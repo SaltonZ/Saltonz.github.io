@@ -79,17 +79,17 @@
 
 
 
-<meta name="description" content="How to calculate power of a number Implement pow(x, n), which calculates x raised to the power n ($$x^n$$). 1. Nest myPow‘’’C++double myPow(double x, int n) {    if(n&amp;lt;0) return 1/x  myPow(1/x, -(n+">
+<meta name="description" content="How to calculate power of a number Implement pow(x, n), which calculates x raised to the power n ($$x^n$$). 1. Nest myPow1234567double myPow(double x, int n) &amp;#123;    if(n&amp;lt;0) return 1/x * myPow(1/">
 <meta property="og:type" content="article">
 <meta property="og:title" content="How to calculate power of a number">
 <meta property="og:url" content="https://saltonz.github.io/2018/10/11/Leetcode-number_power/index.html">
 <meta property="og:site_name" content="Salton&#39;s">
-<meta property="og:description" content="How to calculate power of a number Implement pow(x, n), which calculates x raised to the power n ($$x^n$$). 1. Nest myPow‘’’C++double myPow(double x, int n) {    if(n&amp;lt;0) return 1/x  myPow(1/x, -(n+">
+<meta property="og:description" content="How to calculate power of a number Implement pow(x, n), which calculates x raised to the power n ($$x^n$$). 1. Nest myPow1234567double myPow(double x, int n) &amp;#123;    if(n&amp;lt;0) return 1/x * myPow(1/">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-10-11T04:47:52.330Z">
+<meta property="og:updated_time" content="2018-10-11T04:50:02.927Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="How to calculate power of a number">
-<meta name="twitter:description" content="How to calculate power of a number Implement pow(x, n), which calculates x raised to the power n ($$x^n$$). 1. Nest myPow‘’’C++double myPow(double x, int n) {    if(n&amp;lt;0) return 1/x  myPow(1/x, -(n+">
+<meta name="twitter:description" content="How to calculate power of a number Implement pow(x, n), which calculates x raised to the power n ($$x^n$$). 1. Nest myPow1234567double myPow(double x, int n) &amp;#123;    if(n&amp;lt;0) return 1/x * myPow(1/">
 
 
 
@@ -343,7 +343,7 @@
       
         <h1 id="How-to-calculate-power-of-a-number"><a href="#How-to-calculate-power-of-a-number" class="headerlink" title="How to calculate power of a number"></a>How to calculate power of a number</h1><hr>
 <p>Implement pow(x, n), which calculates x raised to the power n ($$x^n$$).</p>
-<h3 id="1-Nest-myPow"><a href="#1-Nest-myPow" class="headerlink" title="1. Nest myPow"></a>1. Nest myPow</h3><p>‘’’C++<br>double myPow(double x, int n) {<br>    if(n&lt;0) return 1/x <em> myPow(1/x, -(n+1));<br>    if(n==0) return 1;<br>    if(n==2) return x</em>x;<br>    if(n%2==0) return myPow( myPow(x, n/2), 2);<br>    else return x*myPow( myPow(x, n/2), 2);<br>}<br>‘’’</p>
+<h3 id="1-Nest-myPow"><a href="#1-Nest-myPow" class="headerlink" title="1. Nest myPow"></a>1. Nest myPow</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">double</span> <span class="title">myPow</span><span class="params">(<span class="keyword">double</span> x, <span class="keyword">int</span> n)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(n&lt;<span class="number">0</span>) <span class="keyword">return</span> <span class="number">1</span>/x * myPow(<span class="number">1</span>/x, -(n+<span class="number">1</span>));</span><br><span class="line">    <span class="keyword">if</span>(n==<span class="number">0</span>) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">if</span>(n==<span class="number">2</span>) <span class="keyword">return</span> x*x;</span><br><span class="line">    <span class="keyword">if</span>(n%<span class="number">2</span>==<span class="number">0</span>) <span class="keyword">return</span> myPow( myPow(x, n/<span class="number">2</span>), <span class="number">2</span>);</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">return</span> x*myPow( myPow(x, n/<span class="number">2</span>), <span class="number">2</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
       
     </div>
