@@ -79,17 +79,17 @@
 
 
 
-<meta name="description" content="Hello world@(hello world)[salton|1]   Area of focus:  Algorithm/Computer Vision/Machine Learning/Computer Network">
+<meta name="description" content="Chapter 4: Intermediate SQL[TOC]">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Hello World">
-<meta property="og:url" content="https://saltonz.github.io/2018/03/26/hello-world/index.html">
+<meta property="og:title" content="Notes for DB Principle- Intermediate SQL">
+<meta property="og:url" content="https://saltonz.github.io/2019/03/10/DB-ch4/index.html">
 <meta property="og:site_name" content="Salton&#39;s">
-<meta property="og:description" content="Hello world@(hello world)[salton|1]   Area of focus:  Algorithm/Computer Vision/Machine Learning/Computer Network">
+<meta property="og:description" content="Chapter 4: Intermediate SQL[TOC]">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-03-11T05:21:32.989Z">
+<meta property="og:updated_time" content="2019-03-11T05:29:00.224Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Hello World">
-<meta name="twitter:description" content="Hello world@(hello world)[salton|1]   Area of focus:  Algorithm/Computer Vision/Machine Learning/Computer Network">
+<meta name="twitter:title" content="Notes for DB Principle- Intermediate SQL">
+<meta name="twitter:description" content="Chapter 4: Intermediate SQL[TOC]">
 
 
 
@@ -119,13 +119,13 @@
 
 
 
-  <link rel="canonical" href="https://saltonz.github.io/2018/03/26/hello-world/"/>
+  <link rel="canonical" href="https://saltonz.github.io/2019/03/10/DB-ch4/"/>
 
 
 
 
 
-  <title>Hello World | Salton's</title>
+  <title>Notes for DB Principle- Intermediate SQL | Salton's</title>
   
 
 
@@ -252,7 +252,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://saltonz.github.io/2018/03/26/hello-world/">
+    <link itemprop="mainEntityOfPage" href="https://saltonz.github.io/2019/03/10/DB-ch4/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Salton Zhao">
@@ -269,7 +269,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Hello World</h1>
+          <h1 class="post-title" itemprop="name headline">Notes for DB Principle- Intermediate SQL</h1>
         
 
         <div class="post-meta">
@@ -281,8 +281,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-26T00:00:00-04:00">
-                2018-03-26
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-10T13:56:20-04:00">
+                2019-03-10
               </time>
             
 
@@ -304,8 +304,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/hello/" itemprop="url" rel="index">
-                    <span itemprop="name">hello</span>
+                  <a href="/categories/Databases/" itemprop="url" rel="index">
+                    <span itemprop="name">Databases</span>
                   </a>
                 </span>
 
@@ -341,10 +341,127 @@
       
 
       
-        <h1 id="Hello-world"><a href="#Hello-world" class="headerlink" title="Hello world"></a>Hello world</h1><p>@(hello world)[salton|1]</p>
+        <h1 id="Chapter-4-Intermediate-SQL"><a href="#Chapter-4-Intermediate-SQL" class="headerlink" title="Chapter 4: Intermediate SQL"></a>Chapter 4: Intermediate SQL</h1><p>[TOC]</p>
+<a id="more"></a>
+<h2 id="Join-Expressions"><a href="#Join-Expressions" class="headerlink" title="Join Expressions"></a>Join Expressions</h2><p>Join operations take two relations and return as a result another relation.</p>
+<p>A join operation is a Cartesian product which requires that tuples in the two relations match<b>(under some condition)</b> </p>
+<p>Join operations are typically used as subquery expressions in the from clause.</p>
 <blockquote>
+<p><strong>Outer Join</strong><br>An extension of the join operation that avoids loss of information.<br>Join and then adds tuples form one relation that does not match tuples in the other relation to the result of the join<br>Uses null values.</p>
+<blockquote>
+<p>Left outer Join:<br>Reserve the attributes don’t match in the left relation<br>Right outer Join:<br>Reserve the attributes don’t match in the right relation<br>Full outer Join:<br>Reserve the attributes don’t match in both relations</p>
 </blockquote>
-<p><strong>Area of focus: </strong> Algorithm/Computer Vision/Machine Learning/Computer Network</p>
+</blockquote>
+<blockquote>
+<p><strong>Join Conditions</strong><br>defines which tuples in the two relations match and what attributes are present in the result of the join.</p>
+</blockquote>
+<blockquote>
+<p><strong>E.g:</strong><br>courser INNER JOIN prereq ON<br>course.course_id = prereq.course_id</p>
+<blockquote>
+<p>Find the course ID, semeseter, year and title of each course offered by the Comp. Sci. department:<br><strong>select</strong> section.course_id, semester, year, title<br><strong>from</strong> section, course<br><strong>where</strong> section.course_id = course.course_id <strong>and</strong> dept_name = ‘Comp. Sci.’<br><br><br>same with:<br><strong>select</strong> section.course_id, semester, year, title<br><strong>from</strong> section <strong>join</strong> course<br><strong>where</strong> dept_name = ‘Comp. Sci.’</p>
+</blockquote>
+</blockquote>
+<p>##Views<br>In some cases it is not desirable for all users to see the entire logical model.<br>A <strong>view</strong> provides <u>a mechanism to hide certain data from the view of vertain users</u><br>Any relation that is not of the <u>conceptual model</u> but is made visible to a user as a “virtual relation” is called a view.<br></p>
+<p>###View Definition<br>A view is defined using the <strong>create view</strong> statement with the forum:<br><br><strong>create view</strong> v <strong>as</strong> &lt; query expression&gt; <br><br>and the view name is represented by <em>v</em></p>
+<p>View definition is not the same as <strong><del>creating a new relation</del></strong> but <strong>evaluating the query expression</strong></p>
+<p>Rather, a view definition causes the <strong>saving of an expression</strong>. The expression is substituted into queries using the view.</p>
+<p>###Example Views</p>
+<blockquote>
+<p>A view of instructors without their salary:<br><strong>create view</strong> faculty <strong>as</strong><br><strong>select</strong> ID, name, dept_name<br><strong>from</strong> instructors</p>
+</blockquote>
+<blockquote>
+<p>Find all instructors in the Biology department<br><strong>select</strong> name<br><strong>from</strong> faculty<br><strong>where</strong> dept_name = ‘Biology’</p>
+</blockquote>
+<blockquote>
+<p>Create a view of department salary totals<br><strong>create view</strong> departments_total_salary(dept_name, total_salary) <strong>as</strong><br><strong>select</strong> dept_name, <strong>sum</strong>(salary)<br><strong>from</strong> instructors<br><strong>group by</strong> dept_name </p>
+</blockquote>
+<p>###Views defined using other views</p>
+<ul>
+<li>One view may be used in the expression defining of another view</li>
+<li>A view relation v1 is said to <strong>depend directly</strong> on a relavition v2 if v2 is used in the expression defining v1</li>
+<li>A view relation v1 is said to <strong>depend</strong> on view relation v2 if either v1 depends directly to v2 or there is a path of dependencies from v1 to v2 </li>
+<li>A view relation v is said to be <strong>recursive</strong>  if it depends on itself.</li>
+</ul>
+<p>###View expansion</p>
+<ul>
+<li>A way to define the meaning of views defined in terms of other views</li>
+<li>Let view v1 be defined by an expression e1 that may itself contain uses of view relations</li>
+<li>View expansion of an expression repeats the following replacement step:<blockquote>
+<p><strong>repeat</strong><br>Find any view relation vi in e1<br>Replace the view relation vi by the expression deﬁning vi<br><strong>until</strong> no more view relations are present in e1  </p>
+</blockquote>
+</li>
+</ul>
+<p>###Update of a View<br>“faculty” is a view</p>
+<blockquote>
+<p><strong>insert into</strong> faculty <strong>values</strong>(‘30765’, ‘Green’, ‘Music’)</p>
+</blockquote>
+<p><strong>some updates can’t be translated uniquely</strong></p>
+<blockquote>
+<p><strong>create view</strong> instructor_info as<br><strong>select</strong> ID, name, building<br><strong>from</strong> instructor, department<br><strong>where</strong> instructor.dept_name= department.dept_name; </p>
+</blockquote>
+<blockquote>
+<p><strong>insert into</strong> instructor values(‘69987’, ‘White’, ‘Taylor’)</p>
+<blockquote>
+<p>If Talyor in multi departments, which department should be?<br>What if Talyor don’t belong to any department.</p>
+</blockquote>
+</blockquote>
+<p><strong>Most SQL inplementions only allow updated on simple views</strong><br>●  The <strong>from</strong> clause has <strong>only one database relation</strong>.<br>●  The <strong>select</strong> clause contains <strong>only attribute names of the relation</strong>, and does not have any expressions, aggregates, or distinct speciﬁcation.<br>●  Any attribute not listed in the select clause can be set to null<br>●  The query does not have a group by or having clause.</p>
+<p>##Transactions<br>Unit of work<br>Atomic Transaction:either fully executed or rolled back as if it never occured.<br>Isolation from concurrent Transactions<br>Transaction begin implicitly and ended by commit work or roll back work<br>But on most databases, each SQL statement commits automatically</p>
+<p>##Integrity Constraints<br>Integrity constraints guard against accidental damage to the database, by ensuring that authorized changes to the database do not result in a loss of data consistency.</p>
+<ul>
+<li>e.g: A customer must have a phone number</li>
+</ul>
+<p><strong>constraints on a single relation</strong>:</p>
+<blockquote>
+<p><strong>not null</strong></p>
+<blockquote>
+<p>Declare name and budget to be not null </p>
+</blockquote>
+<p><strong>unique(A1, A2, …, $A_m$)</strong></p>
+<blockquote>
+<ul>
+<li>The unique specification states the attibutes(A1, A2, …, $A_m$) form a canditate key</li>
+<li>Canditates keys are permittede to be null</li>
+</ul>
+</blockquote>
+<p><strong>check(P)</strong><br> where P is a predicate<br> (predicate: 谓词，返回值是真值的函数<br> E.g: Like, Between, In, Exists)</p>
+<blockquote>
+<p>The CHECK constraint is used to limit the value range that can be placed in a column.<br><br>If you define a CHECK constraint on a single column it allows only certain values for this column.<br><br>If you define a CHECK constraint on a table it can limit the values in certain columns based on values in other columns in the row.</p>
+</blockquote>
+</blockquote>
+<p> <strong>Referencial Integrity</strong><br> Ensures that a value that appears in one relation for a given set of attributes also appears for a certain set of attributes in another relation. </p>
+<p><strong>cascade</strong></p>
+<blockquote>
+<p>cascade 表示级联操作，就是说，如果主键表中被参考字段更新，外键表中也更新，主键表中的记录被删除，外键表中改行也相应删除</p>
+<blockquote>
+<p>on delete cascade<br> on update cascade</p>
+</blockquote>
+</blockquote>
+<h2 id="SQL-Build-in-Data-Types"><a href="#SQL-Build-in-Data-Types" class="headerlink" title="SQL Build in Data Types"></a>SQL Build in Data Types</h2><ul>
+<li>date: Dates<br>E.g: <strong>date</strong> “2019-3-11”</li>
+<li>time: time of day<br>E.g: <strong>time</strong> ‘09:00:30’<ul>
+<li>timestamp: date + time<br>*interval period of time<blockquote>
+<p>Subtracting a time/date/timestamp value from another gives an interval value<br>Interval values can be used to added to time/date/timestamp values</p>
+</blockquote>
+</li>
+</ul>
+</li>
+</ul>
+<p>##Other Features</p>
+<ul>
+<li><strong>create index</strong> studentID index <strong>on</strong> student(ID)</li>
+<li>large objects<blockquote>
+<p>book review <strong>clob</strong> :</p>
+<blockquote>
+<p>character large object,store tect into DBs and support key word search and other Features</p>
+</blockquote>
+<p>image <strong>blob</strong>, movie <strong>blob</strong>:</p>
+<blockquote>
+<p>binary large object,<br>don’t store image in table, pointer to binary image instead</p>
+</blockquote>
+</blockquote>
+</li>
+</ul>
 
       
     </div>
@@ -369,15 +486,15 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
+              <a href="/2018/10/11/Leetcode-number_power/" rel="next" title="How to calculate power of a number">
+                <i class="fa fa-chevron-left"></i> How to calculate power of a number
+              </a>
+            
           </div>
 
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/10/10/Machine-Learning-Homework/" rel="prev" title="Machine Learning Homework">
-                Machine Learning Homework <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -500,7 +617,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Hello-world"><span class="nav-number">1.</span> <span class="nav-text">Hello world</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Chapter-4-Intermediate-SQL"><span class="nav-number">1.</span> <span class="nav-text">Chapter 4: Intermediate SQL</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Join-Expressions"><span class="nav-number">1.1.</span> <span class="nav-text">Join Expressions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SQL-Build-in-Data-Types"><span class="nav-number">1.2.</span> <span class="nav-text">SQL Build in Data Types</span></a></li></ol></li></ol></div>
             
 
           </div>
