@@ -341,172 +341,18 @@
 
       
         
-          
-            <h1><span id="assignment-of-lab2"><center>Assignment of Lab2</center></span></h1><p><strong><center>DNSpoofing on a LAN</center></strong></p>
+          <h1 id="Assignment-of-Lab2"><a href="#Assignment-of-Lab2" class="headerlink" title="Assignment of Lab2"></a><center>Assignment of Lab2</center></h1><p><strong><center>DNSpoofing on a LAN</center></strong></p>
 <center> Saitong Zhao sz2641 N15871333 </center>
 
 <p>[TOC]</p>
-<h2><span id="exercise">Exercise</span></h2><h3><span id="1-normal-dhcp-and-dns-resolution-of-the-banks-hostname">1. Normal DHCP and DNS resolution of the bank’s hostname</span></h3><p><strong>flowchart</strong>:<br><img src="https://s2.ax1x.com/2019/03/11/ACmyhq.jpg" alt="pic1"><br><strong>Terminal Output</strong>:</p>
-<blockquote>
-<p><strong>Client(nslookup)</strong>:</p>
-<blockquote>
-<p>Server:         10.10.1.2<br>Address:        10.10.1.2#53<br><br>Non-authoritative answer:<br>Name:   bankofhamilton.com<br>Address: 66.55.106.88</p>
-</blockquote>
-</blockquote>
-<blockquote>
-<p><strong>DNS-good/server</strong></p>
-<blockquote>
-<p><strong>dnsmasq-dhcp</strong></p>
-<blockquote>
-<p>DHCPDISCOVER(eth1) 10.10.1.29 02:c6:48:64:56:73<br>DHCPOFFER(eth1) 10.10.1.29 02:c6:48:64:56:73<br>DHCPREQUEST(eth1) 10.10.1.29 02:c6:48:64:56:73<br>DHCPACK(eth1) 10.10.1.29 02:c6:48:64:56:73 client</p>
-</blockquote>
-</blockquote>
-<blockquote>
-<p><strong>Tcpdump</strong></p>
-<blockquote>
-<p>16:28:13.153292 IP 0.0.0.0.68 &gt; 255.255.255.255.67: BOOTP/DHCP, Request from 02:c6:48:64:56:73, length 300<br>16:28:13.654247 IP 10.10.1.2.67 &gt; 10.10.1.29.68: BOOTP/DHCP, Reply, length 300<br>16:28:13.657393 IP 0.0.0.0.68 &gt; 255.255.255.255.67: BOOTP/DHCP, Request from 02:c6:48:64:56:73, length 300<br>16:28:14.192612 IP 10.10.1.2.67 &gt; 10.10.1.29.68: BOOTP/DHCP, Reply, length 300<br><br>16:39:18.589209 IP 10.10.1.29.49400 &gt; 10.10.1.2.53: 24581+ A? bankofhamilton.com. (36)<br>16:39:19.116951 IP 10.10.1.2.53 &gt; 10.10.1.29.49400: 24581 1/4/0 A 66.55.106.88 (134)</p>
-</blockquote>
-</blockquote>
-</blockquote>
-<h3><span id="2-arp-spoofing">2. ARP Spoofing</span></h3><p><strong>flowchart</strong>:<br><img src="https://s2.ax1x.com/2019/03/11/ACmsNn.jpg" alt="pic2"><br><strong>Terminal output</strong>:</p>
-<blockquote>
-<p><strong>Client</strong>:</p>
-<blockquote>
-<p><strong>first arp check(1)</strong>:</p>
-<blockquote>
-<p>dns-good-link-0 (10.10.1.2) at 02:40:9a:33:35:ad [ether] on eth1</p>
-</blockquote>
-</blockquote>
-<blockquote>
-<p><strong>Second arp check(3)</strong></p>
-<blockquote>
-<p>attacker-link-0 (10.10.1.254) at 02:84:62:f7:3e:f6 [ether] on eth1<br>dns-good-link-0 (10.10.1.2) at 02:84:62:f7:3e:f6 [ether] on eth1</p>
-</blockquote>
-</blockquote>
-<blockquote>
-<p><strong>nslookup(5)</strong></p>
-<blockquote>
-<p>Server:         10.10.1.2<br>Address:        10.10.1.2#53<br><br>Non-authoritative answer:<br>Name:   bankofhamilton.com<br>Address: 128.163.233.173</p>
-</blockquote>
-</blockquote>
-</blockquote>
-<blockquote>
-<p><strong>DNS-good</strong></p>
-<blockquote>
-<p><strong>Tcpdump(6)</strong><br>Client send query to attacker</p>
-<blockquote>
-<p>17:42:37.523962 02:c6:48:64:56:73 &gt; 02:84:62:f7:3e:f6, ethertype IPv4 (0x0800), length 78: 10.10.1.29.50608 &gt; 10.10.1.2.53: 18540+ A? bankofhamilton.com. (36) </p>
-</blockquote>
-</blockquote>
-<blockquote>
-<p>Attacker send query to server</p>
-<blockquote>
-<p>17:42:37.822971 02:84:62:f7:3e:f6 &gt; 02:40:9a:33:35:ad, ethertype IPv4 (0x0800), length 78: 10.10.1.29.50614 &gt; 10.10.1.2.53: 18630+ A? bankofhamilton.com. (36)</p>
-</blockquote>
-</blockquote>
-<blockquote>
-<p>Attacker send response to client</p>
-<blockquote>
-<p>17:42:37.824572 02:84:62:f7:3e:f6 &gt; 02:c6:48:64:56:73, ethertype IPv4 (0x0800), length 94: 10.10.1.2.53 &gt; 10.10.1.29.50614: 18540 1/0/0 A 128.163.233.173 (52)</p>
-</blockquote>
-</blockquote>
-<blockquote>
-<p>Server send response to attacker</p>
-<blockquote>
-<p>17:42:38.023812 02:40:9a:33:35:ad &gt; 02:84:62:f7:3e:f6, ethertype IPv4 (0x0800), length 94: 10.10.1.2.53 &gt; 10.10.1.29.50614: 18630 1/0/0 A 66.55.106.88 (52)</p>
-</blockquote>
-</blockquote>
-</blockquote>
-<blockquote>
-<p><strong>Attacker</strong>:</p>
-<blockquote>
-<p><strong>Arpspoof(2)</strong></p>
-<blockquote>
-<p>2:84:62:f7:3e:f6 2:40:9a:33:35:ad 0806 42: arp reply 10.10.1.29 is-at 2:84:62:f7:3e:f6<br>2:84:62:f7:3e:f6 2:c6:48:64:56:73 0806 42: arp reply 10.10.1.2 is-at 2:84:62:f7:3e:f6</p>
-</blockquote>
-</blockquote>
-</blockquote>
-<blockquote>
-<blockquote>
-<p><strong>Start DNS spoof(4)</strong></p>
-<blockquote>
-<p>dnsspoof: listening on eth1 [udp dst port 53 and not src 10.10.1.254]</p>
-</blockquote>
-</blockquote>
-</blockquote>
-<h3><span id="3-dhcp-masquerade">3. DHCP masquerade</span></h3><p><strong>flow chart</strong>:<br><img src="https://s2.ax1x.com/2019/03/11/ACmrAs.jpg" alt="pic3"><br><strong>Terminal output</strong>:</p>
-<blockquote>
-<p><strong>Client</strong></p>
-<blockquote>
-<p><strong>ifconfig</strong></p>
-<blockquote>
-<p>eth1      Link encap:Ethernet  HWaddr 02:c6:48:64:56:73<br>inet addr:<strong>10.10.1.29</strong>  Bcast:10.10.1.255  Mask:255.255.255.0<br>inet6 addr: fe80::c6:48ff:fe64:5673/64 Scope:Link<br>UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1<br>RX packets:7634 errors:0 dropped:0 overruns:0 frame:0<br>TX packets:2674 errors:0 dropped:0 overruns:0 carrier:0<br>collisions:0 txqueuelen:1000<br>RX bytes:449827 (449.8 KB)  TX bytes:192370 (192.3 KB)</p>
-</blockquote>
-</blockquote>
-<blockquote>
-<p><strong>cat /etc/resolv.conf</strong></p>
-<blockquote>
-<p># Dynamic resolv.conf(5) file for glibc resolver(3) generated by resolvconf(8)<br>#     DO NOT EDIT THIS FILE BY HAND – YOUR CHANGES WILL BE OVERWRITTEN<br>nameserver <strong>10.10.1.254</strong></p>
-</blockquote>
-</blockquote>
-<blockquote>
-<p><strong>nslookup</strong></p>
-<blockquote>
-<p>Server:         10.10.1.254<br>Address:        10.10.1.254#53<br><br>Name:   bankofhamilton.com<br>Address: 128.163.233.173</p>
-</blockquote>
-</blockquote>
-</blockquote>
-<blockquote>
-<p><strong>DNS-good/Server</strong></p>
-<blockquote>
-<p><strong>dnsmasq</strong></p>
-<blockquote>
-<p>dnsmasq-dhcp: DHCPRELEASE(eth1) 10.10.1.29 02:c6:48:64:56:73<br>dnsmasq-dhcp: DHCPDISCOVER(eth1) 10.10.1.29 02:c6:48:64:56:73<br>dnsmasq-dhcp: DHCPOFFER(eth1) 10.10.1.29 02:c6:48:64:56:73</p>
-</blockquote>
-</blockquote>
-<blockquote>
-<p><strong>tcpdump(DNS)</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">18:21:53.794731 02:c6:48:64:56:73 &gt; ff:ff:ff:ff:ff:ff, ethertype IPv4 (0x0800), length 342: (tos 0x10, ttl 128, id 0, offset 0, flags [none], proto UDP (17), length 328)</span><br><span class="line">    0.0.0.0.68 &gt; 255.255.255.255.67: BOOTP/DHCP, Request from 02:c6:48:64:56:73, length 300, xid 0x35fe887c, Flags [none]</span><br><span class="line">          Client-Ethernet-Address 02:c6:48:64:56:73</span><br><span class="line">          Vendor-rfc1048 Extensions</span><br><span class="line">            Magic Cookie 0x63825363</span><br><span class="line">            DHCP-Message Option 53, length 1: Discover</span><br><span class="line">            Requested-IP Option 50, length 4: 10.10.1.29</span><br><span class="line">            Hostname Option 12, length 6: &quot;client&quot;</span><br><span class="line">            Parameter-Request Option 55, length 7:</span><br><span class="line">              Subnet-Mask, BR, Time-Zone, Default-Gateway</span><br><span class="line">              Domain-Name, Domain-Name-Server, Option 119</span><br><span class="line">18:21:53.798385 02:c6:48:64:56:73 &gt; ff:ff:ff:ff:ff:ff, ethertype IPv4 (0x0800), length 342: (tos 0x10, ttl 128, id 0, offset 0, flags [none], proto UDP (17), length 328)</span><br><span class="line">    0.0.0.0.68 &gt; 255.255.255.255.67: BOOTP/DHCP, Request from 02:c6:48:64:56:73, length 300, xid 0x35fe887c, Flags [none]</span><br><span class="line">          Client-Ethernet-Address 02:c6:48:64:56:73</span><br><span class="line">          Vendor-rfc1048 Extensions</span><br><span class="line">            Magic Cookie 0x63825363</span><br><span class="line">            DHCP-Message Option 53, length 1: Request</span><br><span class="line">            Server-ID Option 54, length 4: 10.10.1.254</span><br><span class="line">            Requested-IP Option 50, length 4: 10.10.1.29</span><br><span class="line">            Hostname Option 12, length 6: &quot;client&quot;</span><br><span class="line">            Parameter-Request Option 55, length 7:</span><br><span class="line">              Subnet-Mask, BR, Time-Zone, Default-Gateway</span><br><span class="line">              Domain-Name, Domain-Name-Server, Option 119</span><br><span class="line">18:21:54.292102 02:40:9a:33:35:ad &gt; 02:c6:48:64:56:73, ethertype IPv4 (0x0800), length 342: (tos 0xc0, ttl 64, id 6183, offset 0, flags [none], proto UDP (17), length 328)</span><br><span class="line">    10.10.1.2.67 &gt; 10.10.1.29.68: BOOTP/DHCP, Reply, length 300, xid 0x35fe887c, Flags [none]</span><br><span class="line">          Your-IP 10.10.1.29</span><br><span class="line">          Server-IP 10.10.1.2</span><br><span class="line">          Client-Ethernet-Address 02:c6:48:64:56:73</span><br><span class="line">          Vendor-rfc1048 Extensions</span><br><span class="line">            Magic Cookie 0x63825363</span><br><span class="line">            DHCP-Message Option 53, length 1: Offer</span><br><span class="line">            Server-ID Option 54, length 4: 10.10.1.2</span><br><span class="line">            Lease-Time Option 51, length 4: 259200</span><br><span class="line">            RN Option 58, length 4: 129600</span><br><span class="line">            RB Option 59, length 4: 226800</span><br><span class="line">            Subnet-Mask Option 1, length 4: 255.255.255.0</span><br><span class="line">            BR Option 28, length 4: 10.10.1.255</span><br><span class="line">            Default-Gateway Option 3, length 4: 10.10.1.2</span><br><span class="line">            Domain-Name-Server Option 6, length 4: 10.10.1.2</span><br></pre></td></tr></table></figure></p>
-</blockquote>
-</blockquote>
-<blockquote>
-<blockquote>
-<p><strong>tcpdump(UDP)</strong></p>
-<blockquote>
-<p>NULL</p>
-</blockquote>
-</blockquote>
-</blockquote>
-<blockquote>
-<p><strong>Attacker</strong></p>
-<blockquote>
-<p><strong>dnsmasq</strong></p>
-<blockquote>
-<p>dnsmasq-dhcp: DHCPDISCOVER(eth1) 10.10.1.29 02:c6:48:64:56:73<br>dnsmasq-dhcp: DHCPOFFER(eth1) 10.10.1.29 02:c6:48:64:56:73<br>dnsmasq-dhcp: DHCPREQUEST(eth1) 10.10.1.29 02:c6:48:64:56:73<br>dnsmasq-dhcp: DHCPACK(eth1) 10.10.1.29 02:c6:48:64:56:73 client<br><strong>tcpdump(DNS)</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line">18:21:53.798403 02:c6:48:64:56:73 &gt; ff:ff:ff:ff:ff:ff, ethertype IPv4 (0x0800), length 342: (tos 0x10, ttl 128, id 0, offset 0, flags [none], proto UDP (17), length 328)</span><br><span class="line">    0.0.0.0.68 &gt; 255.255.255.255.67: BOOTP/DHCP, Request from 02:c6:48:64:56:73, length 300, xid 0x35fe887c, Flags [none]</span><br><span class="line">          Client-Ethernet-Address 02:c6:48:64:56:73</span><br><span class="line">          Vendor-rfc1048 Extensions</span><br><span class="line">            Magic Cookie 0x63825363</span><br><span class="line">            DHCP-Message Option 53, length 1: Discover</span><br><span class="line">            Requested-IP Option 50, length 4: 10.10.1.29</span><br><span class="line">            Hostname Option 12, length 6: &quot;client&quot;</span><br><span class="line">            Parameter-Request Option 55, length 7:</span><br><span class="line">              Subnet-Mask, BR, Time-Zone, Default-Gateway</span><br><span class="line">              Domain-Name, Domain-Name-Server, Option 119</span><br><span class="line">18:21:53.799365 02:84:62:f7:3e:f6 &gt; 02:c6:48:64:56:73, ethertype IPv4 (0x0800), length 342: (tos 0xc0, ttl 64, id 13002, offset 0, flags [none], proto UDP (17), length 328)</span><br><span class="line">    10.10.1.254.67 &gt; 10.10.1.29.68: BOOTP/DHCP, Reply, length 300, xid 0x35fe887c, Flags [none]</span><br><span class="line">          Your-IP 10.10.1.29</span><br><span class="line">          Server-IP 10.10.1.254</span><br><span class="line">          Client-Ethernet-Address 02:c6:48:64:56:73</span><br><span class="line">          Vendor-rfc1048 Extensions</span><br><span class="line">            Magic Cookie 0x63825363</span><br><span class="line">            DHCP-Message Option 53, length 1: Offer</span><br><span class="line">            Server-ID Option 54, length 4: 10.10.1.254</span><br><span class="line">            Lease-Time Option 51, length 4: 259200</span><br><span class="line">            RN Option 58, length 4: 129600</span><br><span class="line">            RB Option 59, length 4: 226800</span><br><span class="line">            Subnet-Mask Option 1, length 4: 255.255.255.0</span><br><span class="line">            BR Option 28, length 4: 10.10.1.255</span><br><span class="line">            Default-Gateway Option 3, length 4: 10.10.1.254</span><br><span class="line">            Domain-Name-Server Option 6, length 4: 10.10.1.254</span><br><span class="line">18:21:53.801998 02:c6:48:64:56:73 &gt; ff:ff:ff:ff:ff:ff, ethertype IPv4 (0x0800), length 342: (tos 0x10, ttl 128, id 0, offset 0, flags [none], proto UDP (17), length 328)</span><br><span class="line">    0.0.0.0.68 &gt; 255.255.255.255.67: BOOTP/DHCP, Request from 02:c6:48:64:56:73, length 300, xid 0x35fe887c, Flags [none]</span><br><span class="line">          Client-Ethernet-Address 02:c6:48:64:56:73</span><br><span class="line">          Vendor-rfc1048 Extensions</span><br><span class="line">            Magic Cookie 0x63825363</span><br><span class="line">            DHCP-Message Option 53, length 1: Request</span><br><span class="line">            Server-ID Option 54, length 4: 10.10.1.254</span><br><span class="line">            Requested-IP Option 50, length 4: 10.10.1.29</span><br><span class="line">            Hostname Option 12, length 6: &quot;client&quot;</span><br><span class="line">            Parameter-Request Option 55, length 7:</span><br><span class="line">              Subnet-Mask, BR, Time-Zone, Default-Gateway</span><br><span class="line">              Domain-Name, Domain-Name-Server, Option 119</span><br><span class="line">18:21:53.822093 02:84:62:f7:3e:f6 &gt; 02:c6:48:64:56:73, ethertype IPv4 (0x0800), length 342: (tos 0xc0, ttl 64, id 13004, offset 0, flags [none], proto UDP (17), length 328)</span><br><span class="line">    10.10.1.254.67 &gt; 10.10.1.29.68: BOOTP/DHCP, Reply, length 300, xid 0x35fe887c, Flags [none]</span><br><span class="line">          Your-IP 10.10.1.29</span><br><span class="line">          Server-IP 10.10.1.254</span><br><span class="line">          Client-Ethernet-Address 02:c6:48:64:56:73</span><br><span class="line">          Vendor-rfc1048 Extensions</span><br><span class="line">            Magic Cookie 0x63825363</span><br><span class="line">            DHCP-Message Option 53, length 1: ACK</span><br><span class="line">            Server-ID Option 54, length 4: 10.10.1.254</span><br><span class="line">            Lease-Time Option 51, length 4: 259200</span><br><span class="line">            RN Option 58, length 4: 129600</span><br><span class="line">            RB Option 59, length 4: 226800</span><br><span class="line">            Subnet-Mask Option 1, length 4: 255.255.255.0</span><br><span class="line">            BR Option 28, length 4: 10.10.1.255</span><br><span class="line">            Default-Gateway Option 3, length 4: 10.10.1.254</span><br><span class="line">            Domain-Name-Server Option 6, length 4: 10.10.1.254</span><br></pre></td></tr></table></figure></p>
-</blockquote>
-</blockquote>
-</blockquote>
-<blockquote>
-<blockquote>
-<p><strong>tcpdump(udp)</strong></p>
-<blockquote>
-<p>18:45:05.564333 IP 10.10.1.29.52972 &gt; 10.10.1.254.53: 56895+ A? bankofhamilton.com. (36)<br>18:45:05.564544 IP 10.10.1.254.53 &gt; 10.10.1.29.52972: 56895* 1/0/0 A 128.163.233.173 (52)</p>
-</blockquote>
-</blockquote>
-</blockquote>
-<h2><span id="questions">Questions</span></h2><h3><span id="q1">Q1</span></h3><p><strong>If we hadn’t put that big “FAKE” notice over the logo, would you be able to detect the DNS spoofing attack on loading the bank’s web page in your browser?</strong></p>
-<blockquote>
-<p><strong>Yes</strong>. Because when we run the command <strong>“nslookup bankofhamilton.com”</strong> we can see from the output of the terminal that the ip address we get is not the correct ip address of bankofhamilton.com.</p>
-</blockquote>
-<h3><span id="q2">Q2</span></h3><p><strong>The Diamond Banking website lets users input their username and password on a form on a web page that is loaded over HTTP. But when the user presses “Login”, the form sends the username and password to a page that is loaded over HTTPS, i.e. the username and password are sent over an encrypted connection. Explain why this is not sufficient to protect the users’ login information. What kind of attack are users left vulnerable to? How would using HTTPS for the entire site protect users against this kind of attack?</strong></p>
-<blockquote>
-<p>In this mechnism, a hacker can start middle-man attack. Because HTTPS only protect the protocol higher than TLS/SSL layer, but when an attacker using ARP Spoofing or DHCP masquerade, the attacker can get all the communications between the user and the website.<br>And Because of the Login page is loaded over HTTP, which means not encrypted, the attacker can know when the user is tramsmitting the encrypted packet with username and password. Moreover, the attacker can capture the packet with login information, when he want to login as the user, he can just re-transmit the packet to the website.<br><br>When using HTTPS for the whole site, all the communications between the user and website are encrypted, so the attacker won’t know whice packet is the user used for transmitting the login information.</p>
-</blockquote>
-<h3><span id="q3">Q3</span></h3><p><strong>Would DNSSEC protect against this kind of attack? Explain your answer.</strong></p>
-<blockquote>
-<p><strong>Yes</strong>. Because with DNSSEC, all answers from DNSSEC protected zones are digitally signed. By checking the digital signature, a DNS resolver is able to check whether the information is identical to the information served on the authoritative DNS server. The DNS request from a unautnenticated host will be denied.</p>
-</blockquote>
-
-          
+<h2 id="Exercise"><a href="#Exercise" class="headerlink" title="Exercise"></a>Exercise</h2><h3 id="1-Normal-DHCP-and-DNS-resolution-of-the-bank’s-hostname"><a href="#1-Normal-DHCP-and-DNS-resolution-of-the-bank’s-hostname" class="headerlink" title="1. Normal DHCP and DNS resolution of the bank’s hostname"></a>1. Normal DHCP and DNS resolution of the bank’s hostname</h3><p><strong>flowchart</strong>:<br><img src="https://s2.ax1x.com/2019/03/11/ACmyhq.jpg" alt="pic1"><br>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/03/19/DNSpoofing-Lab/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -791,9 +637,8 @@
 
       
         
-          
-            <h1><span id="chapter-4-network-protocol-security">Chapter 4: Network Protocol Security</span></h1><p>[TOC]</p>
-<h1><span id="4-security-of-network-protocols">4-Security of Network Protocols</span></h1><h2><span id="basic-networkingwhat-security-assurances-what-problems">Basic Networking:what security assurances? What problems?</span></h2><h3><span id="example">Example</span></h3><p>In HTTP Process</p>
+          <h1 id="Chapter-4-Network-Protocol-Security"><a href="#Chapter-4-Network-Protocol-Security" class="headerlink" title="Chapter 4: Network Protocol Security"></a>Chapter 4: Network Protocol Security</h1><p>[TOC]</p>
+<h1 id="4-Security-of-Network-Protocols"><a href="#4-Security-of-Network-Protocols" class="headerlink" title="4-Security of Network Protocols"></a>4-Security of Network Protocols</h1><h2 id="Basic-Networking-what-security-assurances-What-problems"><a href="#Basic-Networking-what-security-assurances-What-problems" class="headerlink" title="Basic Networking:what security assurances? What problems?"></a>Basic Networking:what security assurances? What problems?</h2><h3 id="Example"><a href="#Example" class="headerlink" title="Example"></a>Example</h3><p>In HTTP Process</p>
 <blockquote>
 <p>Can I be confident that I was indeed corresponding with the url, and ths HTTP response came from them?</p>
 </blockquote>
@@ -803,148 +648,13 @@
 <blockquote>
 <p>Is the data inside the HTTP request and respnse confidential?</p>
 </blockquote>
-<blockquote>
-<p>Can I be sure that the data I received in the HTTP response was not tempered with? <strong>data integrity</strong></p>
-</blockquote>
-<blockquote>
-<p>Can the remote site be sure that the HTTP request they received was not tempered with? </p>
-</blockquote>
-<blockquote>
-<p>Could the remote site restrict my access based on my network address?</p>
-</blockquote>
-<blockquote>
-<blockquote>
-<p>In HTTP protocol: No peer identity authentication, no traffic flow confidentiality<br>And no data confidentiality, no assurance of data integrity.</p>
-</blockquote>
-</blockquote>
-<h2><span id="packet-sniffing">Packet Sniffing</span></h2><p>Anybody with the physical access to the local network can ‘listen’ to all the traffic traversing a link.</p>
-<p><strong>MAC flooding attack can turn a switch into a hub</strong></p>
-<ul>
-<li>Normally, a switch learns which host is on which port and then send unicast traffic only to the network segment where that host is connected.</li>
-<li>Attacker can generate fake traffic to fill MAC address table on switch with fake entries, so there is no memory for real entries.</li>
-<li>Traffic will be flooded out of all ports.<blockquote>
-<p>Hints:<br>Key differences between hubs, switches and bridges is that hub operate at Layer 1 of the OSI model, while bridges and switches operate at Layer 2 work with MAC address.<br>Hubs broadcast incoming traffic on all ports, whereas bridges and switches only route traffic towards their addressed destinations.</p>
-</blockquote>
-</li>
-</ul>
-<p><strong>MAC address spoofing</strong><br>Trivial change to the MAC address of a network interface card in softwore<br><strong>Useage</strong>: </p>
-<ul>
-<li>Bypass any MAC address filtering</li>
-<li>Impersonate another host</li>
-</ul>
-<p><strong>IP address spoofing</strong><br>Because there’s no source IP authentication -&gt; “Anyone” can put an arbitary source IP into a packet and send it out.</p>
-<blockquote>
-<p>Implications:<br>Anonymous attack: no accountability<br>Can’t get non-repudiation from addresses alone.</p>
-</blockquote>
-<p><strong>TCP Connetcion spoofing</strong><br>Need to guess a resonable sequence number. Easy if we can sniff.</p>
-<p><strong>Where to put security facilities</strong>(int TCP/IP protocal stack)</p>
-<ul>
-<li>Network level:  IP/IPSec</li>
-<li>Transport level: SSL or TLS</li>
-<li>Application level: Kerberos/ MIME<h2><span id="ssltls">SSL/TLS</span></h2><h3><span id="tls">TLS</span></h3></li>
-<li>One of the most widely used security services.</li>
-<li>TLS is an Internet standard evolved from SSL</li>
-<li>TLS is a general purpose service implemented as a set of protocols that rely on TCP<blockquote>
-<p>TLS could be provided as part of the underlying protocol and therefore be transparent to applications.</p>
-</blockquote>
-</li>
-</ul>
-<h3><span id="tls-architecture"><strong>TLS Architecture</strong></span></h3><blockquote>
-<p>TLS Connetcion</p>
-<blockquote>
-<ul>
-<li>A transport provides a suitable type of service</li>
-<li>For TLS, such connections are peer-to-peer relations</li>
-<li>Connections are transient(暂时的)</li>
-<li>Every connection is associated with one session</li>
-</ul>
-</blockquote>
-<p>TLS session</p>
-<blockquote>
-<ul>
-<li>An association between a client and a server</li>
-<li>Created by handshake protocol</li>
-<li>Define a set of cryptographic security parameters which can be shared among multiple connections</li>
-<li>Are used to avoid the expensive negotiation of new security parameters for each connection.</li>
-</ul>
-</blockquote>
-</blockquote>
-<p><strong>For a connection with TLS</strong><br><strong>Data confidentiality</strong>: symmetric cryptography on all data transmitted. Keys generated at the first of each connection<br><strong>Peer identity authentication</strong>: using public key certificates.<br><strong>Data Integrity</strong>: using a MAC appended to each transmitted message.</p>
-<h3><span id="tls-handshake">TLS handshake</span></h3><ul>
-<li>Most complex part of TLS - used before any application data tramsmitted</li>
-<li>Support the server and client authenticate</li>
-<li>Negotiate an encryption and MAC algorithm and cryptographic key to use</li>
-<li>Handshake with an asymmetric cipher to establish<blockquote>
-<p>Step 1： Client Hello<br>Client send a client hello message to server with a client-generated random number, Support Ciphers and SSL Version…</p>
-</blockquote>
-</li>
-</ul>
-<blockquote>
-<p>Step 2: Server Hello<br>Server send server hello message to client with another ramdon number, selected Cipher Suites</p>
-</blockquote>
-<blockquote>
-<p>Step 3: certificate<br>Server send its certificate to client for authentication. Client will get the public key from it after authentication.</p>
-</blockquote>
-<blockquote>
-<p>Step 4: Server Key Exchange()<br>Needed in Diffie-Hellmen for transmitting D-H parameters, not needed in RSA.</p>
-</blockquote>
-<blockquote>
-<p>Step 5: Certificate Request()<br>Server request certificate from client.对安全要求高的场景可选</p>
-</blockquote>
-<blockquote>
-<p>Step 6: Certificate Verify<br>After client verify the certificate from server, generate a random number Random3, and encrypt it with server’s public key and generate the <strong>Premaster Key</strong></p>
-</blockquote>
-<blockquote>
-<p>Step 7: Client Key Exchange<br>Client send the Premaster Key to server, then server decrypt the Premaster Key and get Random3.</p>
-</blockquote>
-<blockquote>
-<p>Step 8: Change Cipher Spec(Client)<br>Client tell server that the next messages will be encrypted by the keys negotiated before.</p>
-</blockquote>
-<blockquote>
-<p>Step 9: Encrypted Handshake Message(Client)</p>
-</blockquote>
-<blockquote>
-<p>Step 10: Change Cipher Spec</p>
-</blockquote>
-<blockquote>
-<p>Step 10:Encrypted Handshake Message(Server)</p>
-</blockquote>
-<blockquote>
-<p>Step 11: Application data</p>
-</blockquote>
-<h2><span id="httpshttp-over-ssltls">HTTPS(HTTP over SSL/TLS)</span></h2><ul>
-<li>Combination with HTTP and SSL/TLS</li>
-<li>HTTPS uses 443 port, instead of 80 for HTTP<blockquote>
-<p>Encrypted elemets in HTTPS:</p>
-<blockquote>
-<p>URL of the request document<br>Contents of the document<br>Contents of browser forms<br>Cookies sent between browser and server<br>Contents of HTTP header</p>
-</blockquote>
-</blockquote>
-</li>
-</ul>
-<p><strong>Why use HTTPS for “regular” traffic?</strong><br>Assure integrity, Protect users privacy, Ranking factor for serach engines, No longer a meaningful performance penalty.</p>
-<h2><span id="ipsec">IPSec</span></h2><p>IPSec is a suite of protocols that interact with one another to provide secure private communications across IP networks. These protocols allow the system to establish and maintain secure tunnels with peer security gateways.</p>
-<h3><span id="why-at-ip-layer">Why at IP Layer?</span></h3><ul>
-<li>Security concerns affect all layers</li>
-<li>Organization can ensure secure networks for all applications, not only those using security mechanisms.</li>
-</ul>
-<h3><span id="transport-mode-vs-tunnel-mode">Transport mode vs. tunnel mode</span></h3><ul>
-<li>Transport mode: protects <strong>payload</strong> of IP packet, used for end-to-end comunication between two hosts.</li>
-<li>Tunnel mode: protects <strong>entire</strong> IP packet, including header. After extra IPSec header is added, the entire packet is encapsulated in a new IP packet with new outer IP header.</li>
-<li>New packet may have differnet source and destination IP address - internal IP header is invisiable to intermediate routers.</li>
-</ul>
-<h3><span id="transport-mode">Transport mode:</span></h3><blockquote>
-<p>provide protection primiarily on upper layer protocols</p>
-<blockquote>
-<p>Exmaples include TCP/UDP segment or ICMP packet</p>
-</blockquote>
-<p>Typically used on end-to-end communication between two hosts<br><strong>ESP</strong> in transport mode encrypts and optionally authenticates <strong>IP payload</strong> but not ip header.<br><strong>AH</strong> in transport mode authenticates the IP payload and select portions of the IP header.</p>
-</blockquote>
-<h3><span id="tunnel-mode">Tunnel mode</span></h3><blockquote>
-<p>provide protection to the entire IP packet.<br>Used when one or both ends of a security association are a security gateway<br>A number of hosts behind the firewall may engaged in secure communications without implementing IPSec<br><strong>ESP</strong> in transport mode encrypts and optionally authenticates <strong>entire Inner IP packet</strong>, including the inner IP header.<br><strong>AH</strong> in transport mode authenticates the entire IP packet and the selected portions of the outer IP header.</p>
-</blockquote>
-<h2><span id="email-security">Email Security</span></h2>
-          
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/03/09/ch4-Network protocol/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
