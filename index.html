@@ -395,6 +395,298 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://saltonz.github.io/2019/03/09/ch4-Network protocol/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Salton Zhao">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Salton's">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/03/09/ch4-Network protocol/" itemprop="url">Notes for DB Principle- Intermediate SQL</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-09T01:34:20-05:00">
+                2019-03-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Network-Security/" itemprop="url" rel="index">
+                    <span itemprop="name">Network Security</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1><span id="chapter-4-intermediate-sql">Chapter 4: Intermediate SQL</span></h1><p>[TOC]</p>
+<h1><span id="4-security-of-network-protocols">4-Security of Network Protocols</span></h1><h2><span id="basic-networkingwhat-security-assurances-what-problems">Basic Networking:what security assurances? What problems?</span></h2><h3><span id="example">Example</span></h3><p>In HTTP Process</p>
+<blockquote>
+<p>Can I be confident that I was indeed corresponding with the url, and ths HTTP response came from them?</p>
+</blockquote>
+<blockquote>
+<p>Can the remote site be confident about who they were corresponding with and that the HTTP response came from me?</p>
+</blockquote>
+<blockquote>
+<p>Is the data inside the HTTP request and respnse confidential?</p>
+</blockquote>
+<blockquote>
+<p>Can I be sure that the data I received in the HTTP response was not tempered with? <strong>data integrity</strong></p>
+</blockquote>
+<blockquote>
+<p>Can the remote site be sure that the HTTP request they received was not tempered with? </p>
+</blockquote>
+<blockquote>
+<p>Could the remote site restrict my access based on my network address?</p>
+</blockquote>
+<blockquote>
+<blockquote>
+<p>In HTTP protocol: No peer identity authentication, no traffic flow confidentiality<br>And no data confidentiality, no assurance of data integrity.</p>
+</blockquote>
+</blockquote>
+<h2><span id="packet-sniffing">Packet Sniffing</span></h2><p>Anybody with the physical access to the local network can ‘listen’ to all the traffic traversing a link.</p>
+<p><strong>MAC flooding attack can turn a switch into a hub</strong></p>
+<ul>
+<li>Normally, a switch learns which host is on which port and then send unicast traffic only to the network segment where that host is connected.</li>
+<li>Attacker can generate fake traffic to fill MAC address table on switch with fake entries, so there is no memory for real entries.</li>
+<li>Traffic will be flooded out of all ports.<blockquote>
+<p>Hints:<br>Key differences between hubs, switches and bridges is that hub operate at Layer 1 of the OSI model, while bridges and switches operate at Layer 2 work with MAC address.<br>Hubs broadcast incoming traffic on all ports, whereas bridges and switches only route traffic towards their addressed destinations.</p>
+</blockquote>
+</li>
+</ul>
+<p><strong>MAC address spoofing</strong><br>Trivial change to the MAC address of a network interface card in softwore<br><strong>Useage</strong>: </p>
+<ul>
+<li>Bypass any MAC address filtering</li>
+<li>Impersonate another host</li>
+</ul>
+<p><strong>IP address spoofing</strong><br>Because there’s no source IP authentication -&gt; “Anyone” can put an arbitary source IP into a packet and send it out.</p>
+<blockquote>
+<p>Implications:<br>Anonymous attack: no accountability<br>Can’t get non-repudiation from addresses alone.</p>
+</blockquote>
+<p><strong>TCP Connetcion spoofing</strong><br>Need to guess a resonable sequence number. Easy if we can sniff.</p>
+<p><strong>Where to put security facilities</strong>(int TCP/IP protocal stack)</p>
+<ul>
+<li>Network level:  IP/IPSec</li>
+<li>Transport level: SSL or TLS</li>
+<li>Application level: Kerberos/ MIME<h2><span id="ssltls">SSL/TLS</span></h2><h3><span id="tls">TLS</span></h3></li>
+<li>One of the most widely used security services.</li>
+<li>TLS is an Internet standard evolved from SSL</li>
+<li>TLS is a general purpose service implemented as a set of protocols that rely on TCP<blockquote>
+<p>TLS could be provided as part of the underlying protocol and therefore be transparent to applications.</p>
+</blockquote>
+</li>
+</ul>
+<h3><span id="tls-architecture"><strong>TLS Architecture</strong></span></h3><blockquote>
+<p>TLS Connetcion</p>
+<blockquote>
+<ul>
+<li>A transport provides a suitable type of service</li>
+<li>For TLS, such connections are peer-to-peer relations</li>
+<li>Connections are transient(暂时的)</li>
+<li>Every connection is associated with one session</li>
+</ul>
+</blockquote>
+<p>TLS session</p>
+<blockquote>
+<ul>
+<li>An association between a client and a server</li>
+<li>Created by handshake protocol</li>
+<li>Define a set of cryptographic security parameters which can be shared among multiple connections</li>
+<li>Are used to avoid the expensive negotiation of new security parameters for each connection.</li>
+</ul>
+</blockquote>
+</blockquote>
+<p><strong>For a connection with TLS</strong><br><strong>Data confidentiality</strong>: symmetric cryptography on all data transmitted. Keys generated at the first of each connection<br><strong>Peer identity authentication</strong>: using public key certificates.<br><strong>Data Integrity</strong>: using a MAC appended to each transmitted message.</p>
+<h3><span id="tls-handshake">TLS handshake</span></h3><ul>
+<li>Most complex part of TLS - used before any application data tramsmitted</li>
+<li>Support the server and client authenticate</li>
+<li>Negotiate an encryption and MAC algorithm and cryptographic key to use</li>
+<li>Handshake with an asymmetric cipher to establish<blockquote>
+<p>Step 1： Client Hello<br>Client send a client hello message to server with a client-generated random number, Support Ciphers and SSL Version…</p>
+</blockquote>
+</li>
+</ul>
+<blockquote>
+<p>Step 2: Server Hello<br>Server send server hello message to client with another ramdon number, selected Cipher Suites</p>
+</blockquote>
+<blockquote>
+<p>Step 3: certificate<br>Server send its certificate to client for authentication. Client will get the public key from it after authentication.</p>
+</blockquote>
+<blockquote>
+<p>Step 4: Server Key Exchange()<br>Needed in Diffie-Hellmen for transmitting D-H parameters, not needed in RSA.</p>
+</blockquote>
+<blockquote>
+<p>Step 5: Certificate Request()<br>Server request certificate from client.对安全要求高的场景可选</p>
+</blockquote>
+<blockquote>
+<p>Step 6: Certificate Verify<br>After client verify the certificate from server, generate a random number Random3, and encrypt it with server’s public key and generate the <strong>Premaster Key</strong></p>
+</blockquote>
+<blockquote>
+<p>Step 7: Client Key Exchange<br>Client send the Premaster Key to server, then server decrypt the Premaster Key and get Random3.</p>
+</blockquote>
+<blockquote>
+<p>Step 8: Change Cipher Spec(Client)<br>Client tell server that the next messages will be encrypted by the keys negotiated before.</p>
+</blockquote>
+<blockquote>
+<p>Step 9: Encrypted Handshake Message(Client)</p>
+</blockquote>
+<blockquote>
+<p>Step 10: Change Cipher Spec</p>
+</blockquote>
+<blockquote>
+<p>Step 10:Encrypted Handshake Message(Server)</p>
+</blockquote>
+<blockquote>
+<p>Step 11: Application data</p>
+</blockquote>
+<h2><span id="httpshttp-over-ssltls">HTTPS(HTTP over SSL/TLS)</span></h2><ul>
+<li>Combination with HTTP and SSL/TLS</li>
+<li>HTTPS uses 443 port, instead of 80 for HTTP<blockquote>
+<p>Encrypted elemets in HTTPS:</p>
+<blockquote>
+<p>URL of the request document<br>Contents of the document<br>Contents of browser forms<br>Cookies sent between browser and server<br>Contents of HTTP header</p>
+</blockquote>
+</blockquote>
+</li>
+</ul>
+<p><strong>Why use HTTPS for “regular” traffic?</strong><br>Assure integrity, Protect users privacy, Ranking factor for serach engines, No longer a meaningful performance penalty.</p>
+<h2><span id="ipsec">IPSec</span></h2><p>IPSec is a suite of protocols that interact with one another to provide secure private communications across IP networks. These protocols allow the system to establish and maintain secure tunnels with peer security gateways.</p>
+<h3><span id="why-at-ip-layer">Why at IP Layer?</span></h3><ul>
+<li>Security concerns affect all layers</li>
+<li>Organization can ensure secure networks for all applications, not only those using security mechanisms.</li>
+</ul>
+<h3><span id="transport-mode-vs-tunnel-mode">Transport mode vs. tunnel mode</span></h3><ul>
+<li>Transport mode: protects <strong>payload</strong> of IP packet, used for end-to-end comunication between two hosts.</li>
+<li>Tunnel mode: protects <strong>entire</strong> IP packet, including header. After extra IPSec header is added, the entire packet is encapsulated in a new IP packet with new outer IP header.</li>
+<li>New packet may have differnet source and destination IP address - internal IP header is invisiable to intermediate routers.</li>
+</ul>
+<h3><span id="transport-mode">Transport mode:</span></h3><blockquote>
+<p>provide protection primiarily on upper layer protocols</p>
+<blockquote>
+<p>Exmaples include TCP/UDP segment or ICMP packet</p>
+</blockquote>
+<p>Typically used on end-to-end communication between two hosts<br><strong>ESP</strong> in transport mode encrypts and optionally authenticates <strong>IP payload</strong> but not ip header.<br><strong>AH</strong> in transport mode authenticates the IP payload and select portions of the IP header.</p>
+</blockquote>
+<h3><span id="tunnel-mode">Tunnel mode</span></h3><blockquote>
+<p>provide protection to the entire IP packet.<br>Used when one or both ends of a security association are a security gateway<br>A number of hosts behind the firewall may engaged in secure communications without implementing IPSec<br><strong>ESP</strong> in transport mode encrypts and optionally authenticates <strong>entire Inner IP packet</strong>, including the inner IP header.<br><strong>AH</strong> in transport mode authenticates the entire IP packet and the selected portions of the outer IP header.</p>
+</blockquote>
+<h2><span id="email-security">Email Security</span></h2>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://saltonz.github.io/2018/10/11/Leetcode-number_power/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -488,17 +780,17 @@
       
         
           
-            <h1 id="How-to-calculate-power-of-a-number"><a href="#How-to-calculate-power-of-a-number" class="headerlink" title="How to calculate power of a number"></a>How to calculate power of a number</h1><hr>
+            <h1><span id="how-to-calculate-power-of-a-number">How to calculate power of a number</span></h1><hr>
 <p>Implement pow(x, n), which calculates x raised to the power n.<br>$$ x^n $$</p>
-<h3 id="Solution-1"><a href="#Solution-1" class="headerlink" title="Solution 1"></a>Solution 1</h3><p>Recursive solution: pow(x,n) means <strong>x</strong> multiplied by <strong>x</strong> for <strong>n</strong> times. And <strong>(x^n)=[(x^(n/2))^2]</strong>. So with this recursive solution, we can reduce the time complexity from <strong>O(n)</strong> to <strong>O(lgn)</strong>.</p>
+<h3><span id="solution-1">Solution 1</span></h3><p>Recursive solution: pow(x,n) means <strong>x</strong> multiplied by <strong>x</strong> for <strong>n</strong> times. And <strong>(x^n)=[(x^(n/2))^2]</strong>. So with this recursive solution, we can reduce the time complexity from <strong>O(n)</strong> to <strong>O(lgn)</strong>.</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">double</span> <span class="title">myPow</span><span class="params">(<span class="keyword">double</span> x, <span class="keyword">int</span> n)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(n&lt;<span class="number">0</span>) <span class="keyword">return</span> <span class="number">1</span>/x * myPow(<span class="number">1</span>/x, -(n+<span class="number">1</span>));</span><br><span class="line">    <span class="keyword">if</span>(n==<span class="number">0</span>) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">if</span>(n==<span class="number">2</span>) <span class="keyword">return</span> x*x;</span><br><span class="line">    <span class="keyword">if</span>(n%<span class="number">2</span>==<span class="number">0</span>) <span class="keyword">return</span> myPow( myPow(x, n/<span class="number">2</span>), <span class="number">2</span>);</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">return</span> x*myPow( myPow(x, n/<span class="number">2</span>), <span class="number">2</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="Solution-2"><a href="#Solution-2" class="headerlink" title="Solution 2"></a>Solution 2</h3><p>Just like the first solution. But in this solution we define a double variable <strong>t</strong> to represent for <strong>(x^(n/2))</strong>, and the method we deal with the sign of <strong>n</strong> is differnet.</p>
+<h3><span id="solution-2">Solution 2</span></h3><p>Just like the first solution. But in this solution we define a double variable <strong>t</strong> to represent for <strong>(x^(n/2))</strong>, and the method we deal with the sign of <strong>n</strong> is differnet.</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">double</span> <span class="title">myPow</span><span class="params">(<span class="keyword">double</span> x, <span class="keyword">int</span> n)</span> </span>&#123; </span><br><span class="line">    <span class="keyword">if</span>(n==<span class="number">0</span>) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">double</span> t = myPow(x,n/<span class="number">2</span>);</span><br><span class="line">    <span class="keyword">if</span>(n%<span class="number">2</span>) <span class="keyword">return</span> n&lt;<span class="number">0</span> ? <span class="number">1</span>/x*t*t : x*t*t;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">return</span> t*t;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="Solution-3"><a href="#Solution-3" class="headerlink" title="Solution 3"></a>Solution 3</h3><p>In this solution, the trick of deal with the sign of <strong>n</strong> is different, using the property between <strong>x</strong> and <strong>n</strong> and normalize them from the very beginning.</p>
+<h3><span id="solution-3">Solution 3</span></h3><p>In this solution, the trick of deal with the sign of <strong>n</strong> is different, using the property between <strong>x</strong> and <strong>n</strong> and normalize them from the very beginning.</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">double</span> <span class="title">myPow</span><span class="params">(<span class="keyword">double</span> x, <span class="keyword">int</span> n)</span> </span>&#123; </span><br><span class="line">    <span class="keyword">if</span>(n==<span class="number">0</span>) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">if</span>(n&lt;<span class="number">0</span>)&#123;</span><br><span class="line">        n = -n;</span><br><span class="line">        x = <span class="number">1</span>/x;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> n%<span class="number">2</span>==<span class="number">0</span> ? myPow(x*x, n/<span class="number">2</span>) : x*myPow(x*x, n/<span class="number">2</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="Solution-4"><a href="#Solution-4" class="headerlink" title="Solution 4"></a>Solution 4</h3><p>Instead of recursion, this solution use the method of iteration and complete the resursive steps before with the while loop. </p>
+<h3><span id="solution-4">Solution 4</span></h3><p>Instead of recursion, this solution use the method of iteration and complete the resursive steps before with the while loop. </p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">double</span> <span class="title">myPow</span><span class="params">(<span class="keyword">double</span> x, <span class="keyword">int</span> n)</span> </span>&#123; </span><br><span class="line">    <span class="keyword">if</span>(n==<span class="number">0</span>) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">if</span>(n&lt;<span class="number">0</span>) &#123;</span><br><span class="line">        n = -n;</span><br><span class="line">        x = <span class="number">1</span>/x;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">double</span> ans = <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">while</span>(n&gt;<span class="number">0</span>)&#123;</span><br><span class="line">        <span class="keyword">if</span>(n&amp;<span class="number">1</span>) ans *= x;</span><br><span class="line">        x *= x;</span><br><span class="line">        n &gt;&gt;= <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="Solution-5"><a href="#Solution-5" class="headerlink" title="Solution 5"></a>Solution 5</h3><p>This solution is a little tricky. For the input range of <strong>n</strong> is [0,31], and for any interger represent in bit format, the number is $$ k0<em>2^0+k1</em>2^1+k2<em>2^2+…+k31</em>2<em>31 $$<br>And pow(x,2^m) can be constructed easily as $$pow(x,2^m) = pow(x,2^(m-1))</em>pow(x,2^(m-1)).</p>
+<h3><span id="solution-5">Solution 5</span></h3><p>This solution is a little tricky. For the input range of <strong>n</strong> is [0,31], and for any interger represent in bit format, the number is $$ k0<em>2^0+k1</em>2^1+k2<em>2^2+…+k31</em>2<em>31 $$<br>And pow(x,2^m) can be constructed easily as $$pow(x,2^m) = pow(x,2^(m-1))</em>pow(x,2^(m-1)).</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">double pow(double x, int n) &#123;</span><br><span class="line">   	if(n&lt;0)&#123;</span><br><span class="line">   		x = 1.0/x;</span><br><span class="line">   		n = -n;</span><br><span class="line">   	&#125;</span><br><span class="line">   	int unsigned m = n;</span><br><span class="line">       double tbl[32] = &#123;0&#125;;</span><br><span class="line">       double result = 1;</span><br><span class="line">       tbl[0] = x;</span><br><span class="line">       for(int i=1;i&lt;32;i++)&#123;</span><br><span class="line">           tbl[i] = tbl[i-1]*tbl[i-1];</span><br><span class="line">       &#125;</span><br><span class="line">       for(int i=0;i&lt;32;i++)&#123;</span><br><span class="line">           if( m &amp; (0x1&lt;&lt;i) )</span><br><span class="line">           result *= tbl[i];</span><br><span class="line">       &#125;</span><br><span class="line">       return result;</span><br></pre></td></tr></table></figure>
           
         
@@ -759,7 +1051,7 @@
       
         
           
-            <h1 id="Hello-world"><a href="#Hello-world" class="headerlink" title="Hello world"></a>Hello world</h1><p>@(hello world)[salton|1]</p>
+            <h1><span id="hello-world">Hello world</span></h1><p>@(hello world)[salton|1]</p>
 <blockquote>
 </blockquote>
 <p><strong>Area of focus: </strong> Algorithm/Computer Vision/Machine Learning/Computer Network</p>
@@ -844,7 +1136,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-count">5</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -855,12 +1147,21 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-count">4</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
             
 
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
             
 
           </nav>
