@@ -86,7 +86,7 @@
 <meta property="og:site_name" content="Salton&#39;s">
 <meta property="og:description" content="Chapter 4: Intermediate SQL[TOC]">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-03-11T05:29:00.224Z">
+<meta property="og:updated_time" content="2019-03-11T05:33:10.367Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Notes for DB Principle- Intermediate SQL">
 <meta name="twitter:description" content="Chapter 4: Intermediate SQL[TOC]">
@@ -361,12 +361,11 @@
 <p>Find the course ID, semeseter, year and title of each course offered by the Comp. Sci. department:<br><strong>select</strong> section.course_id, semester, year, title<br><strong>from</strong> section, course<br><strong>where</strong> section.course_id = course.course_id <strong>and</strong> dept_name = ‘Comp. Sci.’<br><br><br>same with:<br><strong>select</strong> section.course_id, semester, year, title<br><strong>from</strong> section <strong>join</strong> course<br><strong>where</strong> dept_name = ‘Comp. Sci.’</p>
 </blockquote>
 </blockquote>
-<p>##Views<br>In some cases it is not desirable for all users to see the entire logical model.<br>A <strong>view</strong> provides <u>a mechanism to hide certain data from the view of vertain users</u><br>Any relation that is not of the <u>conceptual model</u> but is made visible to a user as a “virtual relation” is called a view.<br></p>
-<p>###View Definition<br>A view is defined using the <strong>create view</strong> statement with the forum:<br><br><strong>create view</strong> v <strong>as</strong> &lt; query expression&gt; <br><br>and the view name is represented by <em>v</em></p>
+<h2 id="Views"><a href="#Views" class="headerlink" title="Views"></a>Views</h2><p>In some cases it is not desirable for all users to see the entire logical model.<br>A <strong>view</strong> provides <u>a mechanism to hide certain data from the view of vertain users</u><br>Any relation that is not of the <u>conceptual model</u> but is made visible to a user as a “virtual relation” is called a view.<br></p>
+<h3 id="View-Definition"><a href="#View-Definition" class="headerlink" title="View Definition"></a>View Definition</h3><p>A view is defined using the <strong>create view</strong> statement with the forum:<br><br><strong>create view</strong> v <strong>as</strong> &lt; query expression&gt; <br><br>and the view name is represented by <em>v</em></p>
 <p>View definition is not the same as <strong><del>creating a new relation</del></strong> but <strong>evaluating the query expression</strong></p>
 <p>Rather, a view definition causes the <strong>saving of an expression</strong>. The expression is substituted into queries using the view.</p>
-<p>###Example Views</p>
-<blockquote>
+<h3 id="Example-Views"><a href="#Example-Views" class="headerlink" title="Example Views"></a>Example Views</h3><blockquote>
 <p>A view of instructors without their salary:<br><strong>create view</strong> faculty <strong>as</strong><br><strong>select</strong> ID, name, dept_name<br><strong>from</strong> instructors</p>
 </blockquote>
 <blockquote>
@@ -375,15 +374,13 @@
 <blockquote>
 <p>Create a view of department salary totals<br><strong>create view</strong> departments_total_salary(dept_name, total_salary) <strong>as</strong><br><strong>select</strong> dept_name, <strong>sum</strong>(salary)<br><strong>from</strong> instructors<br><strong>group by</strong> dept_name </p>
 </blockquote>
-<p>###Views defined using other views</p>
-<ul>
+<h3 id="Views-defined-using-other-views"><a href="#Views-defined-using-other-views" class="headerlink" title="Views defined using other views"></a>Views defined using other views</h3><ul>
 <li>One view may be used in the expression defining of another view</li>
 <li>A view relation v1 is said to <strong>depend directly</strong> on a relavition v2 if v2 is used in the expression defining v1</li>
 <li>A view relation v1 is said to <strong>depend</strong> on view relation v2 if either v1 depends directly to v2 or there is a path of dependencies from v1 to v2 </li>
 <li>A view relation v is said to be <strong>recursive</strong>  if it depends on itself.</li>
 </ul>
-<p>###View expansion</p>
-<ul>
+<h3 id="View-expansion"><a href="#View-expansion" class="headerlink" title="View expansion"></a>View expansion</h3><ul>
 <li>A way to define the meaning of views defined in terms of other views</li>
 <li>Let view v1 be defined by an expression e1 that may itself contain uses of view relations</li>
 <li>View expansion of an expression repeats the following replacement step:<blockquote>
@@ -391,7 +388,7 @@
 </blockquote>
 </li>
 </ul>
-<p>###Update of a View<br>“faculty” is a view</p>
+<h3 id="Update-of-a-View"><a href="#Update-of-a-View" class="headerlink" title="Update of a View"></a>Update of a View</h3><p>“faculty” is a view</p>
 <blockquote>
 <p><strong>insert into</strong> faculty <strong>values</strong>(‘30765’, ‘Green’, ‘Music’)</p>
 </blockquote>
@@ -406,8 +403,8 @@
 </blockquote>
 </blockquote>
 <p><strong>Most SQL inplementions only allow updated on simple views</strong><br>●  The <strong>from</strong> clause has <strong>only one database relation</strong>.<br>●  The <strong>select</strong> clause contains <strong>only attribute names of the relation</strong>, and does not have any expressions, aggregates, or distinct speciﬁcation.<br>●  Any attribute not listed in the select clause can be set to null<br>●  The query does not have a group by or having clause.</p>
-<p>##Transactions<br>Unit of work<br>Atomic Transaction:either fully executed or rolled back as if it never occured.<br>Isolation from concurrent Transactions<br>Transaction begin implicitly and ended by commit work or roll back work<br>But on most databases, each SQL statement commits automatically</p>
-<p>##Integrity Constraints<br>Integrity constraints guard against accidental damage to the database, by ensuring that authorized changes to the database do not result in a loss of data consistency.</p>
+<h2 id="Transactions"><a href="#Transactions" class="headerlink" title="Transactions"></a>Transactions</h2><p>Unit of work<br>Atomic Transaction:either fully executed or rolled back as if it never occured.<br>Isolation from concurrent Transactions<br>Transaction begin implicitly and ended by commit work or roll back work<br>But on most databases, each SQL statement commits automatically</p>
+<h2 id="Integrity-Constraints"><a href="#Integrity-Constraints" class="headerlink" title="Integrity Constraints"></a>Integrity Constraints</h2><p>Integrity constraints guard against accidental damage to the database, by ensuring that authorized changes to the database do not result in a loss of data consistency.</p>
 <ul>
 <li>e.g: A customer must have a phone number</li>
 </ul>
@@ -447,8 +444,7 @@
 </ul>
 </li>
 </ul>
-<p>##Other Features</p>
-<ul>
+<h2 id="Other-Features"><a href="#Other-Features" class="headerlink" title="Other Features"></a>Other Features</h2><ul>
 <li><strong>create index</strong> studentID index <strong>on</strong> student(ID)</li>
 <li>large objects<blockquote>
 <p>book review <strong>clob</strong> :</p>
@@ -617,7 +613,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Chapter-4-Intermediate-SQL"><span class="nav-number">1.</span> <span class="nav-text">Chapter 4: Intermediate SQL</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Join-Expressions"><span class="nav-number">1.1.</span> <span class="nav-text">Join Expressions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SQL-Build-in-Data-Types"><span class="nav-number">1.2.</span> <span class="nav-text">SQL Build in Data Types</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Chapter-4-Intermediate-SQL"><span class="nav-number">1.</span> <span class="nav-text">Chapter 4: Intermediate SQL</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Join-Expressions"><span class="nav-number">1.1.</span> <span class="nav-text">Join Expressions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Views"><span class="nav-number">1.2.</span> <span class="nav-text">Views</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#View-Definition"><span class="nav-number">1.2.1.</span> <span class="nav-text">View Definition</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Example-Views"><span class="nav-number">1.2.2.</span> <span class="nav-text">Example Views</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Views-defined-using-other-views"><span class="nav-number">1.2.3.</span> <span class="nav-text">Views defined using other views</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#View-expansion"><span class="nav-number">1.2.4.</span> <span class="nav-text">View expansion</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Update-of-a-View"><span class="nav-number">1.2.5.</span> <span class="nav-text">Update of a View</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Transactions"><span class="nav-number">1.3.</span> <span class="nav-text">Transactions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Integrity-Constraints"><span class="nav-number">1.4.</span> <span class="nav-text">Integrity Constraints</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SQL-Build-in-Data-Types"><span class="nav-number">1.5.</span> <span class="nav-text">SQL Build in Data Types</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Other-Features"><span class="nav-number">1.6.</span> <span class="nav-text">Other Features</span></a></li></ol></li></ol></div>
             
 
           </div>
