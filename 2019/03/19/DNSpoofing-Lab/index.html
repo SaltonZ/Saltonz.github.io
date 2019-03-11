@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Dnspoof,lab assignment," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Assignment of Lab2DNSpoofing on a LAN  Saitong Zhao sz2641 N15871333   [TOC] Exercise1. Normal DHCP and DNS resolution of the bank’s hostnameflowchart:Terminal Output:  Client(nslookup):  Server:">
+<meta name="keywords" content="Dnspoof,lab assignment">
+<meta property="og:type" content="article">
+<meta property="og:title" content="DNSpoofing Lab Assignment">
+<meta property="og:url" content="https://saltonz.github.io/2019/03/19/DNSpoofing-Lab/index.html">
+<meta property="og:site_name" content="Salton&#39;s">
+<meta property="og:description" content="Assignment of Lab2DNSpoofing on a LAN  Saitong Zhao sz2641 N15871333   [TOC] Exercise1. Normal DHCP and DNS resolution of the bank’s hostnameflowchart:Terminal Output:  Client(nslookup):  Server:">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://s2.ax1x.com/2019/03/11/ACmyhq.jpg">
+<meta property="og:image" content="https://s2.ax1x.com/2019/03/11/ACmsNn.jpg">
+<meta property="og:image" content="https://s2.ax1x.com/2019/03/11/ACmrAs.jpg">
+<meta property="og:updated_time" content="2019-03-11T05:53:12.071Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="DNSpoofing Lab Assignment">
+<meta name="twitter:description" content="Assignment of Lab2DNSpoofing on a LAN  Saitong Zhao sz2641 N15871333   [TOC] Exercise1. Normal DHCP and DNS resolution of the bank’s hostnameflowchart:Terminal Output:  Client(nslookup):  Server:">
+<meta name="twitter:image" content="https://s2.ax1x.com/2019/03/11/ACmyhq.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://saltonz.github.io/2019/03/19/DNSpoofing-Lab/"/>
+
+
+
+
+
+  <title>DNSpoofing Lab Assignment | Salton's</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Salton's</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://saltonz.github.io/2019/03/19/DNSpoofing-Lab/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Salton Zhao">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Salton's">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">DNSpoofing Lab Assignment</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-19T01:52:13-04:00">
+                2019-03-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Network-Security/" itemprop="url" rel="index">
+                    <span itemprop="name">Network Security</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1><span id="assignment-of-lab2"><center>Assignment of Lab2</center></span></h1><p><strong><center>DNSpoofing on a LAN</center></strong></p>
+<center> Saitong Zhao sz2641 N15871333 </center>
+
+<p>[TOC]</p>
+<h2><span id="exercise">Exercise</span></h2><h3><span id="1-normal-dhcp-and-dns-resolution-of-the-banks-hostname">1. Normal DHCP and DNS resolution of the bank’s hostname</span></h3><p><strong>flowchart</strong>:<br><img src="https://s2.ax1x.com/2019/03/11/ACmyhq.jpg" alt="pic1"><br><strong>Terminal Output</strong>:</p>
+<blockquote>
+<p><strong>Client(nslookup)</strong>:</p>
+<blockquote>
+<p>Server:         10.10.1.2<br>Address:        10.10.1.2#53<br><br>Non-authoritative answer:<br>Name:   bankofhamilton.com<br>Address: 66.55.106.88</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p><strong>DNS-good/server</strong></p>
+<blockquote>
+<p><strong>dnsmasq-dhcp</strong></p>
+<blockquote>
+<p>DHCPDISCOVER(eth1) 10.10.1.29 02:c6:48:64:56:73<br>DHCPOFFER(eth1) 10.10.1.29 02:c6:48:64:56:73<br>DHCPREQUEST(eth1) 10.10.1.29 02:c6:48:64:56:73<br>DHCPACK(eth1) 10.10.1.29 02:c6:48:64:56:73 client</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p><strong>Tcpdump</strong></p>
+<blockquote>
+<p>16:28:13.153292 IP 0.0.0.0.68 &gt; 255.255.255.255.67: BOOTP/DHCP, Request from 02:c6:48:64:56:73, length 300<br>16:28:13.654247 IP 10.10.1.2.67 &gt; 10.10.1.29.68: BOOTP/DHCP, Reply, length 300<br>16:28:13.657393 IP 0.0.0.0.68 &gt; 255.255.255.255.67: BOOTP/DHCP, Request from 02:c6:48:64:56:73, length 300<br>16:28:14.192612 IP 10.10.1.2.67 &gt; 10.10.1.29.68: BOOTP/DHCP, Reply, length 300<br><br>16:39:18.589209 IP 10.10.1.29.49400 &gt; 10.10.1.2.53: 24581+ A? bankofhamilton.com. (36)<br>16:39:19.116951 IP 10.10.1.2.53 &gt; 10.10.1.29.49400: 24581 1/4/0 A 66.55.106.88 (134)</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<h3><span id="2-arp-spoofing">2. ARP Spoofing</span></h3><p><strong>flowchart</strong>:<br><img src="https://s2.ax1x.com/2019/03/11/ACmsNn.jpg" alt="pic2"><br><strong>Terminal output</strong>:</p>
+<blockquote>
+<p><strong>Client</strong>:</p>
+<blockquote>
+<p><strong>first arp check(1)</strong>:</p>
+<blockquote>
+<p>dns-good-link-0 (10.10.1.2) at 02:40:9a:33:35:ad [ether] on eth1</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p><strong>Second arp check(3)</strong></p>
+<blockquote>
+<p>attacker-link-0 (10.10.1.254) at 02:84:62:f7:3e:f6 [ether] on eth1<br>dns-good-link-0 (10.10.1.2) at 02:84:62:f7:3e:f6 [ether] on eth1</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p><strong>nslookup(5)</strong></p>
+<blockquote>
+<p>Server:         10.10.1.2<br>Address:        10.10.1.2#53<br><br>Non-authoritative answer:<br>Name:   bankofhamilton.com<br>Address: 128.163.233.173</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<blockquote>
+<p><strong>DNS-good</strong></p>
+<blockquote>
+<p><strong>Tcpdump(6)</strong><br>Client send query to attacker</p>
+<blockquote>
+<p>17:42:37.523962 02:c6:48:64:56:73 &gt; 02:84:62:f7:3e:f6, ethertype IPv4 (0x0800), length 78: 10.10.1.29.50608 &gt; 10.10.1.2.53: 18540+ A? bankofhamilton.com. (36) </p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p>Attacker send query to server</p>
+<blockquote>
+<p>17:42:37.822971 02:84:62:f7:3e:f6 &gt; 02:40:9a:33:35:ad, ethertype IPv4 (0x0800), length 78: 10.10.1.29.50614 &gt; 10.10.1.2.53: 18630+ A? bankofhamilton.com. (36)</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p>Attacker send response to client</p>
+<blockquote>
+<p>17:42:37.824572 02:84:62:f7:3e:f6 &gt; 02:c6:48:64:56:73, ethertype IPv4 (0x0800), length 94: 10.10.1.2.53 &gt; 10.10.1.29.50614: 18540 1/0/0 A 128.163.233.173 (52)</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p>Server send response to attacker</p>
+<blockquote>
+<p>17:42:38.023812 02:40:9a:33:35:ad &gt; 02:84:62:f7:3e:f6, ethertype IPv4 (0x0800), length 94: 10.10.1.2.53 &gt; 10.10.1.29.50614: 18630 1/0/0 A 66.55.106.88 (52)</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<blockquote>
+<p><strong>Attacker</strong>:</p>
+<blockquote>
+<p><strong>Arpspoof(2)</strong></p>
+<blockquote>
+<p>2:84:62:f7:3e:f6 2:40:9a:33:35:ad 0806 42: arp reply 10.10.1.29 is-at 2:84:62:f7:3e:f6<br>2:84:62:f7:3e:f6 2:c6:48:64:56:73 0806 42: arp reply 10.10.1.2 is-at 2:84:62:f7:3e:f6</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<blockquote>
+<blockquote>
+<p><strong>Start DNS spoof(4)</strong></p>
+<blockquote>
+<p>dnsspoof: listening on eth1 [udp dst port 53 and not src 10.10.1.254]</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<h3><span id="3-dhcp-masquerade">3. DHCP masquerade</span></h3><p><strong>flow chart</strong>:<br><img src="https://s2.ax1x.com/2019/03/11/ACmrAs.jpg" alt="pic3"><br><strong>Terminal output</strong>:</p>
+<blockquote>
+<p><strong>Client</strong></p>
+<blockquote>
+<p><strong>ifconfig</strong></p>
+<blockquote>
+<p>eth1      Link encap:Ethernet  HWaddr 02:c6:48:64:56:73<br>inet addr:<strong>10.10.1.29</strong>  Bcast:10.10.1.255  Mask:255.255.255.0<br>inet6 addr: fe80::c6:48ff:fe64:5673/64 Scope:Link<br>UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1<br>RX packets:7634 errors:0 dropped:0 overruns:0 frame:0<br>TX packets:2674 errors:0 dropped:0 overruns:0 carrier:0<br>collisions:0 txqueuelen:1000<br>RX bytes:449827 (449.8 KB)  TX bytes:192370 (192.3 KB)</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p><strong>cat /etc/resolv.conf</strong></p>
+<blockquote>
+<p># Dynamic resolv.conf(5) file for glibc resolver(3) generated by resolvconf(8)<br>#     DO NOT EDIT THIS FILE BY HAND – YOUR CHANGES WILL BE OVERWRITTEN<br>nameserver <strong>10.10.1.254</strong></p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p><strong>nslookup</strong></p>
+<blockquote>
+<p>Server:         10.10.1.254<br>Address:        10.10.1.254#53<br><br>Name:   bankofhamilton.com<br>Address: 128.163.233.173</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<blockquote>
+<p><strong>DNS-good/Server</strong></p>
+<blockquote>
+<p><strong>dnsmasq</strong></p>
+<blockquote>
+<p>dnsmasq-dhcp: DHCPRELEASE(eth1) 10.10.1.29 02:c6:48:64:56:73<br>dnsmasq-dhcp: DHCPDISCOVER(eth1) 10.10.1.29 02:c6:48:64:56:73<br>dnsmasq-dhcp: DHCPOFFER(eth1) 10.10.1.29 02:c6:48:64:56:73</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p><strong>tcpdump(DNS)</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">18:21:53.794731 02:c6:48:64:56:73 &gt; ff:ff:ff:ff:ff:ff, ethertype IPv4 (0x0800), length 342: (tos 0x10, ttl 128, id 0, offset 0, flags [none], proto UDP (17), length 328)</span><br><span class="line">    0.0.0.0.68 &gt; 255.255.255.255.67: BOOTP/DHCP, Request from 02:c6:48:64:56:73, length 300, xid 0x35fe887c, Flags [none]</span><br><span class="line">          Client-Ethernet-Address 02:c6:48:64:56:73</span><br><span class="line">          Vendor-rfc1048 Extensions</span><br><span class="line">            Magic Cookie 0x63825363</span><br><span class="line">            DHCP-Message Option 53, length 1: Discover</span><br><span class="line">            Requested-IP Option 50, length 4: 10.10.1.29</span><br><span class="line">            Hostname Option 12, length 6: &quot;client&quot;</span><br><span class="line">            Parameter-Request Option 55, length 7:</span><br><span class="line">              Subnet-Mask, BR, Time-Zone, Default-Gateway</span><br><span class="line">              Domain-Name, Domain-Name-Server, Option 119</span><br><span class="line">18:21:53.798385 02:c6:48:64:56:73 &gt; ff:ff:ff:ff:ff:ff, ethertype IPv4 (0x0800), length 342: (tos 0x10, ttl 128, id 0, offset 0, flags [none], proto UDP (17), length 328)</span><br><span class="line">    0.0.0.0.68 &gt; 255.255.255.255.67: BOOTP/DHCP, Request from 02:c6:48:64:56:73, length 300, xid 0x35fe887c, Flags [none]</span><br><span class="line">          Client-Ethernet-Address 02:c6:48:64:56:73</span><br><span class="line">          Vendor-rfc1048 Extensions</span><br><span class="line">            Magic Cookie 0x63825363</span><br><span class="line">            DHCP-Message Option 53, length 1: Request</span><br><span class="line">            Server-ID Option 54, length 4: 10.10.1.254</span><br><span class="line">            Requested-IP Option 50, length 4: 10.10.1.29</span><br><span class="line">            Hostname Option 12, length 6: &quot;client&quot;</span><br><span class="line">            Parameter-Request Option 55, length 7:</span><br><span class="line">              Subnet-Mask, BR, Time-Zone, Default-Gateway</span><br><span class="line">              Domain-Name, Domain-Name-Server, Option 119</span><br><span class="line">18:21:54.292102 02:40:9a:33:35:ad &gt; 02:c6:48:64:56:73, ethertype IPv4 (0x0800), length 342: (tos 0xc0, ttl 64, id 6183, offset 0, flags [none], proto UDP (17), length 328)</span><br><span class="line">    10.10.1.2.67 &gt; 10.10.1.29.68: BOOTP/DHCP, Reply, length 300, xid 0x35fe887c, Flags [none]</span><br><span class="line">          Your-IP 10.10.1.29</span><br><span class="line">          Server-IP 10.10.1.2</span><br><span class="line">          Client-Ethernet-Address 02:c6:48:64:56:73</span><br><span class="line">          Vendor-rfc1048 Extensions</span><br><span class="line">            Magic Cookie 0x63825363</span><br><span class="line">            DHCP-Message Option 53, length 1: Offer</span><br><span class="line">            Server-ID Option 54, length 4: 10.10.1.2</span><br><span class="line">            Lease-Time Option 51, length 4: 259200</span><br><span class="line">            RN Option 58, length 4: 129600</span><br><span class="line">            RB Option 59, length 4: 226800</span><br><span class="line">            Subnet-Mask Option 1, length 4: 255.255.255.0</span><br><span class="line">            BR Option 28, length 4: 10.10.1.255</span><br><span class="line">            Default-Gateway Option 3, length 4: 10.10.1.2</span><br><span class="line">            Domain-Name-Server Option 6, length 4: 10.10.1.2</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+</blockquote>
+<blockquote>
+<blockquote>
+<p><strong>tcpdump(UDP)</strong></p>
+<blockquote>
+<p>NULL</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<blockquote>
+<p><strong>Attacker</strong></p>
+<blockquote>
+<p><strong>dnsmasq</strong></p>
+<blockquote>
+<p>dnsmasq-dhcp: DHCPDISCOVER(eth1) 10.10.1.29 02:c6:48:64:56:73<br>dnsmasq-dhcp: DHCPOFFER(eth1) 10.10.1.29 02:c6:48:64:56:73<br>dnsmasq-dhcp: DHCPREQUEST(eth1) 10.10.1.29 02:c6:48:64:56:73<br>dnsmasq-dhcp: DHCPACK(eth1) 10.10.1.29 02:c6:48:64:56:73 client<br><strong>tcpdump(DNS)</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line">18:21:53.798403 02:c6:48:64:56:73 &gt; ff:ff:ff:ff:ff:ff, ethertype IPv4 (0x0800), length 342: (tos 0x10, ttl 128, id 0, offset 0, flags [none], proto UDP (17), length 328)</span><br><span class="line">    0.0.0.0.68 &gt; 255.255.255.255.67: BOOTP/DHCP, Request from 02:c6:48:64:56:73, length 300, xid 0x35fe887c, Flags [none]</span><br><span class="line">          Client-Ethernet-Address 02:c6:48:64:56:73</span><br><span class="line">          Vendor-rfc1048 Extensions</span><br><span class="line">            Magic Cookie 0x63825363</span><br><span class="line">            DHCP-Message Option 53, length 1: Discover</span><br><span class="line">            Requested-IP Option 50, length 4: 10.10.1.29</span><br><span class="line">            Hostname Option 12, length 6: &quot;client&quot;</span><br><span class="line">            Parameter-Request Option 55, length 7:</span><br><span class="line">              Subnet-Mask, BR, Time-Zone, Default-Gateway</span><br><span class="line">              Domain-Name, Domain-Name-Server, Option 119</span><br><span class="line">18:21:53.799365 02:84:62:f7:3e:f6 &gt; 02:c6:48:64:56:73, ethertype IPv4 (0x0800), length 342: (tos 0xc0, ttl 64, id 13002, offset 0, flags [none], proto UDP (17), length 328)</span><br><span class="line">    10.10.1.254.67 &gt; 10.10.1.29.68: BOOTP/DHCP, Reply, length 300, xid 0x35fe887c, Flags [none]</span><br><span class="line">          Your-IP 10.10.1.29</span><br><span class="line">          Server-IP 10.10.1.254</span><br><span class="line">          Client-Ethernet-Address 02:c6:48:64:56:73</span><br><span class="line">          Vendor-rfc1048 Extensions</span><br><span class="line">            Magic Cookie 0x63825363</span><br><span class="line">            DHCP-Message Option 53, length 1: Offer</span><br><span class="line">            Server-ID Option 54, length 4: 10.10.1.254</span><br><span class="line">            Lease-Time Option 51, length 4: 259200</span><br><span class="line">            RN Option 58, length 4: 129600</span><br><span class="line">            RB Option 59, length 4: 226800</span><br><span class="line">            Subnet-Mask Option 1, length 4: 255.255.255.0</span><br><span class="line">            BR Option 28, length 4: 10.10.1.255</span><br><span class="line">            Default-Gateway Option 3, length 4: 10.10.1.254</span><br><span class="line">            Domain-Name-Server Option 6, length 4: 10.10.1.254</span><br><span class="line">18:21:53.801998 02:c6:48:64:56:73 &gt; ff:ff:ff:ff:ff:ff, ethertype IPv4 (0x0800), length 342: (tos 0x10, ttl 128, id 0, offset 0, flags [none], proto UDP (17), length 328)</span><br><span class="line">    0.0.0.0.68 &gt; 255.255.255.255.67: BOOTP/DHCP, Request from 02:c6:48:64:56:73, length 300, xid 0x35fe887c, Flags [none]</span><br><span class="line">          Client-Ethernet-Address 02:c6:48:64:56:73</span><br><span class="line">          Vendor-rfc1048 Extensions</span><br><span class="line">            Magic Cookie 0x63825363</span><br><span class="line">            DHCP-Message Option 53, length 1: Request</span><br><span class="line">            Server-ID Option 54, length 4: 10.10.1.254</span><br><span class="line">            Requested-IP Option 50, length 4: 10.10.1.29</span><br><span class="line">            Hostname Option 12, length 6: &quot;client&quot;</span><br><span class="line">            Parameter-Request Option 55, length 7:</span><br><span class="line">              Subnet-Mask, BR, Time-Zone, Default-Gateway</span><br><span class="line">              Domain-Name, Domain-Name-Server, Option 119</span><br><span class="line">18:21:53.822093 02:84:62:f7:3e:f6 &gt; 02:c6:48:64:56:73, ethertype IPv4 (0x0800), length 342: (tos 0xc0, ttl 64, id 13004, offset 0, flags [none], proto UDP (17), length 328)</span><br><span class="line">    10.10.1.254.67 &gt; 10.10.1.29.68: BOOTP/DHCP, Reply, length 300, xid 0x35fe887c, Flags [none]</span><br><span class="line">          Your-IP 10.10.1.29</span><br><span class="line">          Server-IP 10.10.1.254</span><br><span class="line">          Client-Ethernet-Address 02:c6:48:64:56:73</span><br><span class="line">          Vendor-rfc1048 Extensions</span><br><span class="line">            Magic Cookie 0x63825363</span><br><span class="line">            DHCP-Message Option 53, length 1: ACK</span><br><span class="line">            Server-ID Option 54, length 4: 10.10.1.254</span><br><span class="line">            Lease-Time Option 51, length 4: 259200</span><br><span class="line">            RN Option 58, length 4: 129600</span><br><span class="line">            RB Option 59, length 4: 226800</span><br><span class="line">            Subnet-Mask Option 1, length 4: 255.255.255.0</span><br><span class="line">            BR Option 28, length 4: 10.10.1.255</span><br><span class="line">            Default-Gateway Option 3, length 4: 10.10.1.254</span><br><span class="line">            Domain-Name-Server Option 6, length 4: 10.10.1.254</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+</blockquote>
+</blockquote>
+<blockquote>
+<blockquote>
+<p><strong>tcpdump(udp)</strong></p>
+<blockquote>
+<p>18:45:05.564333 IP 10.10.1.29.52972 &gt; 10.10.1.254.53: 56895+ A? bankofhamilton.com. (36)<br>18:45:05.564544 IP 10.10.1.254.53 &gt; 10.10.1.29.52972: 56895* 1/0/0 A 128.163.233.173 (52)</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<h2><span id="questions">Questions</span></h2><h3><span id="q1">Q1</span></h3><p><strong>If we hadn’t put that big “FAKE” notice over the logo, would you be able to detect the DNS spoofing attack on loading the bank’s web page in your browser?</strong></p>
+<blockquote>
+<p><strong>Yes</strong>. Because when we run the command <strong>“nslookup bankofhamilton.com”</strong> we can see from the output of the terminal that the ip address we get is not the correct ip address of bankofhamilton.com.</p>
+</blockquote>
+<h3><span id="q2">Q2</span></h3><p><strong>The Diamond Banking website lets users input their username and password on a form on a web page that is loaded over HTTP. But when the user presses “Login”, the form sends the username and password to a page that is loaded over HTTPS, i.e. the username and password are sent over an encrypted connection. Explain why this is not sufficient to protect the users’ login information. What kind of attack are users left vulnerable to? How would using HTTPS for the entire site protect users against this kind of attack?</strong></p>
+<blockquote>
+<p>In this mechnism, a hacker can start middle-man attack. Because HTTPS only protect the protocol higher than TLS/SSL layer, but when an attacker using ARP Spoofing or DHCP masquerade, the attacker can get all the communications between the user and the website.<br>And Because of the Login page is loaded over HTTP, which means not encrypted, the attacker can know when the user is tramsmitting the encrypted packet with username and password. Moreover, the attacker can capture the packet with login information, when he want to login as the user, he can just re-transmit the packet to the website.<br><br>When using HTTPS for the whole site, all the communications between the user and website are encrypted, so the attacker won’t know whice packet is the user used for transmitting the login information.</p>
+</blockquote>
+<h3><span id="q3">Q3</span></h3><p><strong>Would DNSSEC protect against this kind of attack? Explain your answer.</strong></p>
+<blockquote>
+<p><strong>Yes</strong>. Because with DNSSEC, all answers from DNSSEC protected zones are digitally signed. By checking the digital signature, a DNS resolver is able to check whether the information is identical to the information served on the authoritative DNS server. The DNS request from a unautnenticated host will be denied.</p>
+</blockquote>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Dnspoof/" rel="tag"># Dnspoof</a>
+          
+            <a href="/tags/lab-assignment/" rel="tag"># lab assignment</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/03/10/DB-ch4/" rel="next" title="Notes for DB Principle- Intermediate SQL">
+                <i class="fa fa-chevron-left"></i> Notes for DB Principle- Intermediate SQL
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Salton Zhao</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#undefined"><span class="nav-number">1.</span> <span class="nav-text">Assignment of Lab2</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#undefined"><span class="nav-number">1.1.</span> <span class="nav-text">Exercise</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">1.1.1.</span> <span class="nav-text">1. Normal DHCP and DNS resolution of the bank’s hostname</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">1.1.2.</span> <span class="nav-text">2. ARP Spoofing</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">1.1.3.</span> <span class="nav-text">3. DHCP masquerade</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#undefined"><span class="nav-number">1.2.</span> <span class="nav-text">Questions</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">1.2.1.</span> <span class="nav-text">Q1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">1.2.2.</span> <span class="nav-text">Q2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">1.2.3.</span> <span class="nav-text">Q3</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Salton Zhao</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
