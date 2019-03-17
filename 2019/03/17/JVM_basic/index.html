@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Java Virtual Machine (JVM)The JVM is an abstract computing machine that enables a computer to run a Java program. There are three notions of JVM: specification (where working of JVM is specified. But">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java Learning note-1 (JVM-JMM)">
+<meta property="og:url" content="https://saltonz.github.io/2019/03/17/JVM_basic/index.html">
+<meta property="og:site_name" content="Salton&#39;s">
+<meta property="og:description" content="Java Virtual Machine (JVM)The JVM is an abstract computing machine that enables a computer to run a Java program. There are three notions of JVM: specification (where working of JVM is specified. But">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://cdn1.howtodoinjava.com/wp-content/uploads/2014/08/JVM-Memory-Area-Parts.jpg">
+<meta property="og:image" content="https://i2.wp.com/betsol.com/wp-content/uploads/2017/06/java-memory-management-1.jpg?resize=1024%2C425&ssl=1">
+<meta property="og:updated_time" content="2019-03-17T17:41:33.743Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Java Learning note-1 (JVM-JMM)">
+<meta name="twitter:description" content="Java Virtual Machine (JVM)The JVM is an abstract computing machine that enables a computer to run a Java program. There are three notions of JVM: specification (where working of JVM is specified. But">
+<meta name="twitter:image" content="https://cdn1.howtodoinjava.com/wp-content/uploads/2014/08/JVM-Memory-Area-Parts.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://saltonz.github.io/2019/03/17/JVM_basic/"/>
+
+
+
+
+
+  <title>Java Learning note-1 (JVM-JMM) | Salton's</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Salton's</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://saltonz.github.io/2019/03/17/JVM_basic/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Salton Zhao">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Salton's">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Java Learning note-1 (JVM-JMM)</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-17T00:00:00-04:00">
+                2019-03-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1><span id="java-virtual-machine-jvm">Java Virtual Machine (JVM)</span></h1><p>The JVM is an abstract computing machine that enables a computer to run a Java program. There are three notions of JVM: <strong>specification</strong> (where working of JVM is specified. But the implementation has been provided by Sun and other companies), <strong>implementation</strong> (known as (JRE) Java Runtime Environment) and <strong>instance</strong> (after writing Java command, to run Java class, an instance of JVM is created).</p>
+<h2><span id="jvm-memory-model-jmm">JVM Memory Model (JMM)</span></h2><p><img src="https://cdn1.howtodoinjava.com/wp-content/uploads/2014/08/JVM-Memory-Area-Parts.jpg" alt=""></p>
+<a id="more"></a>
+<h3><span id="heap-area">Heap Area</span></h3><p>The heap area represents the runtime data area, from which the memory for all java <strong>class instances</strong> and <strong>arrays</strong> is allocated. The heap is <strong>created when the JVM starts up</strong> and may increase or decrease in size while the application runs. The heap can be of fixed size or variable size depending on the garbage collection strategy. By default, the maximum heap size is set to 64 MB.</p>
+<h4><span id="heap-memory-structure">Heap Memory structure</span></h4><p><img src="https://i2.wp.com/betsol.com/wp-content/uploads/2017/06/java-memory-management-1.jpg?resize=1024%2C425&amp;ssl=1" alt=""></p>
+<p>JVM Heap is physically divided into two different generations: nursery(young generation) and old space(old generation).</p>
+<p>The nursery is a part of the heap reserved for allocation of <strong>new objects.</strong> When the nursery becomes full, garbage is collected by running a special young collection, where all the objects that have lived long enough in the nursery are promoted (moved) to the old space, thus freeing up the nursery for more object allocation. This garbage collection is called <strong>Minor GC</strong>. The nursery is divide into three parts – <strong>Eden Memory</strong> and two <strong>Survivor Memory</strong> spaces.</p>
+<blockquote>
+<p>Important things about Nursery space:</p>
+<blockquote>
+<p>Most of the newly created objects are located in the Eden Memory space.</p>
+<p>When Eden space is filled with objects, Minor GC is performed and all the survivor objects are moved to one of the survivor spaces.</p>
+<p>Minor GC also checks the survivor objects and moves them to the other survivor space. So at a time, one of the survivor space is always empty</p>
+<p>Objects that have survived many cycles of GC, are moved to the old generation memory space. Usually it is done by setting a threshold for the age of the nursery objects before they become eligible to promote to old generation</p>
+</blockquote>
+</blockquote>
+<p>When the old generation becomes full, garbage is collected there and the process is called as old collection. Old generation memory contains the objects that are long lived and survived after many rounds of Minor GC. Usually garbage collection is performed in Old generation memory when it’s full. Old generation garbage collection is called as <strong>Major GC</strong> and usually takes longer time. The reasoning behind a nursery is that most objects are temporary and short lived. A young collection is designed to be swift at finding newly allocated objects that are still alive and moving them away from the nursery. Typically, a young collection frees a given amount of memory much faster than an old collection or a garbage collection of a single-generational heap (a heap without a nursery).</p>
+<h3><span id="method-area-and-runtime-constant-pool">Method area and runtime constant pool</span></h3><p>Method area stores <strong>per-class structures</strong> such as the <strong>runtime constant pool</strong>; <strong>field and method data</strong>; the code for methods and constructors, including the special methods used in class, instance, and interface initialization.</p>
+<p>The method area is created on the virtual machine startup. Although it is logically a part of the heap but it can or cannot be garbage collected, whereas we already read that garbage collection in heap is not optional; it’s mandatory. The method area may be of a fixed size or may be expanded as required by the computation and may be contracted if a larger method area becomes unnecessary. The memory for the method area does not need to be contiguous.</p>
+<h3><span id="jvm-stacks">JVM Stacks</span></h3><p>Each JVM threads has a private stack created at the same time as that of the thread. The stack stores frames. A frame is used to store data and partial results and to perform dynamic linking, return values for methods, and dispatch exceptions.</p>
+<p>It holds local variables and partial results and plays a part in the method invocation and return. Because this stack is never manipulated directly, except to push and pop frames, the frames may be heap allocated. Similar to the heap, the memory for this stack does not need to be contiguous.</p>
+<h3><span id="native-method-stacks">Native method stacks</span></h3><p>Native method stacks is called C stacks; it support native methods (methods written in a language other than the Java programming language), typically allocated per each thread when each thread is created. Java Virtual Machine implementations that cannot load native methods and that do not themselves rely on conventional stacks need not supply native method stacks.</p>
+<p>The size of native method stacks can be either fixed or dynamic.</p>
+<h3><span id="pc-registers">PC Registers</span></h3><p>Each of the JVM threads has its own program counter (pc) register. At any point, each of the JVM threads is executing the code of a single method, namely the current method for that thread.</p>
+<p>As the Java applications can contain some native code (for example, using native libraries), we have two different ways for native and non-native methods. If the method is not native (that is, a Java code), the PC register contains the address of the JVM instruction currently being executed. If the method is native, the value of the JVM’s PC register is undefined.</p>
+<h2><span id="garbage-collection">Garbage collection</span></h2><p>Garbage Collection is the process of freeing space in the heap for allocation of new objects. One of the best feature of Java is the automatic garbage collection. One of the basic way of garbage collection involves three steps:</p>
+<ul>
+<li>Marking: identifying which objects are in use and which ones are not in use</li>
+<li>Normal Deletion: Garbage Colletor removes the unused objects and reclaims the free space to be allocated to other objects</li>
+<li>Deletion with Compacting: After deletion, move all the survived objects together.</li>
+</ul>
+<h3><span id="mark-and-sweep-model-of-garbage-collection">Mark and Sweep Model of Garbage Collection</span></h3><p>JVM uses the mark and sweep garbage collection model for performing garbage collection of the whole heap. A mark and sweep garbage collection consists of two phases, the mark phase and the sweep phase.</p>
+<p>During the mark phase, all the objects that are reachable from Java threads, native handlers and other root sources are marked as alive, as well as the objects that are reachable from these objects and so forth. This process identifies and marks all objects that are still used, and the rest can be considered garbage.</p>
+<p>During the sweep phase, the heap is traversed to find the gaps between the live objects. These gaps are recorded in a free list and are made available for new object allocation.</p>
+<h3><span id="java-garbage-collection-types">Java Garbage Collection Types</span></h3><ul>
+<li><strong>Serial GC</strong> (-XX:+UseSerialGC): Serial GC uses the simple mark-sweep-compact approach for young and old generations garbage collection that is, Minor and Major GC</li>
+<li><strong>Parallel GC</strong> (-XX:+UseParallelGC): Parallel GC is same as Serial GC except that, it spawns N threads for young generation garbage collection where N is the number of CPU cores in the system. We can control the number of threads using</li>
+<li><strong>Parallel Old GC</strong> (-XX:+UseParallelOldGC): This is same as Parallel GC except that it uses multiple threads for both young generation and old generation garbage collection</li>
+<li><strong>Concurrent Mark Sweep (CMS) Collector</strong> (-XX:+UseConcMarkSweepGC): CMS is also referred as concurrent low pause collector. It does the garbage collection for old generation. CMS collector tries to minimize the pauses due to garbage collection by doing most of the garbage collection work concurrently within the application threads. CMS collector on young generation uses the same algorithm as that of the parallel collector. This garbage collector is suitable for responsive applications where we can’t afford longer pause times.</li>
+<li><strong>G1 Garbage Collector (-XX:+UseG1GC)</strong>: The garbage first or G1 Garbage Collector is available from Java 7 and its long term goal is to replace the CMS collector. The G1 collector is a parallel, concurrent and incrementally compact low-pause garbage collector. Garbage first collector doesn’t work like other collectors and there is no concept of young and old generation space. It divides the heap space into multiple equal-sized heap regions. When a garbage collector is invoked, it first collects the region with lesser live data, hence “Garbage First”</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/03/17/java_learning(2)/" rel="next" title="Java Learning note-2 (Hashmap & IO)">
+                <i class="fa fa-chevron-left"></i> Java Learning note-2 (Hashmap & IO)
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/03/19/DNSpoofing-Lab/" rel="prev" title="DNSpoofing Lab Assignment">
+                DNSpoofing Lab Assignment <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Salton Zhao</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#undefined"><span class="nav-number">1.</span> <span class="nav-text">Java Virtual Machine (JVM)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#undefined"><span class="nav-number">1.1.</span> <span class="nav-text">JVM Memory Model (JMM)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">1.1.1.</span> <span class="nav-text">Heap Area</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#undefined"><span class="nav-number">1.1.1.1.</span> <span class="nav-text">Heap Memory structure</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">1.1.2.</span> <span class="nav-text">Method area and runtime constant pool</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">1.1.3.</span> <span class="nav-text">JVM Stacks</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">1.1.4.</span> <span class="nav-text">Native method stacks</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">1.1.5.</span> <span class="nav-text">PC Registers</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#undefined"><span class="nav-number">1.2.</span> <span class="nav-text">Garbage collection</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">1.2.1.</span> <span class="nav-text">Mark and Sweep Model of Garbage Collection</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">1.2.2.</span> <span class="nav-text">Java Garbage Collection Types</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Salton Zhao</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
