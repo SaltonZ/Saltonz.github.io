@@ -249,6 +249,172 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://saltonz.github.io/2019/03/22/basic/Memory Leak of C++/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Salton Zhao">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Salton's">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/03/22/basic/Memory Leak of C++/" itemprop="url">C++ Memory Leak</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-22T00:00:00-04:00">
+                2019-03-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/basic/" itemprop="url" rel="index">
+                    <span itemprop="name">basic</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2><span id="c-内存泄漏的常见情况">C++ 内存泄漏的常见情况</span></h2><h4><span id="在类的构造函数和析构函数中没有对应地调用new-和delete-函数">在类的构造函数和析构函数中没有对应地调用new 和delete 函数</span></h4><p>这种泄漏在两种情况下可能出现</p>
+<ol>
+<li>在堆里创建了对象占用了内存， 但没有显示地释放对象占用的内存</li>
+<li>在类的构造函数中动态地分配了内存，但在析构函数中没有释放内存<h4><span id="没有正确地清除嵌套的对象指针">没有正确地清除嵌套的对象指针</span></h4><br><h4><span id="释放对象数组时在delete中没有使用方括号">释放对象数组时在delete中没有使用方括号</span></h4>指针被默认为只指向一个对象，对象数组中的其他对象的析构函数不会被调用，结果造成内存泄露。如果在方括号中间放了一个比对象数组大小还大的数字，那么编译器就会调用无效对象（内存溢出）的析构函数，会造成堆的奔溃。如果方括号中间的数字值比对象数组的大小小的话，编译器就不能调用足够多个析构函数，结果会造成内存泄露。<blockquote>
+<p><u>释放单个对象、单个基本数据类型的变量或者是基本数据类型的数组不需要大小参数，释放定义了析构函数的对象数组才需要大小参数。</u></p>
+</blockquote>
+</li>
+</ol>
+<h4><span id="指向对象的指针数组不等于对象数组">指向对象的指针数组不等于对象数组</span></h4><p>对象数组是指：数组中存放的是对象，只需要delete []p，即可调用对象数组中的每个对象的析构函数释放空间</p>
+<p>指向对象的指针数组是指：数组中存放的是指向对象的指针，不仅要释放每个对象的空间，还要释放每个指针的空间，delete []p只是释放了每个指针，但是并没有释放对象的空间，正确的做法，是通过一个循环，将每个对象释放了，然后再把指针释放了。</p>
+<h4><span id="缺少拷贝构造函数">缺少拷贝构造函数</span></h4><p>两次释放相同的内存是一种错误的做法，同时可能会造成堆的奔溃。</p>
+<p>按值传递会调用（拷贝）构造函数，引用传递不会调用。</p>
+<p>在C++中，如果没有定义拷贝构造函数，那么编译器就会调用默认的拷贝构造函数，会逐个成员拷贝的方式来复制数据成员，如果是以逐个成员拷贝的方式来复制指针被定义为将一个变量的地址赋给另一个变量。这种隐式的指针复制结果就是两个对象拥有指向同一个动态分配的内存空间的指针。当释放第一个对象的时候，它的析构函数就会释放与该对象有关的动态分配的内存空间。而释放第二个对象的时候，它的析构函数会释放相同的内存，这样是错误的。<br>所以，如果一个类里面有指针成员变量，要么必须显示的写拷贝构造函数和重载赋值运算符，要么禁用拷贝构造函数和重载赋值运算符。</p>
+<h4><span id="没有将基类的析构函数定义为虚函数">没有将基类的析构函数定义为虚函数</span></h4><p>当基类指针指向子类对象时，如果基类的析构函数不是virtual，那么子类的析构函数不会被调用，造成内存泄漏</p>
+<h2><span id="c的内存泄漏检测方法">C++的内存泄漏检测方法</span></h2><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//用到的头文件</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> _CRTDBG_MAP_ALLOC  </span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;crtdbg.h&gt;</span></span></span><br></pre></td></tr></table></figure>
+<h4><span id="方法一">方法一</span></h4><p>在程序末尾加上 _CrtDumpMemoryLeaks(),<br>Debug 调试后，如果有内存泄漏，调试窗口会输出内存泄漏的块。<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">nt _tmain(<span class="keyword">int</span> argc, _TCHAR* argv[])</span><br><span class="line">&#123;</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> *b = <span class="keyword">new</span> <span class="keyword">int</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">char</span> *b = <span class="keyword">new</span> <span class="keyword">char</span>[<span class="number">100</span>];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    _CrtDumpMemoryLeaks();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>Detected memory leaks!<br>Dumping objects -&gt;<br>{453} normal block at 0x02432CA8, 868 bytes long.<br> Data: <404303374> 34 30 34 33 30 33 33 37 34 00 00 00 00 00 00 00<br>{447} normal block at 0x024328B0, 868 bytes long.<br> Data: <404303374> 34 30 34 33 30 33 33 37 34 00 00 00 00 00 00 00<br>{441} normal block at 0x024324B8, 868 bytes long.</404303374></404303374></p>
+</blockquote>
+<p>输出包括一个块号和泄漏的大小<br>453就是我们需要的内存泄漏定位值，868 bytes long就是说这个地方有868比特内存没有释放。</p>
+<h4><span id="方法二">方法二</span></h4><p>使用 _CtrMemCheckPoint()<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"stdafx.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> _CRTDBG_MAP_ALLOOC</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;crtdbg.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> _tmain(<span class="keyword">int</span> argc, _TCHAR* argv[])</span><br><span class="line">&#123;</span><br><span class="line">    _CrtMemState  s1, s2, s3;</span><br><span class="line">    _CrtMemCheckpoint(&amp;s1);</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> *a= <span class="keyword">new</span> <span class="keyword">int</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">char</span> *b = <span class="keyword">new</span> <span class="keyword">char</span>[<span class="number">100</span>];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    _CrtMemCheckpoint(&amp;s2);</span><br><span class="line">    <span class="keyword">if</span> (_CrtMemDifference(&amp;s3, &amp;s1, &amp;s2)) _CrtMemDumpStatistics(&amp;s3);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//_CrtDumpMemoryLeaks();</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4><span id="定位">定位</span></h4><p>在main函数第一行加上：<strong>_CrtSetBreakAlloc(453)</strong>; 意思就是在申请453这块内存的位置中断<br>查看调用堆栈，并双击代码调用的最后一个函数就能定位到申请该内存的代码段。</p>
+<blockquote>
+<p><a href="https://blog.csdn.net/a369189453/article/details/81839053" target="_blank" rel="noopener">https://blog.csdn.net/a369189453/article/details/81839053</a></p>
+</blockquote>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://saltonz.github.io/2019/03/20/Cryptographybasic4/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -354,168 +520,6 @@
 <p>By modify the communication between Alice and Bob, Alice is in fact have the secret key between Alice and Mallory, while Bob have the secret key between Bob and Mallory.</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> math</span><br><span class="line"><span class="keyword">import</span> random</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">judge_prime</span><span class="params">(p)</span>:</span></span><br><span class="line"><span class="comment">#判断质数</span></span><br><span class="line">	<span class="keyword">if</span> p &lt;= <span class="number">1</span>:</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">False</span></span><br><span class="line">	i = <span class="number">2</span></span><br><span class="line">	<span class="keyword">while</span> i * i &lt;= p:</span><br><span class="line">		<span class="keyword">if</span> p % i == <span class="number">0</span>:</span><br><span class="line">			<span class="keyword">return</span> <span class="keyword">False</span></span><br><span class="line">		i += <span class="number">1</span></span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">True</span></span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_generator</span><span class="params">(p)</span>:</span></span><br><span class="line"><span class="comment">#得到所有的原根</span></span><br><span class="line">	a = <span class="number">2</span></span><br><span class="line">	list = []</span><br><span class="line">	<span class="keyword">while</span> a &lt; p:		</span><br><span class="line">		flag = <span class="number">1</span></span><br><span class="line">		<span class="keyword">while</span> flag != p:</span><br><span class="line">			<span class="keyword">if</span> (a ** flag) % p == <span class="number">1</span>:</span><br><span class="line">				<span class="keyword">break</span></span><br><span class="line">			flag += <span class="number">1</span></span><br><span class="line">		<span class="keyword">if</span> flag == (p - <span class="number">1</span>):</span><br><span class="line">			list.append(a)	</span><br><span class="line">		a += <span class="number">1</span></span><br><span class="line">	<span class="keyword">return</span> list</span><br><span class="line"> </span><br><span class="line"><span class="comment">#A，B得到各自的计算数	</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_calculation</span><span class="params">(p, a, X)</span>:</span></span><br><span class="line">	Y = (a ** X) % p</span><br><span class="line">	<span class="keyword">return</span> Y</span><br><span class="line"> </span><br><span class="line"><span class="comment">#A，B得到交换计算数后的密钥	</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_key</span><span class="params">(X, Y, p)</span>:</span></span><br><span class="line">	key = (Y ** X) % p</span><br><span class="line">	<span class="keyword">return</span> key</span><br><span class="line">	</span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">	</span><br><span class="line">	<span class="comment">#得到规定的素数</span></span><br><span class="line">	flag = <span class="keyword">False</span></span><br><span class="line">	<span class="keyword">while</span> flag == <span class="keyword">False</span>:</span><br><span class="line">		print(<span class="string">'Please input your number(It must be a prime!): '</span>, end = <span class="string">''</span>)</span><br><span class="line">		p = input()</span><br><span class="line">		p = int(p)</span><br><span class="line">		flag = judge_prime(p)</span><br><span class="line">	print(str(p) + <span class="string">' is a prime! '</span>)</span><br><span class="line">	</span><br><span class="line">	<span class="comment">#得到素数的一个原根</span></span><br><span class="line">	list = get_generator(p)</span><br><span class="line">	print(str(p) + <span class="string">' 的一个原根为：'</span>, end = <span class="string">''</span>)</span><br><span class="line">	print(list[<span class="number">-1</span>])</span><br><span class="line">	print(<span class="string">'------------------------------------------------------------------------------'</span>)</span><br><span class="line">	</span><br><span class="line">	<span class="comment">#得到A的私钥</span></span><br><span class="line">	XA = random.randint(<span class="number">0</span>, p<span class="number">-1</span>)</span><br><span class="line">	print(<span class="string">'A随机生成的私钥为：%d'</span> % XA)</span><br><span class="line">	</span><br><span class="line">	<span class="comment">#得到B的私钥</span></span><br><span class="line">	XB = random.randint(<span class="number">0</span>, p<span class="number">-1</span>)</span><br><span class="line">	print(<span class="string">'B随机生成的私钥为：%d'</span> % XB)</span><br><span class="line">	print(<span class="string">'------------------------------------------------------------------------------'</span>)</span><br><span class="line">	</span><br><span class="line">	<span class="comment">#得待A的计算数</span></span><br><span class="line">	YA = get_calculation(p, int(list[<span class="number">-1</span>]), XA)</span><br><span class="line">	print(<span class="string">'A的计算数为：%d'</span> % YA)</span><br><span class="line">	</span><br><span class="line">	<span class="comment">#得到B的计算数</span></span><br><span class="line">	YB = get_calculation(p, int(list[<span class="number">-1</span>]), XB)</span><br><span class="line">	print(<span class="string">'B的计算数为：%d'</span> % YB)</span><br><span class="line">	print(<span class="string">'------------------------------------------------------------------------------'</span>)</span><br><span class="line">	</span><br><span class="line">	<span class="comment">#交换后A的密钥</span></span><br><span class="line">	key_A = get_key(XA, YB, p)</span><br><span class="line">	print(<span class="string">'A的生成密钥为：%d'</span> % key_A)</span><br><span class="line">	</span><br><span class="line">	<span class="comment">#交换后B的密钥</span></span><br><span class="line">	key_B = get_key(XB, YA, p)</span><br><span class="line">	print(<span class="string">'B的生成密钥为：%d'</span> % key_B)</span><br><span class="line">	print(<span class="string">'---------------------------True or False------------------------------------'</span>)</span><br><span class="line">	</span><br><span class="line">	print(key_A == key_B)</span><br></pre></td></tr></table></figure>
           
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://saltonz.github.io/2019/03/19/Cryotgraohybasic1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Salton Zhao">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Salton's">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/03/19/Cryotgraohybasic1/" itemprop="url">Cryptography Basic1</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-19T00:00:00-04:00">
-                2019-03-19
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Network-Security/" itemprop="url" rel="index">
-                    <span itemprop="name">Network Security</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="Cryptography-Basic"><a href="#Cryptography-Basic" class="headerlink" title="Cryptography Basic"></a>Cryptography Basic</h1><p><strong>Cipher</strong>: mathematic process usedfor encryption and decryption by cryptographic systems<br>Classification of cryptographic systems:</p>
-<ol>
-<li>Type of transformation<ul>
-<li>plaintext is transformed to ciphertext by some combination of stages of substitution(置换) and transposition(换位).</li>
-</ul>
-</li>
-<li>Number of Keys<ul>
-<li>Single key used by sender and receiver: symmetric, public key</li>
-<li>Sender and receiver each use different keys: asymmetric, public key</li>
-</ul>
-</li>
-<li>How plaintext is processed<ul>
-<li>One block at a time (block cipher), output block for each input block</li>
-<li>continuously (stream cipher)</li>
-</ul>
-</li>
-</ol>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/03/19/Cryotgraohybasic1/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
         
       
     </div>
@@ -708,6 +712,168 @@
 </ul>
 
           
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://saltonz.github.io/2019/03/19/Cryotgraohybasic1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Salton Zhao">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Salton's">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/03/19/Cryotgraohybasic1/" itemprop="url">Cryptography Basic1</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-19T00:00:00-04:00">
+                2019-03-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Network-Security/" itemprop="url" rel="index">
+                    <span itemprop="name">Network Security</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="Cryptography-Basic"><a href="#Cryptography-Basic" class="headerlink" title="Cryptography Basic"></a>Cryptography Basic</h1><p><strong>Cipher</strong>: mathematic process usedfor encryption and decryption by cryptographic systems<br>Classification of cryptographic systems:</p>
+<ol>
+<li>Type of transformation<ul>
+<li>plaintext is transformed to ciphertext by some combination of stages of substitution(置换) and transposition(换位).</li>
+</ul>
+</li>
+<li>Number of Keys<ul>
+<li>Single key used by sender and receiver: symmetric, public key</li>
+<li>Sender and receiver each use different keys: asymmetric, public key</li>
+</ul>
+</li>
+<li>How plaintext is processed<ul>
+<li>One block at a time (block cipher), output block for each input block</li>
+<li>continuously (stream cipher)</li>
+</ul>
+</li>
+</ol>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/03/19/Cryotgraohybasic1/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1690,158 +1856,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://saltonz.github.io/2018/10/11/Leetcode-number_power/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Salton Zhao">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Salton's">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/10/11/Leetcode-number_power/" itemprop="url">How to calculate power of a number</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-10-11T00:00:00-04:00">
-                2018-10-11
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Algorithms/" itemprop="url" rel="index">
-                    <span itemprop="name">Algorithms</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1><span id="how-to-calculate-power-of-a-number">How to calculate power of a number</span></h1><hr>
-<p>Implement pow(x, n), which calculates x raised to the power n.<br>$$ x^n $$</p>
-<h3><span id="solution-1">Solution 1</span></h3><p>Recursive solution: pow(x,n) means <strong>x</strong> multiplied by <strong>x</strong> for <strong>n</strong> times. And <strong>(x^n)=[(x^(n/2))^2]</strong>. So with this recursive solution, we can reduce the time complexity from <strong>O(n)</strong> to <strong>O(lgn)</strong>.</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">double</span> <span class="title">myPow</span><span class="params">(<span class="keyword">double</span> x, <span class="keyword">int</span> n)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(n&lt;<span class="number">0</span>) <span class="keyword">return</span> <span class="number">1</span>/x * myPow(<span class="number">1</span>/x, -(n+<span class="number">1</span>));</span><br><span class="line">    <span class="keyword">if</span>(n==<span class="number">0</span>) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">if</span>(n==<span class="number">2</span>) <span class="keyword">return</span> x*x;</span><br><span class="line">    <span class="keyword">if</span>(n%<span class="number">2</span>==<span class="number">0</span>) <span class="keyword">return</span> myPow( myPow(x, n/<span class="number">2</span>), <span class="number">2</span>);</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">return</span> x*myPow( myPow(x, n/<span class="number">2</span>), <span class="number">2</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3><span id="solution-2">Solution 2</span></h3><p>Just like the first solution. But in this solution we define a double variable <strong>t</strong> to represent for <strong>(x^(n/2))</strong>, and the method we deal with the sign of <strong>n</strong> is differnet.</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">double</span> <span class="title">myPow</span><span class="params">(<span class="keyword">double</span> x, <span class="keyword">int</span> n)</span> </span>&#123; </span><br><span class="line">    <span class="keyword">if</span>(n==<span class="number">0</span>) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">double</span> t = myPow(x,n/<span class="number">2</span>);</span><br><span class="line">    <span class="keyword">if</span>(n%<span class="number">2</span>) <span class="keyword">return</span> n&lt;<span class="number">0</span> ? <span class="number">1</span>/x*t*t : x*t*t;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">return</span> t*t;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3><span id="solution-3">Solution 3</span></h3><p>In this solution, the trick of deal with the sign of <strong>n</strong> is different, using the property between <strong>x</strong> and <strong>n</strong> and normalize them from the very beginning.</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">double</span> <span class="title">myPow</span><span class="params">(<span class="keyword">double</span> x, <span class="keyword">int</span> n)</span> </span>&#123; </span><br><span class="line">    <span class="keyword">if</span>(n==<span class="number">0</span>) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">if</span>(n&lt;<span class="number">0</span>)&#123;</span><br><span class="line">        n = -n;</span><br><span class="line">        x = <span class="number">1</span>/x;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> n%<span class="number">2</span>==<span class="number">0</span> ? myPow(x*x, n/<span class="number">2</span>) : x*myPow(x*x, n/<span class="number">2</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3><span id="solution-4">Solution 4</span></h3><p>Instead of recursion, this solution use the method of iteration and complete the resursive steps before with the while loop. </p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">double</span> <span class="title">myPow</span><span class="params">(<span class="keyword">double</span> x, <span class="keyword">int</span> n)</span> </span>&#123; </span><br><span class="line">    <span class="keyword">if</span>(n==<span class="number">0</span>) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">if</span>(n&lt;<span class="number">0</span>) &#123;</span><br><span class="line">        n = -n;</span><br><span class="line">        x = <span class="number">1</span>/x;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">double</span> ans = <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">while</span>(n&gt;<span class="number">0</span>)&#123;</span><br><span class="line">        <span class="keyword">if</span>(n&amp;<span class="number">1</span>) ans *= x;</span><br><span class="line">        x *= x;</span><br><span class="line">        n &gt;&gt;= <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3><span id="solution-5">Solution 5</span></h3><p>This solution is a little tricky. For the input range of <strong>n</strong> is [0,31], and for any interger represent in bit format, the number is $$ k_0<em>2^0+k_1</em>2^1+k_2<em>2^2+…+k_{31}</em>2<em>31 $$<br>And pow(x,2^m) can be constructed easily as $$ pow(x,2^m) = pow(x,2^(m-1))</em>pow(x,2^(m-1)) $$.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">double pow(double x, int n) &#123;</span><br><span class="line">   	if(n&lt;0)&#123;</span><br><span class="line">   		x = 1.0/x;</span><br><span class="line">   		n = -n;</span><br><span class="line">   	&#125;</span><br><span class="line">   	int unsigned m = n;</span><br><span class="line">       double tbl[32] = &#123;0&#125;;</span><br><span class="line">       double result = 1;</span><br><span class="line">       tbl[0] = x;</span><br><span class="line">       for(int i=1;i&lt;32;i++)&#123;</span><br><span class="line">           tbl[i] = tbl[i-1]*tbl[i-1];</span><br><span class="line">       &#125;</span><br><span class="line">       for(int i=0;i&lt;32;i++)&#123;</span><br><span class="line">           if( m &amp; (0x1&lt;&lt;i) )</span><br><span class="line">           result *= tbl[i];</span><br><span class="line">       &#125;</span><br><span class="line">       return result;</span><br></pre></td></tr></table></figure>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1892,7 +1906,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-count">13</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1903,7 +1917,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-count">7</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -1914,7 +1928,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-count">7</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

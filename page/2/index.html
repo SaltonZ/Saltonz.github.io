@@ -249,6 +249,158 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://saltonz.github.io/2018/10/11/Leetcode-number_power/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Salton Zhao">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Salton's">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/10/11/Leetcode-number_power/" itemprop="url">How to calculate power of a number</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-10-11T00:00:00-04:00">
+                2018-10-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Algorithms/" itemprop="url" rel="index">
+                    <span itemprop="name">Algorithms</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1><span id="how-to-calculate-power-of-a-number">How to calculate power of a number</span></h1><hr>
+<p>Implement pow(x, n), which calculates x raised to the power n.<br>$$ x^n $$</p>
+<h3><span id="solution-1">Solution 1</span></h3><p>Recursive solution: pow(x,n) means <strong>x</strong> multiplied by <strong>x</strong> for <strong>n</strong> times. And <strong>(x^n)=[(x^(n/2))^2]</strong>. So with this recursive solution, we can reduce the time complexity from <strong>O(n)</strong> to <strong>O(lgn)</strong>.</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">double</span> <span class="title">myPow</span><span class="params">(<span class="keyword">double</span> x, <span class="keyword">int</span> n)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(n&lt;<span class="number">0</span>) <span class="keyword">return</span> <span class="number">1</span>/x * myPow(<span class="number">1</span>/x, -(n+<span class="number">1</span>));</span><br><span class="line">    <span class="keyword">if</span>(n==<span class="number">0</span>) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">if</span>(n==<span class="number">2</span>) <span class="keyword">return</span> x*x;</span><br><span class="line">    <span class="keyword">if</span>(n%<span class="number">2</span>==<span class="number">0</span>) <span class="keyword">return</span> myPow( myPow(x, n/<span class="number">2</span>), <span class="number">2</span>);</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">return</span> x*myPow( myPow(x, n/<span class="number">2</span>), <span class="number">2</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3><span id="solution-2">Solution 2</span></h3><p>Just like the first solution. But in this solution we define a double variable <strong>t</strong> to represent for <strong>(x^(n/2))</strong>, and the method we deal with the sign of <strong>n</strong> is differnet.</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">double</span> <span class="title">myPow</span><span class="params">(<span class="keyword">double</span> x, <span class="keyword">int</span> n)</span> </span>&#123; </span><br><span class="line">    <span class="keyword">if</span>(n==<span class="number">0</span>) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">double</span> t = myPow(x,n/<span class="number">2</span>);</span><br><span class="line">    <span class="keyword">if</span>(n%<span class="number">2</span>) <span class="keyword">return</span> n&lt;<span class="number">0</span> ? <span class="number">1</span>/x*t*t : x*t*t;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">return</span> t*t;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3><span id="solution-3">Solution 3</span></h3><p>In this solution, the trick of deal with the sign of <strong>n</strong> is different, using the property between <strong>x</strong> and <strong>n</strong> and normalize them from the very beginning.</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">double</span> <span class="title">myPow</span><span class="params">(<span class="keyword">double</span> x, <span class="keyword">int</span> n)</span> </span>&#123; </span><br><span class="line">    <span class="keyword">if</span>(n==<span class="number">0</span>) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">if</span>(n&lt;<span class="number">0</span>)&#123;</span><br><span class="line">        n = -n;</span><br><span class="line">        x = <span class="number">1</span>/x;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> n%<span class="number">2</span>==<span class="number">0</span> ? myPow(x*x, n/<span class="number">2</span>) : x*myPow(x*x, n/<span class="number">2</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3><span id="solution-4">Solution 4</span></h3><p>Instead of recursion, this solution use the method of iteration and complete the resursive steps before with the while loop. </p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">double</span> <span class="title">myPow</span><span class="params">(<span class="keyword">double</span> x, <span class="keyword">int</span> n)</span> </span>&#123; </span><br><span class="line">    <span class="keyword">if</span>(n==<span class="number">0</span>) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">if</span>(n&lt;<span class="number">0</span>) &#123;</span><br><span class="line">        n = -n;</span><br><span class="line">        x = <span class="number">1</span>/x;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">double</span> ans = <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">while</span>(n&gt;<span class="number">0</span>)&#123;</span><br><span class="line">        <span class="keyword">if</span>(n&amp;<span class="number">1</span>) ans *= x;</span><br><span class="line">        x *= x;</span><br><span class="line">        n &gt;&gt;= <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3><span id="solution-5">Solution 5</span></h3><p>This solution is a little tricky. For the input range of <strong>n</strong> is [0,31], and for any interger represent in bit format, the number is $$ k_0<em>2^0+k_1</em>2^1+k_2<em>2^2+…+k_{31}</em>2<em>31 $$<br>And pow(x,2^m) can be constructed easily as $$ pow(x,2^m) = pow(x,2^(m-1))</em>pow(x,2^(m-1)) $$.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">double pow(double x, int n) &#123;</span><br><span class="line">   	if(n&lt;0)&#123;</span><br><span class="line">   		x = 1.0/x;</span><br><span class="line">   		n = -n;</span><br><span class="line">   	&#125;</span><br><span class="line">   	int unsigned m = n;</span><br><span class="line">       double tbl[32] = &#123;0&#125;;</span><br><span class="line">       double result = 1;</span><br><span class="line">       tbl[0] = x;</span><br><span class="line">       for(int i=1;i&lt;32;i++)&#123;</span><br><span class="line">           tbl[i] = tbl[i-1]*tbl[i-1];</span><br><span class="line">       &#125;</span><br><span class="line">       for(int i=0;i&lt;32;i++)&#123;</span><br><span class="line">           if( m &amp; (0x1&lt;&lt;i) )</span><br><span class="line">           result *= tbl[i];</span><br><span class="line">       &#125;</span><br><span class="line">       return result;</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://saltonz.github.io/2018/10/10/Machine-Learning-Homework/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -550,7 +702,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-count">13</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -561,7 +713,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-count">7</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -572,7 +724,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-count">7</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
