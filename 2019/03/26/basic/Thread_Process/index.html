@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Salton&#39;s">
 <meta property="og:description" content="Thread &amp;amp; Process进程： 从程序角度：计算机中正在运行在内存中的程序  {代码 + 数据 + 堆栈 + PCB(进程控制块)} 从操作系统角度：进程是一个术语，在UNIX、Linux和其他一些操作系统中，当程序启动时（由用户输入shell命令或由另一程序启动），进程开始。每个进程的描述都是一个结构体的统称及进程控制块（PCB）linux下叫具体为task_struct。  进">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-03-27T04:38:35.768Z">
+<meta property="og:updated_time" content="2019-03-27T04:41:52.547Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Thread &amp; Process">
 <meta name="twitter:description" content="Thread &amp;amp; Process进程： 从程序角度：计算机中正在运行在内存中的程序  {代码 + 数据 + 堆栈 + PCB(进程控制块)} 从操作系统角度：进程是一个术语，在UNIX、Linux和其他一些操作系统中，当程序启动时（由用户输入shell命令或由另一程序启动），进程开始。每个进程的描述都是一个结构体的统称及进程控制块（PCB）linux下叫具体为task_struct。  进">
@@ -347,7 +347,7 @@
 <li>从操作系统角度：<br>进程是一个术语，在UNIX、Linux和其他一些操作系统中，当程序启动时（由用户输入shell命令或由另一程序启动），进程开始。每个进程的描述都是一个结构体的统称及进程控制块（PCB）linux下叫具体为task_struct。</li>
 </ul>
 <h4><span id="进程的状态">进程的状态：</span></h4><blockquote>
-<p>running （R）运行状态，该状态不只是指程序正在运行，还包括准备运行的状态。<br>sleeping （S）可中断睡眠状态 ，<br>disk sleeping（D）不可中断睡眠状态，系统的休眠等待，不可用户打断，有特殊方式唤醒<br>stopped（T）停止状态，通过发送sigstop信号停止，可以通过发送sigcont信号继续。<br>tracing stop（t）跟踪状态<br>dead（X）死亡状态，是一个返回状态，时间很短，<br>zombie（Z）僵尸状态，子进程先于父进程退出，而且父进程不关心子进程的退出状态，从而形成。</p>
+<p>running （R）运行状态，该状态不只是指程序正在运行，还包括准备运行的状态。<br>sleeping （S）可中断睡眠状态 ，<br>disk sleeping（D）不可中断睡眠状态，系统的休眠等待，不可用户打断，有特殊方式唤醒<br>stopped（T）停止状态，通过发送sigstop信号停止，可以通过发送sigcont信号继续。<br>tracing stop（t）跟踪状态<br>dead（X）死亡状态，是一个返回状态，时间很短，<br>zombie（Z）僵尸状态，子进程先于父进程退出，而且父进程不关心子进程的退出状态，从而形成。<br><a id="more"></a></p>
 </blockquote>
 <h4><span id="创建一个进程">创建一个进程：</span></h4><ol>
 <li>分配一个PID- 从小到大找一个未被使用过的进程号（0号位内核进程）</li>
