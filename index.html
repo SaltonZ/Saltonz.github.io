@@ -249,6 +249,382 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://saltonz.github.io/2019/03/26/basic/Thread_Process/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Salton Zhao">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Salton's">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/03/26/basic/Thread_Process/" itemprop="url">Thread & Process</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-26T00:00:00-04:00">
+                2019-03-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/basic/" itemprop="url" rel="index">
+                    <span itemprop="name">basic</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1><span id="thread-amp-process">Thread &amp; Process</span></h1><h2><span id="进程">进程：</span></h2><ul>
+<li>从程序角度：<br>计算机中正在运行在内存中的程序  {代码 + 数据 + 堆栈 + PCB(进程控制块)}</li>
+<li>从操作系统角度：<br>进程是一个术语，在UNIX、Linux和其他一些操作系统中，当程序启动时（由用户输入shell命令或由另一程序启动），进程开始。每个进程的描述都是一个结构体的统称及进程控制块（PCB）linux下叫具体为task_struct。</li>
+</ul>
+<h4><span id="进程的状态">进程的状态：</span></h4><blockquote>
+<p>running （R）运行状态，该状态不只是指程序正在运行，还包括准备运行的状态。<br>sleeping （S）可中断睡眠状态 ，<br>disk sleeping（D）不可中断睡眠状态，系统的休眠等待，不可用户打断，有特殊方式唤醒<br>stopped（T）停止状态，通过发送sigstop信号停止，可以通过发送sigcont信号继续。<br>tracing stop（t）跟踪状态<br>dead（X）死亡状态，是一个返回状态，时间很短，<br>zombie（Z）僵尸状态，子进程先于父进程退出，而且父进程不关心子进程的退出状态，从而形成。</p>
+</blockquote>
+<h4><span id="创建一个进程">创建一个进程：</span></h4><ol>
+<li>分配一个PID- 从小到大找一个未被使用过的进程号（0号位内核进程）</li>
+<li>分配PCB，拷贝父进程PCB的绝大部分数据</li>
+<li>给子进程分配资源</li>
+<li>子进程复制父进程的地址空间</li>
+<li>子进程设置成就绪状态，放入就绪队列</li>
+</ol>
+<p><strong>函数：</strong></p>
+<blockquote>
+<p>pid_t <strong>fork</strong>(void): 当返回0时代表子进程，大于0时代表父进程</p>
+</blockquote>
+<p>e.g：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line">​</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">　 <span class="built_in">printf</span>(<span class="string">"Before Fork\n"</span>);</span><br><span class="line">　 <span class="keyword">pid_t</span> pid = fork();</span><br><span class="line">　  <span class="keyword">if</span> (pid == <span class="number">0</span>)</span><br><span class="line">　　&#123;   </span><br><span class="line">  　　  <span class="built_in">printf</span>(<span class="string">"child\n"</span>);</span><br><span class="line">　　&#125;   </span><br><span class="line">　　<span class="keyword">else</span> <span class="keyword">if</span> (pid &gt; <span class="number">0</span>)</span><br><span class="line">　　&#123;   </span><br><span class="line"> 　　   <span class="built_in">printf</span>(<span class="string">"parent\n"</span>);</span><br><span class="line">　　&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>output:<br>　　Before Fork<br>　　parent<br>　　child </p>
+</blockquote>
+<p>fork 注意事项：</p>
+<ol>
+<li>fork父子进程交替进行，运行顺序与内核的进程调度有关</li>
+<li>父进程死亡后，子进程成为孤儿进程，由1号进程领养</li>
+<li>子进程死亡，成为僵尸进程</li>
+</ol>
+<h4><span id="linux中特殊进程">Linux中特殊进程：</span></h4><ul>
+<li>PID=0 - IDLE进程<ul>
+<li>由系统自动创建，运行在内核态，是系统创建的第一个进程</li>
+</ul>
+</li>
+<li><p>PID=1 - INIT进程</p>
+<ul>
+<li>由IDLE进程通过kernel_thread创建，在内核空间完成初始化后，加载init程序，并进入用户空间</li>
+<li>由0进程创建，完成系统的初始化. 是系统中所有其它用户进程的祖先进程 </li>
+<li>Linux中的所有进程都是有init进程创建并运行的。首先Linux内核启动，然后在用户空间中启动init进程，再启动其他系统进程。在系统启动完成完成后，init将变为守护进程监视系统其他进程。</li>
+</ul>
+</li>
+<li><p>PID=2 - kthreadd进程</p>
+<ul>
+<li>由init进程创建，并始终运行在内核空间，负责所有内核线程的调度与管理</li>
+<li>它的任务就是管理和调度其他内核线程kernel_thread, 会循环执行一个kthread的函数，该函数的作用就是运行kthread_create_list全局链表中维护的kthread, 当我们调用kernel_thread创建的内核线程会被加入到此链表中，因此所有的内核线程都是直接或者间接的以kthreadd为父进程</li>
+</ul>
+</li>
+</ul>
+<p>more about linux process: <a href="https://www.cnblogs.com/alantu2018/p/8526970.html" target="_blank" rel="noopener">https://www.cnblogs.com/alantu2018/p/8526970.html</a></p>
+<h2><span id="线程">线程</span></h2><p>线程是进程中的单一的顺序控制流程也可以叫做最小控制单元，线程是进程中执行单元，开启一个线程比开启一个进程更加节省资源。 </p>
+<h4><span id="线程的优点">线程的优点</span></h4><ol>
+<li>创建一个新线程的代价要比创建一个新进程小得多</li>
+<li>与进程之间的切换相比，线程之间的切换需要操作系统做的工作要少很多</li>
+<li>线程占用的资源要比进程少很多</li>
+<li>能充分利用多处理器的可并行数量</li>
+<li>在等待慢速I/O操作结束的同时，程序可执行其他的计算任务</li>
+<li>计算密集型应用，为了能在多处理器系统上运行，将计算分解到多个线程中实现</li>
+<li>I/O密集型应用，为了提高性能，将I/O操作重叠。线程可以同时等待不同的I/O操作。</li>
+</ol>
+<h2><span id="并发编程">并发编程</span></h2><p>并行： 两个或多个独立操作<strong>同时进行</strong>（同时做很多事情）<br>并发： 两个任务可以在重叠的<strong>时间段</strong>内启动，运行和完成。（一次做好很多事情）</p>
+<p><strong>C++ 11 中引进了多线程库</strong><br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;thread&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">output</span><span class="params">(<span class="keyword">int</span> i)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; i &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">uint8_t</span> i = <span class="number">0</span>; i &lt; <span class="number">4</span>; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="function">thread <span class="title">t</span><span class="params">(output, i)</span></span>; <span class="comment">//创建线程t,执行output</span></span><br><span class="line">        t.detach(); <span class="comment">//该线程在后台允许，无需等待该线程完成，继续执行后面的语句。</span></span><br><span class="line">    &#125;</span><br><span class="line">        </span><br><span class="line">    getchar();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>output:<br>01</p>
+<p>2<br>3</p>
+<blockquote>
+<p>线程0未执行完毕，线程1开始执行</p>
+</blockquote>
+</blockquote>
+<p>结束进程</p>
+<ul>
+<li>detach()<br>  启动的进程资助在后台运行，当前代码继续执行，不等待新线程结束<br>  使用detach需注意创建的<strong>新线程对当前作用域变量的使用</strong></li>
+<li>join()<br>  等待启动的线程完成，才会往下继续执</li>
+</ul>
+<h4><span id="c线程间通信">C++线程间通信</span></h4><h5><span id="全局变量">全局变量</span></h5><p>通过全局变量来访问共同的数据段，这个全局变量可以是类中的成员变量（线程函数是类的成员函数），也可以是类外的实际全局变量（整个程序中所有地方都可以访问到）。多个线程访问同一个数据，那么就会涉及到一个问题：线程互斥，当一个线程在读，一个线程在写的时候，会有冲突，这个时候就需要用到线程互斥的处理方式：锁</p>
+<h5><span id="自定义消息">自定义消息</span></h5><p>借助于windows程序的消息通信机制，当两个线程之间至少有一个为UI线程，那么就可以直接通过SendMessage或者PostMessage来发送消息到指定线程进行响应。这种方法涉及到线程的切换，如果SendMessage/PostMessage指定的窗口是由调用线程创建，那么就是一个普通的子程序；如果指定窗口由另一个线程创建，也即UI线程，那么系统会挂起当前工作线程，切换到ui线程，并调用合适的窗口过程(PostMessage则直接进消息队列)。</p>
+<h5><span id="c11stdpromise-stdfuture">C++11：std::promise std::future</span></h5><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;       // std::cout</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;functional&gt;     // std::ref</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;thread&gt;         // std::thread</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;future&gt;         // std::promise, std::future</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">print_int</span><span class="params">(<span class="built_in">std</span>::future&lt;<span class="keyword">int</span>&gt;&amp; fut)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> x = fut.get(); <span class="comment">// 获取共享状态的值.</span></span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"value: "</span> &lt;&lt; x &lt;&lt; <span class="string">'\n'</span>; <span class="comment">// 打印 value: 10.</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span> <span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">std</span>::promise&lt;<span class="keyword">int</span>&gt; prom; <span class="comment">// 生成一个 std::promise&lt;int&gt; 对象.</span></span><br><span class="line">    <span class="built_in">std</span>::future&lt;<span class="keyword">int</span>&gt; fut = prom.get_future(); <span class="comment">// 和 future 关联.</span></span><br><span class="line">    std::thread t(print_int, std::ref(fut)); // 将 future 交给另外一个线程t.</span><br><span class="line">    prom.set_value(<span class="number">10</span>); <span class="comment">// 设置共享状态的值, 此处和线程t保持同步.</span></span><br><span class="line">    t.join();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>C++11 同时也实现了\<mutex>,互斥锁</mutex></p>
+<blockquote>
+<p>mutex.lock();<br>mutex.unlock();</p>
+</blockquote>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://saltonz.github.io/2019/03/26/basic/overwrite_cmp/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Salton Zhao">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Salton's">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/03/26/basic/overwrite_cmp/" itemprop="url">OverWrite of cmp(cmp重载)</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-26T00:00:00-04:00">
+                2019-03-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/basic/" itemprop="url" rel="index">
+                    <span itemprop="name">basic</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2><span id="overwrite-rule-of-cmp-function-in-c">OverWrite Rule of cmp function in C++</span></h2><h2><span id="c-重载cmp">C++ 重载cmp</span></h2><h3><span id="void-sortiterator-start-iterator-end-strictweakordering-cmp">void sort(iterator start, iterator end, StrictWeakOrdering cmp);</span></h3><p>函数标准声明：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">RandomAccessIterator</span>, <span class="title">class</span> <span class="title">Compare</span>&gt;</span></span><br><span class="line"><span class="class"><span class="title">void</span> <span class="title">sort</span> (<span class="title">RandomAccessIterator</span> <span class="title">first</span>, <span class="title">RandomAccessIterator</span> <span class="title">last</span>, <span class="title">Compare</span> <span class="title">comp</span>);</span></span><br></pre></td></tr></table></figure></p>
+<p>例子（降序）：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">cmp</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">return</span> a &gt; b; <span class="comment">// a &lt; b 为升序</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> a[<span class="number">11</span>] = &#123; <span class="number">-5</span>,<span class="number">2</span>,<span class="number">5</span>,<span class="number">7</span>,<span class="number">-11</span>,<span class="number">2</span>,<span class="number">-6</span>,<span class="number">8</span>,<span class="number">9</span>,<span class="number">6</span>,<span class="number">6</span> &#125;;</span><br><span class="line">	sort(a, a + <span class="number">11</span>, cmp);</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i  = <span class="number">0</span>; i &lt; <span class="number">10</span>; ++i)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="built_in">cout</span> &lt;&lt; a[i] &lt;&lt; <span class="string">" "</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">cout</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">	system(<span class="string">"pause"</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>输出：<br>9 8 7 6 6 5 2 2 -5 -6</p>
+</blockquote>
+<h3><span id="setmap">set/map</span></h3><p>set 与 map的cmp不再只是函数，而是函数对象<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">cmp</span>&#123;</span></span><br><span class="line">	<span class="function"><span class="keyword">bool</span> <span class="title">operator</span> <span class="params">()</span><span class="params">(<span class="keyword">const</span> <span class="keyword">int</span> a , <span class="keyword">const</span> <span class="keyword">int</span> b)</span></span></span><br><span class="line"><span class="function">	</span>&#123;</span><br><span class="line">		<span class="keyword">return</span> a &lt; b ;			<span class="comment">// 从小到大 </span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>例子(set):<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;cstring&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;set&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Person</span> &#123;</span></span><br><span class="line">	<span class="keyword">int</span> age;</span><br><span class="line">	<span class="keyword">char</span> name[<span class="number">20</span>];</span><br><span class="line">	Person(<span class="keyword">int</span> Age, <span class="keyword">const</span> <span class="keyword">char</span> Name[]) :age(Age) &#123; strcpy_s(name, Name); &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">cmp</span> &#123;</span></span><br><span class="line">	<span class="function"><span class="keyword">bool</span> <span class="title">operator</span> <span class="params">()</span><span class="params">(<span class="keyword">const</span> Person a, <span class="keyword">const</span> Person b)</span></span></span><br><span class="line"><span class="function">	</span>&#123;</span><br><span class="line">		<span class="keyword">return</span> a.age &lt; b.age;			<span class="comment">//从小到大 </span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="built_in">set</span>&lt;Person, cmp&gt; s;</span><br><span class="line">	<span class="function">Person <span class="title">n1</span><span class="params">(<span class="number">46</span>, <span class="string">"zst"</span>)</span></span>;</span><br><span class="line">	<span class="function">Person <span class="title">n2</span><span class="params">(<span class="number">-16</span>, <span class="string">"salton"</span>)</span></span>;			</span><br><span class="line">	<span class="function">Person <span class="title">n3</span><span class="params">(<span class="number">45</span>, <span class="string">"123"</span>)</span></span>;</span><br><span class="line">	<span class="function">Person <span class="title">n4</span><span class="params">(<span class="number">-25</span>, <span class="string">"test"</span>)</span></span>;</span><br><span class="line">	<span class="function">Person <span class="title">n5</span><span class="params">(<span class="number">34</span>, <span class="string">"zst"</span>)</span></span>;</span><br><span class="line">	<span class="function">Person <span class="title">n6</span><span class="params">(<span class="number">22</span>, <span class="string">"zst"</span>)</span></span>;</span><br><span class="line">	<span class="function">Person <span class="title">n7</span><span class="params">(<span class="number">2</span>, <span class="string">"zst"</span>)</span></span>;</span><br><span class="line">	s.insert(n1);</span><br><span class="line">	s.insert(n2);</span><br><span class="line">	s.insert(n3);</span><br><span class="line">	s.insert(n4);</span><br><span class="line">	s.insert(n5);</span><br><span class="line">	s.insert(n6);</span><br><span class="line">	s.insert(n7);</span><br><span class="line">	<span class="built_in">set</span>&lt;Person, cmp&gt;::iterator begin = s.begin();</span><br><span class="line">	<span class="built_in">set</span>&lt;Person, cmp&gt;::iterator end = s.end();</span><br><span class="line">	<span class="keyword">for</span> (<span class="built_in">set</span>&lt;Person, cmp&gt;::iterator i = begin; i != end; ++i)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="built_in">cout</span> &lt;&lt; i-&gt;age &lt;&lt; <span class="string">" "</span> &lt;&lt; i-&gt;name &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	system(<span class="string">"pause"</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>输出:<br>-25 test<br>-16 salton<br>2 zst<br>22 zst<br>34 zst<br>45 123<br>46 zst</p>
+</blockquote>
+<h3><span id="priority_queue-cmp">priority_queue cmp</span></h3><p>priority queue 的cmp同样是函数对象<br>对于pair&lt;int, char&gt;:<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">cmp</span>&#123;</span></span><br><span class="line">    <span class="function"><span class="keyword">bool</span> <span class="title">operator</span><span class="params">()</span><span class="params">(pair&lt;<span class="keyword">int</span>,<span class="keyword">char</span>&gt; a, pair&lt;<span class="keyword">int</span>,<span class="keyword">char</span>&gt; b)</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> a.first &gt; b.first;  <span class="comment">//以int 为索引排列的小顶堆</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;queue&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">cmp</span> &#123;</span></span><br><span class="line">	<span class="function"><span class="keyword">bool</span> <span class="title">operator</span><span class="params">()</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">int</span> j)</span> </span>&#123; <span class="keyword">return</span> i &gt; j; &#125; <span class="comment">//小顶堆</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	priority_queue&lt;<span class="keyword">int</span>, <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;, cmp&gt; q;</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++) &#123; </span><br><span class="line">		<span class="keyword">if</span> (q.size() &gt;= <span class="number">5</span>) &#123;              <span class="comment">//只保留最大的五个</span></span><br><span class="line">			<span class="keyword">if</span> (i &gt; q.top()) &#123;</span><br><span class="line">				q.pop();</span><br><span class="line">				q.push(i);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span> &#123;</span><br><span class="line">			q.push(i);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">while</span> (!q.empty()) &#123;</span><br><span class="line">		<span class="built_in">cout</span> &lt;&lt; q.top() &lt;&lt; <span class="string">' '</span>;</span><br><span class="line">		q.pop();</span><br><span class="line">	&#125;</span><br><span class="line">	system(<span class="string">"pause"</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>输出：<br>5 6 7 8 9</p>
+</blockquote>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://saltonz.github.io/2019/03/22/basic/Memory Leak of C++/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -920,153 +1296,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://saltonz.github.io/2019/03/17/JVM_basic/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Salton Zhao">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Salton's">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/03/17/JVM_basic/" itemprop="url">Java Learning note-1 (JVM-JMM)</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-17T00:00:00-04:00">
-                2019-03-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java/" itemprop="url" rel="index">
-                    <span itemprop="name">Java</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="Java-Virtual-Machine-JVM"><a href="#Java-Virtual-Machine-JVM" class="headerlink" title="Java Virtual Machine (JVM)"></a>Java Virtual Machine (JVM)</h1><p>The JVM is an abstract computing machine that enables a computer to run a Java program. There are three notions of JVM: <strong>specification</strong> (where working of JVM is specified. But the implementation has been provided by Sun and other companies), <strong>implementation</strong> (known as (JRE) Java Runtime Environment) and <strong>instance</strong> (after writing Java command, to run Java class, an instance of JVM is created).</p>
-<h2 id="JVM-Memory-Model-JMM"><a href="#JVM-Memory-Model-JMM" class="headerlink" title="JVM Memory Model (JMM)"></a>JVM Memory Model (JMM)</h2><p><img src="https://cdn1.howtodoinjava.com/wp-content/uploads/2014/08/JVM-Memory-Area-Parts.jpg" alt=""></p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/03/17/JVM_basic/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://saltonz.github.io/2019/03/17/java_learning(2)/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1176,6 +1405,153 @@
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2019/03/17/java_learning(2)/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://saltonz.github.io/2019/03/17/JVM_basic/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Salton Zhao">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Salton's">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/03/17/JVM_basic/" itemprop="url">Java Learning note-1 (JVM-JMM)</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-17T00:00:00-04:00">
+                2019-03-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="Java-Virtual-Machine-JVM"><a href="#Java-Virtual-Machine-JVM" class="headerlink" title="Java Virtual Machine (JVM)"></a>Java Virtual Machine (JVM)</h1><p>The JVM is an abstract computing machine that enables a computer to run a Java program. There are three notions of JVM: <strong>specification</strong> (where working of JVM is specified. But the implementation has been provided by Sun and other companies), <strong>implementation</strong> (known as (JRE) Java Runtime Environment) and <strong>instance</strong> (after writing Java command, to run Java class, an instance of JVM is created).</p>
+<h2 id="JVM-Memory-Model-JMM"><a href="#JVM-Memory-Model-JMM" class="headerlink" title="JVM Memory Model (JMM)"></a>JVM Memory Model (JMM)</h2><p><img src="https://cdn1.howtodoinjava.com/wp-content/uploads/2014/08/JVM-Memory-Area-Parts.jpg" alt=""></p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/03/17/JVM_basic/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1509,353 +1885,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://saltonz.github.io/2019/03/09/ch4-Network protocol/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Salton Zhao">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Salton's">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/03/09/ch4-Network protocol/" itemprop="url">Network Protocol Security</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-09T01:34:20-05:00">
-                2019-03-09
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Network-Security/" itemprop="url" rel="index">
-                    <span itemprop="name">Network Security</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="Chapter-4-Network-Protocol-Security"><a href="#Chapter-4-Network-Protocol-Security" class="headerlink" title="Chapter 4: Network Protocol Security"></a>Chapter 4: Network Protocol Security</h1><p>[TOC]</p>
-<h1 id="4-Security-of-Network-Protocols"><a href="#4-Security-of-Network-Protocols" class="headerlink" title="4-Security of Network Protocols"></a>4-Security of Network Protocols</h1><h2 id="Basic-Networking-what-security-assurances-What-problems"><a href="#Basic-Networking-what-security-assurances-What-problems" class="headerlink" title="Basic Networking:what security assurances? What problems?"></a>Basic Networking:what security assurances? What problems?</h2><h3 id="Example"><a href="#Example" class="headerlink" title="Example"></a>Example</h3><p>In HTTP Process</p>
-<blockquote>
-<p>Can I be confident that I was indeed corresponding with the url, and ths HTTP response came from them?</p>
-</blockquote>
-<blockquote>
-<p>Can the remote site be confident about who they were corresponding with and that the HTTP response came from me?</p>
-</blockquote>
-<blockquote>
-<p>Is the data inside the HTTP request and respnse confidential?</p>
-</blockquote>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/03/09/ch4-Network protocol/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://saltonz.github.io/2019/01/20/tencent/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Salton Zhao">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Salton's">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/01/20/tencent/" itemprop="url">Basic Concepts</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-01-20T00:00:00-05:00">
-                2019-01-20
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/基础/" itemprop="url" rel="index">
-                    <span itemprop="name">基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1><span id="笔记1">笔记（1）</span></h1><h3><span id="静态变量全局变量和局部变量">静态变量，全局变量和局部变量</span></h3><blockquote>
-<p><strong>从作用域看</strong><br>1&gt;全局变量具有全局作用域。全局变量只需在一个源文件中定义，就可以作用于所有的源文件。当然，其他不包含全局变量定义的源文件需要用extern关键字再次声明这个全局变量。<br><br>2&gt;静态局部变量具有局部作用域，它只被初始化一次，自从第一次被初始化直到程序运行结束都一直存在，它和全局变量的区别在于全局变量对所有的函数都是可见的，而静态局部变量只对定义自己的函数体始终可见。<br><br>3&gt;局部变量也只有局部作用域，它是自动对象（auto），它在程序运行期间不是一直存在，而是只在函数执行期间存在，函数的一次调用执行结束后，变量被撤销，其所占用的内存也被收回。<br><br>4&gt;静态全局变量也具有全局作用域，它与全局变量的区别在于如果程序包含多个文件的话，它作用于定义它的文件里，不能作用到其它文件里，即被static关键字修饰过的变量具有文件作用域。这样即使两个不同的源文件都定义了相同名字的静态全局变量，它们也是不同的变量。</p>
-</blockquote>
-<blockquote>
-<p><strong>从内存分配空间看</strong><br>1&gt;<u>全局变量，静态局部变量，静态全局变量都在静态存储区分配空间，而局部变量在栈里分配空间</u></p>
-</blockquote>
-<h3><span id="c-堆栈">C++ 堆，栈</span></h3><p>C++中，内存分为五个区</p>
-<blockquote>
-<p>栈：由编译器在需要时自动分配，不需要时自动清除的变量存储区，通常存放局部变量<br><br>堆：由new分配的内存块，由程序员释放，一般一个new与一个delete对应，若没有释放，资源将有操作系统在程序结束后紫都回收<br><br>自由存储区：有malloc等分配的内存块，和堆十分相似,用free来释放<br><br>全局/静态存储区：全局变量和静态变量被分配到同一块内存中<br>常量存储区：一块特殊存储区，里边存放常量，不允许修改</p>
-</blockquote>
-<blockquote>
-<p><strong>堆与栈的讨论</strong></p>
-<blockquote>
-<p><strong>管理方式</strong>：堆中资源由程序员控制（容易产生memory leak）， 栈资源由编译器自动管理，无需手工控制。<br><br><strong>系统响应</strong>：对于堆，硬知道系统有一个记录空闲内存地址的链表，当系统收到程序申请时，遍历该链表，寻找第一个空间大于申请空间的堆节点，在链表中删除该节点，并将该节点空间分配给程序。<br>对于栈，只要栈的剩余空间大于所申请空间，系统为程序提供内存，否则报异常提示栈溢出。<br><br><strong>空间大小</strong>：堆是不连续的内存区域，堆的大小受限于系统中有效的虚拟内存，因此堆的空间更灵活，比较大。而栈是一块连续的内存区域，大小是操作系统预定好的。<br><br><strong>碎片问题</strong>：对于堆，频繁的new/delete会造成大量碎片，使程序的效率降低，他是一个先进后出的队列，进出一一对应，不会产生碎片。<br><br><strong>分配方式</strong>：堆是动态分配，栈有静态分配和动态分配。静态分配由编译器完成，动态分配有allocal函数分配。<br><br><strong>分配效率</strong>：堆的效率比栈低很多</p>
-</blockquote>
-</blockquote>
-<h3><span id="二叉树的遍历">二叉树的遍历</span></h3><blockquote>
-<blockquote>
-<p>前序：根左右<br>中序/对称：左根右<br>后序：左右根</p>
-</blockquote>
-</blockquote>
-<h3><span id="sql语句执行顺序">SQL语句执行顺序</span></h3><blockquote>
-<p>select-from-where-group by-having-order by</p>
-</blockquote>
-<h3><span id="http返回码">http返回码</span></h3><blockquote>
-<p>常用:</p>
-<blockquote>
-<p>200 服务器成功返回网页<br>404 请求的网页不存在<br>503 服务不可用</p>
-</blockquote>
-<p>1**(临时响应)<br>表示临时响应并需要请求者继续执行操作的状态代码</p>
-<blockquote>
-<p>100（继续） 请求者应当继续提出请求，服务器返回此代码表示已收到请求得第一部分，正在等待其余部分<br>101(切换协议) 请求者已要求服务器切换协议，服务器已确认并准备切换</p>
-</blockquote>
-<p>2**（成功）<br>表示成功处理了请求的状态代码</p>
-<blockquote>
-<p>200（成功) 服务器已成功处理了请求。 通常，这表示服务器提供了请求的网页。<br>201（已创建）请求成功并且服务器创建了新的资源。<br>202（已接受） 服务器已接受请求，但尚未处理。<br>203（非授权信息）服务器已成功处理了请求，但返回的信息可能来自另一来源<br>204（无内容）服务器成功处理了请求，但没有返回任何内<br>205（重置内容）服务器成功处理了请求，但没有返回任何内容。<br>206（部分内容）服务器成功处理了部分 GET 请求。</p>
-</blockquote>
-<p>3**（重定向）<br>表示要完成请求，需要进一步操作。 通常，这些状态代码用来重定向。</p>
-<blockquote>
-<p>300（多种选择）针对请求，服务器可执行多种操作。 服务器可根据请求者 (user agent) 选择一项操作，或提供操作列表供请求者选择。<br>301（永久移动）请求的网页已永久移动到新位置。 服务器返回此响应（对 GET 或 HEAD 请求的响应）时，会自动将请求者转到新位置。<br>302（临时移动）服务器目前从不同位置的网页响应请求，但请求者应继续使用原有位置来进行以后的请求。<br>303（查看其他位置）请求者应当对不同的位置使用单独的 GET 请求来检索响应时，服务器返回此代码。<br>304（未修改）自从上次请求后，请求的网页未修改过。 服务器返回此响应时，不会返回网页内容。<br>305（使用代理）请求者只能使用代理访问请求的网页。 如果服务器返回此响应，还表示请求者应使用代理。<br>307（临时重定向）服务器目前从不同位置的网页响应请求，但请求者应继续使用原有位置来进行以后的请求。</p>
-</blockquote>
-<p>4**（请求错误）<br>这些状态代码表示请求可能出错，妨碍了服务器的处理。</p>
-<blockquote>
-<p>400（错误请求）服务器不理解请求的语法。<br>401（未授权）请求要求身份验证。 对于需要登录的网页，服务器可能返回此响应。<br>403（禁止）服务器拒绝请求。<br>404（未找到）服务器找不到请求的网页。<br>405（方法禁用）禁用请求中指定的方法。<br>406（不接受）无法使用请求的内容特性响应请求的网页。<br>407（需要代理授权）此状态代码与 401（未授权）类似，但指定请求者应当授权使用代理。<br>408（请求超时）服务器等候请求时发生超时。<br>409（冲突）服务器在完成请求时发生冲突。 服务器必须在响应中包含有关冲突的信息。<br>410（已删除）如果请求的资源已永久删除，服务器就会返回此响应。<br>411（需要有效长度）服务器不接受不含有效内容长度标头字段的请求。<br>412（未满足前提条件）服务器未满足请求者在请求中设置的其中一个前提条件。<br>413（请求实体过大）服务器无法处理请求，因为请求实体过大，超出服务器的处理能力。<br>414（请求的 URI 过长）请求的 URI（通常为网址）过长，服务器无法处理。<br>415（不支持的媒体类型）请求的格式不受请求页面的支持。<br>416（请求范围不符合要求）如果页面无法提供请求的范围，则服务器会返回此状态代码。<br>417（未满足期望值）服务器未满足”期望”请求标头字段的要求。</p>
-</blockquote>
-<p>5**（服务器错误）<br>这些状态代码表示服务器在尝试处理请求时发生内部错误。 这些错误可能是服务器本身的错误，而不是请求出错。</p>
-<blockquote>
-<p>500（服务器内部错误）服务器遇到错误，无法完成请求。<br>501（尚未实施）服务器不具备完成请求的功能。 例如，服务器无法识别请求方法时可能会返回此代码。<br>502（错误网关）服务器作为网关或代理，从上游服务器收到无效响应。<br>503（服务不可用）服务器目前无法使用（由于超载或停机维护）。 通常，这只是暂时状态。<br>504（网关超时）服务器作为网关或代理，但是没有及时从上游服务器收到请求。<br>505（HTTP 版本不受支持）服务器不支持请求中所用的 HTTP 协议版本。</p>
-</blockquote>
-</blockquote>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1906,7 +1935,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-count">15</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1928,7 +1957,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-count">10</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
