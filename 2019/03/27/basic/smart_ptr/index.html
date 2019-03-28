@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="C++,OS,Concurrency,Lock," />
 
 
 
@@ -79,17 +79,18 @@
 
 
 
-<meta name="description" content="Java_Learning Note -2Hashmap/Hashtable/ConcurrentHashMapHashtable   底层数组+链表实现，无论key还是value都不能为null,线程安全，Synchronized,效率低 初始size为11，扩容时newsize = oldsize*2 + 1 计算index: index = (hash &amp;amp; 0x7FFFFFFF) %">
+<meta name="description" content="智能指针在c++中，经常使用new,delete在堆上动态分配内存  new: 为对象分配一个空间并返回指向该空间的指针 delete: 指向一个动态独享的指针，销毁对象，并释放与之关联的内存  动态分配内存常出现问题  一、忘记释放内存/内存在运行到delete前中止， 造成内存泄漏 二、在内存仍然有指针引用的情况下释放，产生引用非法内存的指针  C++11中引入了智能指针：share_ptr允">
+<meta name="keywords" content="C++,OS,Concurrency,Lock">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Java Learning note-2 (Hashmap &amp; IO)">
-<meta property="og:url" content="https://saltonz.github.io/2019/03/17/java_learning(2)/index.html">
+<meta property="og:title" content="Smart_ptr">
+<meta property="og:url" content="https://saltonz.github.io/2019/03/27/basic/smart_ptr/index.html">
 <meta property="og:site_name" content="Salton&#39;s">
-<meta property="og:description" content="Java_Learning Note -2Hashmap/Hashtable/ConcurrentHashMapHashtable   底层数组+链表实现，无论key还是value都不能为null,线程安全，Synchronized,效率低 初始size为11，扩容时newsize = oldsize*2 + 1 计算index: index = (hash &amp;amp; 0x7FFFFFFF) %">
+<meta property="og:description" content="智能指针在c++中，经常使用new,delete在堆上动态分配内存  new: 为对象分配一个空间并返回指向该空间的指针 delete: 指向一个动态独享的指针，销毁对象，并释放与之关联的内存  动态分配内存常出现问题  一、忘记释放内存/内存在运行到delete前中止， 造成内存泄漏 二、在内存仍然有指针引用的情况下释放，产生引用非法内存的指针  C++11中引入了智能指针：share_ptr允">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-03-17T17:39:56.132Z">
+<meta property="og:updated_time" content="2019-03-28T04:27:30.282Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Java Learning note-2 (Hashmap &amp; IO)">
-<meta name="twitter:description" content="Java_Learning Note -2Hashmap/Hashtable/ConcurrentHashMapHashtable   底层数组+链表实现，无论key还是value都不能为null,线程安全，Synchronized,效率低 初始size为11，扩容时newsize = oldsize*2 + 1 计算index: index = (hash &amp;amp; 0x7FFFFFFF) %">
+<meta name="twitter:title" content="Smart_ptr">
+<meta name="twitter:description" content="智能指针在c++中，经常使用new,delete在堆上动态分配内存  new: 为对象分配一个空间并返回指向该空间的指针 delete: 指向一个动态独享的指针，销毁对象，并释放与之关联的内存  动态分配内存常出现问题  一、忘记释放内存/内存在运行到delete前中止， 造成内存泄漏 二、在内存仍然有指针引用的情况下释放，产生引用非法内存的指针  C++11中引入了智能指针：share_ptr允">
 
 
 
@@ -119,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="https://saltonz.github.io/2019/03/17/java_learning(2)/"/>
+  <link rel="canonical" href="https://saltonz.github.io/2019/03/27/basic/smart_ptr/"/>
 
 
 
 
 
-  <title>Java Learning note-2 (Hashmap & IO) | Salton's</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  <title>Smart_ptr | Salton's</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
   
 
 
@@ -252,7 +253,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://saltonz.github.io/2019/03/17/java_learning(2)/">
+    <link itemprop="mainEntityOfPage" href="https://saltonz.github.io/2019/03/27/basic/smart_ptr/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Salton Zhao">
@@ -269,7 +270,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Java Learning note-2 (Hashmap & IO)</h1>
+          <h1 class="post-title" itemprop="name headline">Smart_ptr</h1>
         
 
         <div class="post-meta">
@@ -281,8 +282,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-17T00:00:00-04:00">
-                2019-03-17
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-27T00:00:00-04:00">
+                2019-03-27
               </time>
             
 
@@ -304,8 +305,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java/" itemprop="url" rel="index">
-                    <span itemprop="name">Java</span>
+                  <a href="/categories/basic/" itemprop="url" rel="index">
+                    <span itemprop="name">basic</span>
                   </a>
                 </span>
 
@@ -341,34 +342,36 @@
       
 
       
-        <h1><span id="java_learning-note-2">Java_Learning Note -2</span></h1><h2><span id="hashmaphashtableconcurrenthashmap">Hashmap/Hashtable/ConcurrentHashMap</span></h2><p><strong>Hashtable</strong> </p>
+        <h2><span id="智能指针">智能指针</span></h2><p>在c++中，经常使用new,delete在堆上动态分配内存</p>
 <ul>
-<li>底层数组+链表实现，无论key还是value都<strong>不能为null</strong>,线程<strong>安全</strong>，Synchronized,效率低</li>
-<li>初始size为11，扩容时newsize = oldsize*2 + 1</li>
-<li>计算index: index = (hash &amp; 0x7FFFFFFF) % tab.length</li>
+<li>new: 为对象分配一个空间并返回指向该空间的指针</li>
+<li>delete: 指向一个动态独享的指针，销毁对象，并释放与之关联的内存</li>
 </ul>
-<p><strong>HashMap</strong></p>
+<p>动态分配内存常出现问题</p>
 <ul>
-<li>底层数组+链表实现，<strong>可以储存null key 和 value</strong>, 线程<strong>不安全</strong></li>
-<li>初始size为16， 扩容newsize = oldsize*2</li>
-<li>扩容针对整个map,每次扩容时原来数组中元素依次重新计算存放位置，并重新插入</li>
-<li>插入元素后判断是否扩容</li>
-<li>当map中元素总数超过Entry数组的75%，触发扩容，为了减小链表长度</li>
-<li>计算index: index = hash &amp; (tab.length-1)<a id="more"></a>
-<strong>ConcorrentHashMap</strong></li>
-<li>底层采用分段的数组+链表实现，线程安全</li>
-<li>通过把整个Map分为N个Segment，可以提供相同的线程安全，但是效率提升N倍，默认提升16倍。</li>
-<li>Hashtable的synchronized是针对整张Hash表的，即每次锁住整张表让线程独占，ConcurrentHashMap允许多个修改操作并发进行，其关键在于使用了锁分离技术</li>
-<li>扩容：段内扩容（段内元素超过该段对应Entry数组长度的75%触发扩容，不会对整个Map进行扩容），插入前检测需不需要扩容，有效避免无效扩容</li>
-<li>Segment 是基于重入锁（ReentrantLock）：一个数据段竞争锁。每个 HashEntry 一个链表结构的元素，利用 Hash 算法得到索引确定归属的数据段，也就是对应到在修改时需要竞争获取的锁。ConcurrentHashMap 支持 CurrencyLevel（Segment 数组数量）的线程并发。每当一个线程占用锁访问一个 Segment 时，不会影响到其他的 Segment</li>
-<li>核心数据如 value，以及链表都是 volatile 修饰的，保证了获取时的可见性</li>
+<li>一、忘记释放内存/内存在运行到delete前中止， 造成内存泄漏</li>
+<li>二、在内存仍然有指针引用的情况下释放，产生引用非法内存的指针</li>
 </ul>
-<p>## </p>
-<h2><span id="streamio">Stream/IO</span></h2><h3><span id="控制台输入">控制台输入</span></h3><p>控制台输入由System.in完成。<br>可以把System.in包装在一个BufferedReader对象中来创建一个字符流。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">BufferedReader br = <span class="keyword">new</span> BufferedReader(<span class="keyword">new</span> InputStreamReader(System.in));</span><br><span class="line">``` </span><br><span class="line">BufferedReader对象创建后，可以使用br.read()读取一个字符，或者使用br.readLine()读取一个字符串。</span><br><span class="line">```java</span><br><span class="line">ch = br.read();</span><br><span class="line">str = br.readline();</span><br><span class="line">``` </span><br><span class="line"></span><br><span class="line">### 控制台输出</span><br><span class="line"></span><br><span class="line">控制台输出由print()和println()完成，这些类方法都由PrintStream定义，System.out是对该类对象的一个引用。同样，write()也可以用来往控制台写操作。</span><br><span class="line"></span><br><span class="line">### Scanner类</span><br><span class="line">(Java5新特征，通过Scanner类来获取用户的输入)</span><br><span class="line">```java</span><br><span class="line">Scanner s = <span class="keyword">new</span> Scanner(System.in);</span><br></pre></td></tr></table></figure></p>
-<p>使用next()与nextLine()方法来获取输入的字符串，在读取前用hasNext与hasNextLine判断是否还有要输入的数据。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.Scanner;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ScannerDemo</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        Scanner scan = <span class="keyword">new</span> Scanner(System.in);</span><br><span class="line">        <span class="comment">// 从键盘接收数据</span></span><br><span class="line"> </span><br><span class="line">        <span class="comment">// nextLine方式接收字符串</span></span><br><span class="line">        System.out.println(<span class="string">"nextLine方式接收："</span>);</span><br><span class="line">        <span class="comment">// 判断是否还有输入</span></span><br><span class="line">        <span class="keyword">if</span> (scan.hasNextLine()) &#123;</span><br><span class="line">            String str2 = scan.nextLine();</span><br><span class="line">            System.out.println(<span class="string">"输入的数据为："</span> + str2);</span><br><span class="line">        &#125;</span><br><span class="line">        scan.close();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>C++11中引入了智能指针：share_ptr允许多个指针指向一个对象，unique_ptr则独占所指向的对象。</p>
+<h4><span id="share_ptr">share_ptr</span></h4><p>函数：</p>
+<ul>
+<li><p>make_shared\<t>(args) 返回一个shared_ptr，指向一个动态分配的类型为T的对象，使用args初始化该对象</t></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">shared_ptr</span>&lt;<span class="keyword">int</span>&gt; p3 = make_shared&lt;<span class="keyword">int</span>&gt;(<span class="number">42</span>);</span><br><span class="line"><span class="built_in">shared_ptr</span>&lt;<span class="built_in">string</span>&gt; p4 = make_shared&lt;<span class="built_in">string</span>&gt;(<span class="number">10</span>,<span class="string">'9'</span>);</span><br><span class="line"><span class="built_in">shared_ptr</span>&lt;<span class="keyword">int</span>&gt; p5 = make_shared&lt;<span class="keyword">int</span>&gt;();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>shared_ptr<t>p(q) p是shared_ptr q的拷贝，此操作会递增q中的计数器。</t></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">auto</span> p = make_shared&lt;<span class="built_in">string</span>&gt;(<span class="number">10</span>,<span class="string">'9'</span>);</span><br><span class="line"><span class="function"><span class="keyword">auto</span> <span class="title">q</span><span class="params">(p)</span></span>;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>我们可以认为每个shared_ptr都有一个关联的计数器，通常称其为引用计数，无论何时我们拷贝一个shared_ptr，计数器都会递增。当我们给shared_ptr赋予一个新值或是shared_ptr被销毁（例如一个局部的shared_ptr离开其作用域）时，计数器就会递减，一旦一个shared_ptr的计数器变为0,它就会自动释放自己所管理的对象。</p>
+<p>当指向一个对象的最后一个shared_ptr被销毁时，shared_ptr类会自动销毁此对象，它是通过析构函数完成销毁工作的。当动态对象不再被使用时，shared_ptr类还会自动释放动态对象，这一特性使得动态内存的使用变得非常容易。</p>
 <blockquote>
-<p>Next与NextLine的区别<br>next():<br>1、一定要读取到有效字符后才可以结束输入。<br>2、对输入有效字符之前遇到的空白，next() 方法会自动将其去掉。<br>3、只有输入有效字符后才将其后面输入的空白作为分隔符或者结束符。<br>next() 不能得到带有空格的字符串。<br><br>nextLine()：<br>1、以Enter为结束符,也就是说 nextLine()方法返回的是输入回车之前的所有字符。<br>2、可以获得空白。</p>
+<p>注意：shared_ptr有可能出现循环引用的情况，无法正确释放内存。<br>解决方案：weak_ptr</p>
+<blockquote>
+<p>将出现循环引用的shared_ptr保存下来，并且weak_prt中不增加引用计数。</p>
 </blockquote>
+</blockquote>
+<h4><span id="share_ptr实现">share_ptr实现</span></h4><p>模拟：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="class"><span class="keyword">class</span> <span class="title">T</span>&gt;</span></span><br><span class="line"><span class="class"><span class="title">class</span> <span class="title">Shared_ptr</span>&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    Shared_ptr(T* ptr) : _ptr(ptr); _pCount(<span class="keyword">new</span> <span class="keyword">int</span>(<span class="number">1</span>))&#123;&#125;</span><br><span class="line"></span><br><span class="line">    Shared_ptr&amp;(<span class="keyword">const</span> Shared_ptr&amp; sp): _ptr(sp,_ptr); _pCount(sp._pCount)&#123;</span><br><span class="line">        (*_pCount)++;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    Shared_ptr&amp; <span class="keyword">operator</span> = (Shared_ptr&lt;T&gt;&amp; sp)&#123;</span><br><span class="line">        <span class="keyword">if</span>(<span class="keyword">this</span> != sp)&#123;</span><br><span class="line">            <span class="keyword">if</span>(--(*pCount) == <span class="number">0</span>)&#123;</span><br><span class="line">                <span class="keyword">delete</span> _ptr;</span><br><span class="line">                <span class="keyword">delete</span> _pCount;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            _ptr = sp._ptr;</span><br><span class="line">            _pCount = sp._pCount;</span><br><span class="line">            (*_pCount)++;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> *<span class="keyword">this</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ~Shared_ptr()&#123;</span><br><span class="line">        <span class="keyword">if</span>(--(*pCount) == <span class="number">0</span>)&#123;</span><br><span class="line">            <span class="keyword">delete</span> _ptr;</span><br><span class="line">            <span class="keyword">delete</span> _pCount;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    T&amp; <span class="keyword">operator</span>*()&#123;</span><br><span class="line">        <span class="keyword">return</span> *_ptr;</span><br><span class="line">    &#125;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    T* _ptr;</span><br><span class="line">    <span class="keyword">int</span> *_pCount;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4><span id="unique_ptr">Unique_ptr</span></h4><p>某个时刻只能有一个unique_ptr指向一个给定对象，由于一个unique_ptr拥有它指向的对象，因此unique_ptr不支持普通的拷贝或赋值操作。</p>
 
       
     </div>
@@ -384,6 +387,18 @@
 
     <footer class="post-footer">
       
+        <div class="post-tags">
+          
+            <a href="/tags/C/" rel="tag"># C++</a>
+          
+            <a href="/tags/OS/" rel="tag"># OS</a>
+          
+            <a href="/tags/Concurrency/" rel="tag"># Concurrency</a>
+          
+            <a href="/tags/Lock/" rel="tag"># Lock</a>
+          
+        </div>
+      
 
       
       
@@ -393,8 +408,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/03/10/DB-ch4/" rel="next" title="Notes for DB Principle- Intermediate SQL">
-                <i class="fa fa-chevron-left"></i> Notes for DB Principle- Intermediate SQL
+              <a href="/2019/03/27/basic/lock_between_threads/" rel="next" title="Thread Locks in Cpp">
+                <i class="fa fa-chevron-left"></i> Thread Locks in Cpp
               </a>
             
           </div>
@@ -402,10 +417,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/03/17/JVM_basic/" rel="prev" title="Java Learning note-1 (JVM-JMM)">
-                Java Learning note-1 (JVM-JMM) <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -537,7 +548,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#undefined"><span class="nav-number">1.</span> <span class="nav-text">Java_Learning Note -2</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#undefined"><span class="nav-number">1.1.</span> <span class="nav-text">Hashmap/Hashtable/ConcurrentHashMap</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#undefined"><span class="nav-number">1.2.</span> <span class="nav-text">Stream/IO</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">1.2.1.</span> <span class="nav-text">控制台输入</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#undefined"><span class="nav-number">1.</span> <span class="nav-text">智能指针</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#undefined"><span class="nav-number">1.0.1.</span> <span class="nav-text">share_ptr</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#undefined"><span class="nav-number">1.0.2.</span> <span class="nav-text">share_ptr实现</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#undefined"><span class="nav-number">1.0.3.</span> <span class="nav-text">Unique_ptr</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>
