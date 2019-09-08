@@ -5,7 +5,7 @@
   
 
 
-<html class="theme-next muse use-motion" lang="zh-Hans">
+<html class="theme-next muse use-motion" lang="en">
 <head>
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -79,13 +79,16 @@
 
 
 
+<meta name="description" content="My Blog to document some of my notes">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Salton&#39;s">
 <meta property="og:url" content="https://saltonz.github.io/index.html">
 <meta property="og:site_name" content="Salton&#39;s">
-<meta property="og:locale" content="zh-Hans">
+<meta property="og:description" content="My Blog to document some of my notes">
+<meta property="og:locale" content="en">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Salton&#39;s">
+<meta name="twitter:description" content="My Blog to document some of my notes">
 
 
 
@@ -101,7 +104,7 @@
     motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
     duoshuo: {
       userId: '0',
-      author: '博主'
+      author: 'Author'
     },
     algolia: {
       applicationID: '',
@@ -133,7 +136,7 @@
 
 </head>
 
-<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
 
   
   
@@ -182,7 +185,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
-            首页
+            Home
           </a>
         </li>
       
@@ -192,7 +195,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
             
-            标签
+            Tags
           </a>
         </li>
       
@@ -202,7 +205,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
             
-            分类
+            Categories
           </a>
         </li>
       
@@ -212,7 +215,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
-            归档
+            Archives
           </a>
         </li>
       
@@ -278,9 +281,9 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">发表于</span>
+                <span class="post-meta-item-text">Posted on</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-27T00:00:00-04:00">
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-03-27T00:00:00-04:00">
                 2019-03-27
               </time>
             
@@ -299,7 +302,7 @@
                 <i class="fa fa-folder-o"></i>
               </span>
               
-                <span class="post-meta-item-text">分类于</span>
+                <span class="post-meta-item-text">In</span>
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
@@ -341,8 +344,7 @@
 
       
         
-          
-            <h2><span id="智能指针">智能指针</span></h2><p>在c++中，经常使用new,delete在堆上动态分配内存</p>
+          <h2 id="智能指针"><a href="#智能指针" class="headerlink" title="智能指针"></a>智能指针</h2><p>在c++中，经常使用new,delete在堆上动态分配内存</p>
 <ul>
 <li>new: 为对象分配一个空间并返回指向该空间的指针</li>
 <li>delete: 指向一个动态独享的指针，销毁对象，并释放与之关联的内存</li>
@@ -353,27 +355,13 @@
 <li>二、在内存仍然有指针引用的情况下释放，产生引用非法内存的指针</li>
 </ul>
 <p>C++11中引入了智能指针：share_ptr允许多个指针指向一个对象，unique_ptr则独占所指向的对象。</p>
-<h4><span id="share_ptr">share_ptr</span></h4><p>函数：</p>
-<ul>
-<li><p>make_shared\<t>(args) 返回一个shared_ptr，指向一个动态分配的类型为T的对象，使用args初始化该对象</t></p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">shared_ptr</span>&lt;<span class="keyword">int</span>&gt; p3 = make_shared&lt;<span class="keyword">int</span>&gt;(<span class="number">42</span>);</span><br><span class="line"><span class="built_in">shared_ptr</span>&lt;<span class="built_in">string</span>&gt; p4 = make_shared&lt;<span class="built_in">string</span>&gt;(<span class="number">10</span>,<span class="string">'9'</span>);</span><br><span class="line"><span class="built_in">shared_ptr</span>&lt;<span class="keyword">int</span>&gt; p5 = make_shared&lt;<span class="keyword">int</span>&gt;();</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>shared_ptr<t>p(q) p是shared_ptr q的拷贝，此操作会递增q中的计数器。</t></p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">auto</span> p = make_shared&lt;<span class="built_in">string</span>&gt;(<span class="number">10</span>,<span class="string">'9'</span>);</span><br><span class="line"><span class="function"><span class="keyword">auto</span> <span class="title">q</span><span class="params">(p)</span></span>;</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<p>我们可以认为每个shared_ptr都有一个关联的计数器，通常称其为引用计数，无论何时我们拷贝一个shared_ptr，计数器都会递增。当我们给shared_ptr赋予一个新值或是shared_ptr被销毁（例如一个局部的shared_ptr离开其作用域）时，计数器就会递减，一旦一个shared_ptr的计数器变为0,它就会自动释放自己所管理的对象。</p>
-<p>当指向一个对象的最后一个shared_ptr被销毁时，shared_ptr类会自动销毁此对象，它是通过析构函数完成销毁工作的。当动态对象不再被使用时，shared_ptr类还会自动释放动态对象，这一特性使得动态内存的使用变得非常容易。</p>
-<blockquote>
-<p>注意：shared_ptr有可能出现循环引用的情况，无法正确释放内存。<br>解决方案：weak_ptr</p>
-<blockquote>
-<p>将出现循环引用的shared_ptr保存下来，并且weak_prt中不增加引用计数。</p>
-</blockquote>
-</blockquote>
-<h4><span id="share_ptr实现">share_ptr实现</span></h4><p>模拟：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="class"><span class="keyword">class</span> <span class="title">T</span>&gt;</span></span><br><span class="line"><span class="class"><span class="title">class</span> <span class="title">Shared_ptr</span>&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    Shared_ptr(T* ptr) : _ptr(ptr); _pCount(<span class="keyword">new</span> <span class="keyword">int</span>(<span class="number">1</span>))&#123;&#125;</span><br><span class="line"></span><br><span class="line">    Shared_ptr&amp;(<span class="keyword">const</span> Shared_ptr&amp; sp): _ptr(sp,_ptr); _pCount(sp._pCount)&#123;</span><br><span class="line">        (*_pCount)++;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    Shared_ptr&amp; <span class="keyword">operator</span> = (Shared_ptr&lt;T&gt;&amp; sp)&#123;</span><br><span class="line">        <span class="keyword">if</span>(<span class="keyword">this</span> != sp)&#123;</span><br><span class="line">            <span class="keyword">if</span>(--(*pCount) == <span class="number">0</span>)&#123;</span><br><span class="line">                <span class="keyword">delete</span> _ptr;</span><br><span class="line">                <span class="keyword">delete</span> _pCount;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            _ptr = sp._ptr;</span><br><span class="line">            _pCount = sp._pCount;</span><br><span class="line">            (*_pCount)++;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> *<span class="keyword">this</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ~Shared_ptr()&#123;</span><br><span class="line">        <span class="keyword">if</span>(--(*pCount) == <span class="number">0</span>)&#123;</span><br><span class="line">            <span class="keyword">delete</span> _ptr;</span><br><span class="line">            <span class="keyword">delete</span> _pCount;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    T&amp; <span class="keyword">operator</span>*()&#123;</span><br><span class="line">        <span class="keyword">return</span> *_ptr;</span><br><span class="line">    &#125;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    T* _ptr;</span><br><span class="line">    <span class="keyword">int</span> *_pCount;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h4><span id="unique_ptr">Unique_ptr</span></h4><p>某个时刻只能有一个unique_ptr指向一个给定对象，由于一个unique_ptr拥有它指向的对象，因此unique_ptr不支持普通的拷贝或赋值操作。</p>
-
-          
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/03/27/basic/smart_ptr/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -449,9 +437,9 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">发表于</span>
+                <span class="post-meta-item-text">Posted on</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-27T00:00:00-04:00">
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-03-27T00:00:00-04:00">
                 2019-03-27
               </time>
             
@@ -470,7 +458,7 @@
                 <i class="fa fa-folder-o"></i>
               </span>
               
-                <span class="post-meta-item-text">分类于</span>
+                <span class="post-meta-item-text">In</span>
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
@@ -512,44 +500,19 @@
 
       
         
-          
-            <h2><span id="c-线程锁">C++ 线程锁</span></h2><h4><span id="1-互斥锁mutex">1. 互斥锁（Mutex）</span></h4><p>互斥锁是一个控制多个线程对他们共享资源访问的信号量。 如：线程池中有多个空闲线程和一个任务队列，所有线程都应该使用互斥锁互斥访问该任务队列，避免多个线程同时访问任务队列发生错乱。</p>
+          <h2 id="C-线程锁"><a href="#C-线程锁" class="headerlink" title="C++ 线程锁"></a>C++ 线程锁</h2><h4 id="1-互斥锁（Mutex）"><a href="#1-互斥锁（Mutex）" class="headerlink" title="1. 互斥锁（Mutex）"></a>1. 互斥锁（Mutex）</h4><p>互斥锁是一个控制多个线程对他们共享资源访问的信号量。 如：线程池中有多个空闲线程和一个任务队列，所有线程都应该使用互斥锁互斥访问该任务队列，避免多个线程同时访问任务队列发生错乱。</p>
 <p>在某一时刻，只有一个线程能够访问互斥锁，在互斥锁释放之前所有其他线程都不能获取该互斥锁</p>
 <blockquote>
 <p>头文件:\<mutex><br>类型:std::mutex</mutex></p>
 </blockquote>
 <p>例子：<br>调用lock/unlock函数加锁<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;boost/thread/mutex.hpp&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;boost/thread/thread.hpp&gt;</span></span></span><br><span class="line"> </span><br><span class="line">boost::mutex mutex;</span><br><span class="line"><span class="keyword">int</span> count = <span class="number">0</span>;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Counter</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  mutex.lock();</span><br><span class="line"> </span><br><span class="line">  <span class="keyword">int</span> i = ++count;</span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"count == "</span> &lt;&lt; i &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line"> </span><br><span class="line"></span><br><span class="line">  mutex.unlock();  <span class="comment">// 如果前面的代码有异常，就调用不到unlock。</span></span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  boost::thread_group threads;  <span class="comment">// 创建一组线程。</span></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">4</span>; ++i) &#123;</span><br><span class="line">    threads.create_thread(&amp;Counter);</span><br><span class="line">  &#125;</span><br><span class="line"> </span><br><span class="line">  threads.join_all();  <span class="comment">// 等待所有线程结束。</span></span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>例子：<br>使用lock_guard自动加锁<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;boost/thread/lock_guard.hpp&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;boost/thread/mutex.hpp&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;boost/thread/thread.hpp&gt;</span></span></span><br><span class="line"> </span><br><span class="line">boost::mutex mutex;</span><br><span class="line"><span class="keyword">int</span> count = <span class="number">0</span>;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Counter</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="comment">// lock_guard 在构造函数里加锁，在析构函数里解锁。</span></span><br><span class="line">  boost::lock_guard&lt;boost::mutex&gt; lock(mutex);</span><br><span class="line"> </span><br><span class="line">  <span class="keyword">int</span> i = ++count;</span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"count == "</span> &lt;&lt; i &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  boost::thread_group threads;</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">4</span>; ++i) &#123;</span><br><span class="line">    threads.create_thread(&amp;Counter);</span><br><span class="line">  &#125;</span><br><span class="line"> </span><br><span class="line">  threads.join_all();</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h4><span id="2条件变量-ltcondition_variablegt">2.条件变量 &lt;condition_variable&gt;</span></h4><p>condition_variable类是一个同步原语，可以被用来阻塞一个线程或者同时阻塞多个线程，直到另一个线程既修改了共享变量（即“条件”)，也做了通知。</p>
-<blockquote>
-<p>想要修改共享变量（即“条件”）的线程必须：</p>
-<ol>
-<li>获得一个std::mutex(一般来说是通过std::lock_guard获得)</li>
-<li>当持有锁的时候，执行修改动作</li>
-<li>对std::condition_variable执行notify_one或notify_all(当做notify动作时，不必持有锁)</li>
-</ol>
-<p>即使共享变量是原子性的，它也必须在mutex的保护下被修改，这是为了能够将改动正确发布到正在等待的线程。</p>
-</blockquote>
-<blockquote>
-<p>任意要等待std::condition_variable的线程必须：</p>
-<ol>
-<li>获取std::unique_lock<a href="std::mutex" target="_blank" rel="noopener">std::mutex</a>，这个mutex正是用来保护共享变量（即“条件”）的</li>
-<li>执行wait, wait_for或者wait_until. 这些等待动作原子性地释放mutex，并使得线程的执行暂停</li>
-<li>当获得条件变量的通知，或者超时，或者一个虚假的唤醒，那么线程就会被唤醒，并且获得mutex. 然后线程应该检查条件是否成立，如果是虚假唤醒，就继续等待。</li>
-</ol>
-</blockquote>
-<p>例子：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">    1. wait()函数的内部实现是：先释放互斥量的锁，然后阻塞,以等待条件为真；</span></span><br><span class="line"><span class="comment">    2. notify系列函数需在unlock之后再被调用。</span></span><br><span class="line"><span class="comment">    3. 套路是：</span></span><br><span class="line"><span class="comment">        a. A线程拿住锁，然后wait,此时已经释放锁，只是阻塞了在等待条件为真；</span></span><br><span class="line"><span class="comment">        b. B线程拿住锁，做一些业务处理，然后令条件为真，释放锁，再调用notify函数；</span></span><br><span class="line"><span class="comment">        c. A线程被唤醒，接着运行。</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"> </span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;thread&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;mutex&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;condition_variable&gt;</span></span></span><br><span class="line"> </span><br><span class="line"><span class="built_in">std</span>::mutex m;</span><br><span class="line"><span class="built_in">std</span>::condition_variable cv;</span><br><span class="line"><span class="built_in">std</span>::<span class="built_in">string</span> data;</span><br><span class="line"><span class="keyword">bool</span> ready = <span class="literal">false</span>;</span><br><span class="line"><span class="keyword">bool</span> processed = <span class="literal">false</span>;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">worker_thread</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// Wait until main() sends data</span></span><br><span class="line">        <span class="built_in">std</span>::unique_lock&lt;<span class="built_in">std</span>::mutex&gt; lk(m);</span><br><span class="line">        cv.wait(lk, []&#123;<span class="keyword">return</span> ready;&#125;);</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">std</span>::unique_lock&lt;<span class="built_in">std</span>::mutex&gt; lk(m);</span><br><span class="line">        <span class="comment">// after the wait, we own the lock.</span></span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"Worker thread is processing data\n"</span>;</span><br><span class="line">        data += <span class="string">" after processing"</span>;</span><br><span class="line">     </span><br><span class="line">        <span class="comment">// Send data back to main()</span></span><br><span class="line">        processed = <span class="literal">true</span>;</span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"Worker thread signals data processing completed\n"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    cv.notify_one();</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">std</span>::<span class="function">thread <span class="title">worker</span><span class="params">(worker_thread)</span></span>;</span><br><span class="line"> </span><br><span class="line">    data = <span class="string">"Example data"</span>;</span><br><span class="line">    <span class="comment">// send data to the worker thread</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">std</span>::unique_lock&lt;<span class="built_in">std</span>::mutex&gt; lk(m);</span><br><span class="line">        ready = <span class="literal">true</span>;</span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"main() signals data ready for processing\n"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    cv.notify_one();</span><br><span class="line"> </span><br><span class="line">    <span class="comment">// wait for the worker</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">std</span>::unique_lock&lt;<span class="built_in">std</span>::mutex&gt; lk(m);</span><br><span class="line">        cv.wait(lk, []&#123;<span class="keyword">return</span> processed;&#125;);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"Back in main(), data = "</span> &lt;&lt; data &lt;&lt; <span class="string">'\n'</span>; </span><br><span class="line">    worker.join();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<blockquote>
-<p>输出：<br>main() signals data ready for processing<br>Worker thread is processing data<br>Worker thread signals data processing completed<br>Back in main(), data = Example data after processing</p>
-</blockquote>
-<h4><span id="3自旋锁">3.自旋锁</span></h4><p>假设双核计算机有两个处理器core1,core2; 计算机上正在运行两个共享资源的线程T1,T2,分别在core1, core2中。</p>
-<p><strong>互斥锁</strong>是一种<strong>sleep-waiting</strong>的锁，假设线程T1获取互斥锁并且正在core1上运行时，线程T2也想要获取互斥锁，但是由于T1正在使用互斥锁使得T2被阻塞。当T2处于阻塞状态时，T2被放入到等待队列中去，处理器core2会去处理其他任务而不必一直等待（忙等）。</p>
-<p><strong>自旋锁</strong>是一种<strong>busy-waiting</strong>的锁，如果T1正在使用自旋锁，而T2也去申请这个自旋锁，此时T2肯定得不到这个自旋锁。与互斥锁相反的是，此时运行T2的处理器core2会一直不断地循环检查锁是否可用（自旋锁请求），直到获取到这个自旋锁为止。</p>
-<p>如果一个线程想要获取一个被使用的自旋锁，那么它会一致占用CPU请求这个自旋锁使得CPU不能去做其他的事情，直到获取这个锁为止，这就是“自旋”的含义。</p>
-<p><strong>在加锁时间短暂的环境下会极大的提高效率。但如果加锁时间过长，则会非常浪费CPU资源</strong></p>
-<p><a href="https://blog.csdn.net/fanyun_01/article/details/79406368" target="_blank" rel="noopener">https://blog.csdn.net/fanyun_01/article/details/79406368</a></p>
-
-          
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/03/27/basic/lock_between_threads/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -625,9 +588,9 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">发表于</span>
+                <span class="post-meta-item-text">Posted on</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-26T00:00:00-04:00">
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-03-26T00:00:00-04:00">
                 2019-03-26
               </time>
             
@@ -646,7 +609,7 @@
                 <i class="fa fa-folder-o"></i>
               </span>
               
-                <span class="post-meta-item-text">分类于</span>
+                <span class="post-meta-item-text">In</span>
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
@@ -691,8 +654,8 @@
           <h2 id="OverWrite-Rule-of-cmp-function-in-C"><a href="#OverWrite-Rule-of-cmp-function-in-C" class="headerlink" title="OverWrite Rule of cmp function in C++"></a>OverWrite Rule of cmp function in C++</h2><h2 id="C-重载cmp"><a href="#C-重载cmp" class="headerlink" title="C++ 重载cmp"></a>C++ 重载cmp</h2><h3 id="void-sort-iterator-start-iterator-end-StrictWeakOrdering-cmp"><a href="#void-sort-iterator-start-iterator-end-StrictWeakOrdering-cmp" class="headerlink" title="void sort(iterator start, iterator end, StrictWeakOrdering cmp);"></a>void sort(iterator start, iterator end, StrictWeakOrdering cmp);</h3><p>函数标准声明：<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">RandomAccessIterator</span>, <span class="title">class</span> <span class="title">Compare</span>&gt;</span></span><br><span class="line"><span class="class"><span class="title">void</span> <span class="title">sort</span> (<span class="title">RandomAccessIterator</span> <span class="title">first</span>, <span class="title">RandomAccessIterator</span> <span class="title">last</span>, <span class="title">Compare</span> <span class="title">comp</span>);</span></span><br></pre></td></tr></table></figure></p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2019/03/26/basic/overwrite_cmp/#meer" rel="contents">
-              阅读全文 &raquo;
+            <a class="btn" href="/2019/03/26/basic/overwrite_cmp/#more" rel="contents">
+              Read more &raquo;
             </a>
           </div>
           <!--/noindex-->
@@ -771,9 +734,9 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">发表于</span>
+                <span class="post-meta-item-text">Posted on</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-26T00:00:00-04:00">
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-03-26T00:00:00-04:00">
                 2019-03-26
               </time>
             
@@ -792,7 +755,7 @@
                 <i class="fa fa-folder-o"></i>
               </span>
               
-                <span class="post-meta-item-text">分类于</span>
+                <span class="post-meta-item-text">In</span>
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
@@ -842,8 +805,8 @@
 <p>running （R）运行状态，该状态不只是指程序正在运行，还包括准备运行的状态。<br>sleeping （S）可中断睡眠状态 ，<br>disk sleeping（D）不可中断睡眠状态，系统的休眠等待，不可用户打断，有特殊方式唤醒<br>stopped（T）停止状态，通过发送sigstop信号停止，可以通过发送sigcont信号继续。<br>tracing stop（t）跟踪状态<br>dead（X）死亡状态，是一个返回状态，时间很短，<br>zombie（Z）僵尸状态，子进程先于父进程退出，而且父进程不关心子进程的退出状态，从而形成。<br>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2019/03/26/basic/Thread_Process/#meer" rel="contents">
-              阅读全文 &raquo;
+            <a class="btn" href="/2019/03/26/basic/Thread_Process/#more" rel="contents">
+              Read more &raquo;
             </a>
           </div>
           <!--/noindex-->
@@ -922,9 +885,9 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">发表于</span>
+                <span class="post-meta-item-text">Posted on</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-22T00:00:00-04:00">
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-03-22T00:00:00-04:00">
                 2019-03-22
               </time>
             
@@ -943,7 +906,7 @@
                 <i class="fa fa-folder-o"></i>
               </span>
               
-                <span class="post-meta-item-text">分类于</span>
+                <span class="post-meta-item-text">In</span>
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
@@ -991,819 +954,8 @@
 <li>在类的构造函数中动态地分配了内存，但在析构函数中没有释放内存<h4 id="没有正确地清除嵌套的对象指针"><a href="#没有正确地清除嵌套的对象指针" class="headerlink" title="没有正确地清除嵌套的对象指针"></a>没有正确地清除嵌套的对象指针</h4><br>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2019/03/22/basic/Memory Leak of C++/#meer" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://saltonz.github.io/2019/03/20/Cryptographybasic4/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Salton Zhao">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Salton's">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/03/20/Cryptographybasic4/" itemprop="url">Diffie Hellman Algorithm</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-20T00:00:00-04:00">
-                2019-03-20
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Network-Security/" itemprop="url" rel="index">
-                    <span itemprop="name">Network Security</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1><span id="diffie-hellman">Diffie-Hellman</span></h1><p><strong>Purpose:</strong> Enable two users to exchange a secret key securely that then can be used for subsequent encryption of messages </p>
-<p><strong>General idea:</strong> it is easy to calculate exponentials modulo a prime, but it is very difficult to calculate discrete logarithms.</p>
-<p><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Diffie-Hellman-Schl%C3%BCsselaustausch.svg/1200px-Diffie-Hellman-Schl%C3%BCsselaustausch.svg.png" alt=""></p>
-<p>As in the picture, Alice and Bob generate secret key K using Diffie-Hellman Algorithm.</p>
-<blockquote>
-<p>g,p are public information<br>a,b are secret information<br>$A=g^a mod(p)$<br>$B=g^b mod(p)$<br>$K=B^a mod(p)=A^b mod(p)$</p>
-</blockquote>
-<h1><span id="risk-of-d-h-algorithm">Risk of D-H algorithm</span></h1><p><img src="https://images2018.cnblogs.com/blog/653357/201805/653357-20180509203733832-1457088379.png" alt=""><br><img src="https://images2018.cnblogs.com/blog/653357/201805/653357-20180509204257982-320719224.png" alt=""></p>
-<p>In this situation, Mallory is an attacker between Alice and Bob start a Middle man attack.</p>
-<p>By modify the communication between Alice and Bob, Alice is in fact have the secret key between Alice and Mallory, while Bob have the secret key between Bob and Mallory.</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> math</span><br><span class="line"><span class="keyword">import</span> random</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">judge_prime</span><span class="params">(p)</span>:</span></span><br><span class="line"><span class="comment">#判断质数</span></span><br><span class="line">	<span class="keyword">if</span> p &lt;= <span class="number">1</span>:</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">False</span></span><br><span class="line">	i = <span class="number">2</span></span><br><span class="line">	<span class="keyword">while</span> i * i &lt;= p:</span><br><span class="line">		<span class="keyword">if</span> p % i == <span class="number">0</span>:</span><br><span class="line">			<span class="keyword">return</span> <span class="keyword">False</span></span><br><span class="line">		i += <span class="number">1</span></span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">True</span></span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_generator</span><span class="params">(p)</span>:</span></span><br><span class="line"><span class="comment">#得到所有的原根</span></span><br><span class="line">	a = <span class="number">2</span></span><br><span class="line">	list = []</span><br><span class="line">	<span class="keyword">while</span> a &lt; p:		</span><br><span class="line">		flag = <span class="number">1</span></span><br><span class="line">		<span class="keyword">while</span> flag != p:</span><br><span class="line">			<span class="keyword">if</span> (a ** flag) % p == <span class="number">1</span>:</span><br><span class="line">				<span class="keyword">break</span></span><br><span class="line">			flag += <span class="number">1</span></span><br><span class="line">		<span class="keyword">if</span> flag == (p - <span class="number">1</span>):</span><br><span class="line">			list.append(a)	</span><br><span class="line">		a += <span class="number">1</span></span><br><span class="line">	<span class="keyword">return</span> list</span><br><span class="line"> </span><br><span class="line"><span class="comment">#A，B得到各自的计算数	</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_calculation</span><span class="params">(p, a, X)</span>:</span></span><br><span class="line">	Y = (a ** X) % p</span><br><span class="line">	<span class="keyword">return</span> Y</span><br><span class="line"> </span><br><span class="line"><span class="comment">#A，B得到交换计算数后的密钥	</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_key</span><span class="params">(X, Y, p)</span>:</span></span><br><span class="line">	key = (Y ** X) % p</span><br><span class="line">	<span class="keyword">return</span> key</span><br><span class="line">	</span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">	</span><br><span class="line">	<span class="comment">#得到规定的素数</span></span><br><span class="line">	flag = <span class="keyword">False</span></span><br><span class="line">	<span class="keyword">while</span> flag == <span class="keyword">False</span>:</span><br><span class="line">		print(<span class="string">'Please input your number(It must be a prime!): '</span>, end = <span class="string">''</span>)</span><br><span class="line">		p = input()</span><br><span class="line">		p = int(p)</span><br><span class="line">		flag = judge_prime(p)</span><br><span class="line">	print(str(p) + <span class="string">' is a prime! '</span>)</span><br><span class="line">	</span><br><span class="line">	<span class="comment">#得到素数的一个原根</span></span><br><span class="line">	list = get_generator(p)</span><br><span class="line">	print(str(p) + <span class="string">' 的一个原根为：'</span>, end = <span class="string">''</span>)</span><br><span class="line">	print(list[<span class="number">-1</span>])</span><br><span class="line">	print(<span class="string">'------------------------------------------------------------------------------'</span>)</span><br><span class="line">	</span><br><span class="line">	<span class="comment">#得到A的私钥</span></span><br><span class="line">	XA = random.randint(<span class="number">0</span>, p<span class="number">-1</span>)</span><br><span class="line">	print(<span class="string">'A随机生成的私钥为：%d'</span> % XA)</span><br><span class="line">	</span><br><span class="line">	<span class="comment">#得到B的私钥</span></span><br><span class="line">	XB = random.randint(<span class="number">0</span>, p<span class="number">-1</span>)</span><br><span class="line">	print(<span class="string">'B随机生成的私钥为：%d'</span> % XB)</span><br><span class="line">	print(<span class="string">'------------------------------------------------------------------------------'</span>)</span><br><span class="line">	</span><br><span class="line">	<span class="comment">#得待A的计算数</span></span><br><span class="line">	YA = get_calculation(p, int(list[<span class="number">-1</span>]), XA)</span><br><span class="line">	print(<span class="string">'A的计算数为：%d'</span> % YA)</span><br><span class="line">	</span><br><span class="line">	<span class="comment">#得到B的计算数</span></span><br><span class="line">	YB = get_calculation(p, int(list[<span class="number">-1</span>]), XB)</span><br><span class="line">	print(<span class="string">'B的计算数为：%d'</span> % YB)</span><br><span class="line">	print(<span class="string">'------------------------------------------------------------------------------'</span>)</span><br><span class="line">	</span><br><span class="line">	<span class="comment">#交换后A的密钥</span></span><br><span class="line">	key_A = get_key(XA, YB, p)</span><br><span class="line">	print(<span class="string">'A的生成密钥为：%d'</span> % key_A)</span><br><span class="line">	</span><br><span class="line">	<span class="comment">#交换后B的密钥</span></span><br><span class="line">	key_B = get_key(XB, YA, p)</span><br><span class="line">	print(<span class="string">'B的生成密钥为：%d'</span> % key_B)</span><br><span class="line">	print(<span class="string">'---------------------------True or False------------------------------------'</span>)</span><br><span class="line">	</span><br><span class="line">	print(key_A == key_B)</span><br></pre></td></tr></table></figure>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://saltonz.github.io/2019/03/19/Cryptgraphybasic2/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Salton Zhao">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Salton's">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/03/19/Cryptgraphybasic2/" itemprop="url">Cipher Block Mode of Opertion</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-19T00:00:00-04:00">
-                2019-03-19
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Network-Security/" itemprop="url" rel="index">
-                    <span itemprop="name">Network Security</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1><span id="cipher-block-mode-of-operation">Cipher Block Mode of Operation</span></h1><p><strong>ECB-Electronic Codebook Mode</strong><br>Block of plaintext will be encrypted by the same key and directly become the cipher block.<br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/ECB_encryption.svg/601px-ECB_encryption.svg.png" alt=""></p>
-<ul>
-<li>特点：明文与密文一一对应，故重复的明文对应重复的密文。 只要观察一下密文就能知道明文中存在怎样的重复组合， 并可以此为线索来破译密码， 因此ECB模式是存在一定风险的。</li>
-<li>对ECB模式的攻击：<ul>
-<li>若转账请求包括三部分：<ul>
-<li>A-&gt;付款人账号</li>
-<li>B-&gt;收款人账号</li>
-<li>C-&gt;转账金额</li>
-</ul>
-</li>
-<li>若攻击者调换A，B，顺序，则在未破译密码的情况下操纵了明文</li>
-</ul>
-</li>
-</ul>
-<h2><span id="cbc-cipher-block-chaining-mode"><strong>CBC-Cipher Block Chaining Mode</strong></span></h2><p>Input to encryption is XOR of current Plaintext block and previous Ciphertext block(initialization vector for the first block).<br>Same key is used for each block.<br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/CBC_encryption.svg/601px-CBC_encryption.svg.png" alt=""><br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/CBC_decryption.svg/601px-CBC_decryption.svg.png" alt=""></p>
-<ul>
-<li>特点： <ul>
-<li>加密之前一定会与前一个密文分组进行异或运算，因此同样的明文加密得到的密文未必相同，故避免了ECB模式的缺陷</li>
-<li>加密过程中无法单独对一个中间的明文分组进行加密</li>
-<li>解密过程中，如果有一个密文分组损坏，最多两个明文分组会受到影响。如果密文分组中有比特丢失，则缺失比特位后面全部分组都无法解密</li>
-</ul>
-</li>
-<li>对CBC模式的攻击：<ul>
-<li><strong>填充提示攻击</strong><br>是一种利用分组密码中填充部分来进行攻击的方法。在分组密码中，当明文长度不为分组长度的整数倍时，需要在最后一个分组中填充一些数据使其凑满一个分组长度。在填充提示攻击中，攻击者会反复发送一段密文，每次发送时都对填充数据进行少许改变。由于接收者（服务器）在无法正确解密时会返回一个错误消息，攻击者通过这一错误消息就可以获得一部分与明文相关的信息。这一攻击并不仅限于CBC模式，而是适用所有需要进行分组填充的模式。<br>2014年对SSL3.0 造成了重大影响POODLE攻击实际上就是一种填充示攻击。</li>
-<li><strong>对初始化向量（IV）进行攻击</strong><br>初始化向量（IV）必须使用不可预测的随机数。然而在SSL/TLS的TLS1.0版本协议中，IV并没有使用不可预测的随机数，而是使用上一次CBC模式加密时的最后一个分组。为了防御攻击者对此进行攻击，TLS1.1以上的版本中改为了必须显示传送IV。</li>
-</ul>
-</li>
-</ul>
-<h2><span id="cfb-cipher-feedback-mode"><strong>CFB-Cipher Feedback Mode</strong></span></h2><p>CFB converts block cipher into stream cipher.<br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/CFB_encryption.svg/601px-CFB_encryption.svg.png" alt=""><br><img src="https://www.researchgate.net/profile/Yas_Alsultanny/publication/255581885/figure/fig1/AS:563789780013062@1511429366690/Block-diagram-of-the-encryption-of-the-CFB-mode.png" alt=""></p>
-<ul>
-<li>对CFB模式的攻击：<ul>
-<li>重放攻击：<br>第一天Alice 使用CFB模式向Bob发送了一条信息（五个分组）<br>第二天Alice 向Bob发送了另外一条信息（五个分组）<br>若使用相同的秘钥，<br>攻击者可以截获第一天后四个分组，并将第二天的后四个分组替换成第一天的</li>
-</ul>
-</li>
-</ul>
-<h2><span id="ctr-counter-mode"><strong>CTR-Counter Mode</strong></span></h2><p>CTR also convert block cipher into stream cipher<br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/CTR_encryption_2.svg/601px-CTR_encryption_2.svg.png" alt=""><br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/CTR_decryption_2.svg/601px-CTR_decryption_2.svg.png" alt=""></p>
-<ul>
-<li>特点<ul>
-<li>CTR模式的加密和解密使用了完全相同的模式，因此在程序实现上比较容易</li>
-<li>能够以任意的顺序对分组进行加密解密，也就意味着能够实现并行计算</li>
-</ul>
-</li>
-<li>攻击者<ul>
-<li>可以通过反转密文分组中的某些比特，引起解密后明文中响应比特也发生反转</li>
-</ul>
-</li>
-</ul>
-<h2><span id="ofb-output-feedback-mode"><strong>OFB-Output Feedback Mode</strong></span></h2><p>OFB is similar to CFB, with output of encryption function fed back to the shift register instead of ciphertext.<br>(Also, OFB mode operates on full blocks of plaintext and ciphertext, not on an s-bit subset.)<br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/OFB_encryption.svg/601px-OFB_encryption.svg.png" alt=""></p>
-<ul>
-<li>OFB 与CFB唯一的不同就是Encryption算法的输入<br>CFB Encryption 的输入是前一个密文分组<br>OFB Encryption 的输入时前一个Encryption的输出</li>
-</ul>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://saltonz.github.io/2019/03/19/Cryotgraohybasic1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Salton Zhao">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Salton's">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/03/19/Cryotgraohybasic1/" itemprop="url">Cryptography Basic1</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-19T00:00:00-04:00">
-                2019-03-19
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Network-Security/" itemprop="url" rel="index">
-                    <span itemprop="name">Network Security</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="Cryptography-Basic"><a href="#Cryptography-Basic" class="headerlink" title="Cryptography Basic"></a>Cryptography Basic</h1><p><strong>Cipher</strong>: mathematic process usedfor encryption and decryption by cryptographic systems<br>Classification of cryptographic systems:</p>
-<ol>
-<li>Type of transformation<ul>
-<li>plaintext is transformed to ciphertext by some combination of stages of substitution(置换) and transposition(换位).</li>
-</ul>
-</li>
-<li>Number of Keys<ul>
-<li>Single key used by sender and receiver: symmetric, public key</li>
-<li>Sender and receiver each use different keys: asymmetric, public key</li>
-</ul>
-</li>
-<li>How plaintext is processed<ul>
-<li>One block at a time (block cipher), output block for each input block</li>
-<li>continuously (stream cipher)</li>
-</ul>
-</li>
-</ol>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/03/19/Cryotgraohybasic1/#meer" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://saltonz.github.io/2019/03/17/JVM_basic/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Salton Zhao">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Salton's">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/03/17/JVM_basic/" itemprop="url">Java Learning note-1 (JVM-JMM)</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-17T00:00:00-04:00">
-                2019-03-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java/" itemprop="url" rel="index">
-                    <span itemprop="name">Java</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="Java-Virtual-Machine-JVM"><a href="#Java-Virtual-Machine-JVM" class="headerlink" title="Java Virtual Machine (JVM)"></a>Java Virtual Machine (JVM)</h1><p>The JVM is an abstract computing machine that enables a computer to run a Java program. There are three notions of JVM: <strong>specification</strong> (where working of JVM is specified. But the implementation has been provided by Sun and other companies), <strong>implementation</strong> (known as (JRE) Java Runtime Environment) and <strong>instance</strong> (after writing Java command, to run Java class, an instance of JVM is created).</p>
-<h2 id="JVM-Memory-Model-JMM"><a href="#JVM-Memory-Model-JMM" class="headerlink" title="JVM Memory Model (JMM)"></a>JVM Memory Model (JMM)</h2><p><img src="https://cdn1.howtodoinjava.com/wp-content/uploads/2014/08/JVM-Memory-Area-Parts.jpg" alt=""></p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/03/17/JVM_basic/#meer" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://saltonz.github.io/2019/03/17/java_learning(2)/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Salton Zhao">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Salton's">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/03/17/java_learning(2)/" itemprop="url">Java Learning note-2 (Hashmap & IO)</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-17T00:00:00-04:00">
-                2019-03-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java/" itemprop="url" rel="index">
-                    <span itemprop="name">Java</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="Java-Learning-Note-2"><a href="#Java-Learning-Note-2" class="headerlink" title="Java_Learning Note -2"></a>Java_Learning Note -2</h1><h2 id="Hashmap-Hashtable-ConcurrentHashMap"><a href="#Hashmap-Hashtable-ConcurrentHashMap" class="headerlink" title="Hashmap/Hashtable/ConcurrentHashMap"></a>Hashmap/Hashtable/ConcurrentHashMap</h2><p><strong>Hashtable</strong> </p>
-<ul>
-<li>底层数组+链表实现，无论key还是value都<strong>不能为null</strong>,线程<strong>安全</strong>，Synchronized,效率低</li>
-<li>初始size为11，扩容时newsize = oldsize*2 + 1</li>
-<li>计算index: index = (hash &amp; 0x7FFFFFFF) % tab.length</li>
-</ul>
-<p><strong>HashMap</strong></p>
-<ul>
-<li>底层数组+链表实现，<strong>可以储存null key 和 value</strong>, 线程<strong>不安全</strong></li>
-<li>初始size为16， 扩容newsize = oldsize*2</li>
-<li>扩容针对整个map,每次扩容时原来数组中元素依次重新计算存放位置，并重新插入</li>
-<li>插入元素后判断是否扩容</li>
-<li>当map中元素总数超过Entry数组的75%，触发扩容，为了减小链表长度</li>
-<li>计算index: index = hash &amp; (tab.length-1)
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/03/17/java_learning(2)/#meer" rel="contents">
-              阅读全文 &raquo;
+            <a class="btn" href="/2019/03/22/basic/Memory Leak of C++/#more" rel="contents">
+              Read more &raquo;
             </a>
           </div>
           <!--/noindex-->
@@ -1844,7 +996,7 @@
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1880,7 +1032,7 @@
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
               <p class="site-author-name" itemprop="name">Salton Zhao</p>
-              <p class="site-description motion-element" itemprop="description"></p>
+              <p class="site-description motion-element" itemprop="description">My Blog to document some of my notes</p>
           </div>
 
           <nav class="site-state motion-element">
@@ -1891,7 +1043,7 @@
                 <a href="/archives/">
               
                   <span class="site-state-item-count">17</span>
-                  <span class="site-state-item-name">日志</span>
+                  <span class="site-state-item-name">posts</span>
                 </a>
               </div>
             
@@ -1902,7 +1054,7 @@
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
                   <span class="site-state-item-count">7</span>
-                  <span class="site-state-item-name">分类</span>
+                  <span class="site-state-item-name">categories</span>
                 </a>
               </div>
             
@@ -1913,7 +1065,7 @@
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
                   <span class="site-state-item-count">11</span>
-                  <span class="site-state-item-name">标签</span>
+                  <span class="site-state-item-name">tags</span>
                 </a>
               </div>
             
@@ -1959,7 +1111,7 @@
 </div>
 
 
-  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
 
 
 
@@ -1967,7 +1119,7 @@
 
 
 
-  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
 
 
 
