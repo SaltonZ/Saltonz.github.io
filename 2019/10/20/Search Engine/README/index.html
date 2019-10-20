@@ -79,17 +79,17 @@
 
 
 
-<meta name="description" content="My Blog to document some of my notes">
+<meta name="description" content="12345title: Inverted Index - C++ baseddate: 2019/9/28categories: Information Retrivementtags: [Python, Search Engine, Information Retrivement]author: salton Multi thread crawlerMetrics Priority: relat">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Machine Learning Homework">
-<meta property="og:url" content="https://saltonz.github.io/2018/10/10/Machine-Learning-Homework/index.html">
+<meta property="og:title" content="Salton&#39;s">
+<meta property="og:url" content="https://saltonz.github.io/2019/10/20/Search Engine/README/index.html">
 <meta property="og:site_name" content="Salton&#39;s">
-<meta property="og:description" content="My Blog to document some of my notes">
+<meta property="og:description" content="12345title: Inverted Index - C++ baseddate: 2019/9/28categories: Information Retrivementtags: [Python, Search Engine, Information Retrivement]author: salton Multi thread crawlerMetrics Priority: relat">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2018-10-10T17:56:20.417Z">
+<meta property="og:updated_time" content="2019-10-20T20:37:08.047Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Machine Learning Homework">
-<meta name="twitter:description" content="My Blog to document some of my notes">
+<meta name="twitter:title" content="Salton&#39;s">
+<meta name="twitter:description" content="12345title: Inverted Index - C++ baseddate: 2019/9/28categories: Information Retrivementtags: [Python, Search Engine, Information Retrivement]author: salton Multi thread crawlerMetrics Priority: relat">
 
 
 
@@ -119,13 +119,13 @@
 
 
 
-  <link rel="canonical" href="https://saltonz.github.io/2018/10/10/Machine-Learning-Homework/"/>
+  <link rel="canonical" href="https://saltonz.github.io/2019/10/20/Search Engine/README/"/>
 
 
 
 
 
-  <title>Machine Learning Homework | Salton's</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  <title> | Salton's</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
   
 
 
@@ -252,7 +252,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://saltonz.github.io/2018/10/10/Machine-Learning-Homework/">
+    <link itemprop="mainEntityOfPage" href="https://saltonz.github.io/2019/10/20/Search Engine/README/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Salton Zhao">
@@ -269,7 +269,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Machine Learning Homework</h1>
+          <h1 class="post-title" itemprop="name headline"></h1>
         
 
         <div class="post-meta">
@@ -281,8 +281,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-10-10T13:56:20-04:00">
-                2018-10-10
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-20T16:37:21-04:00">
+                2019-10-20
               </time>
             
 
@@ -319,7 +319,64 @@
       
 
       
-        
+        <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">title: Inverted Index - C++ based</span><br><span class="line">date: 2019/9/28</span><br><span class="line">categories: Information Retrivement</span><br><span class="line">tags: [Python, Search Engine, Information Retrivement]</span><br><span class="line">author: salton</span><br></pre></td></tr></table></figure>
+<h2><span id="multi-thread-crawler">Multi thread crawler</span></h2><h3><span id="metrics">Metrics</span></h3><ul>
+<li><strong>Priority</strong>: related to the uncrawled graph - which one has more hyperline point to or have more score on PageRank</li>
+<li><strong>Novelty</strong>: If a page on a </li>
+<li><strong>Output</strong>: A log with a list of all visited <strong>URLs</strong> in the order they are visited, together with the information such as <strong>size of the page</strong> and <strong>depth</strong> of each page, <strong>priority score</strong> of the page when it was crawled and the <strong>timestamp</strong> of the download.</li>
+</ul>
+<h3><span id="usage">Usage</span></h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">python run.py <span class="string">"[Your Query]"</span> [max_number of pages you want to crawl]</span><br><span class="line"></span><br><span class="line">More than two parameters is invalid.</span><br><span class="line"></span><br><span class="line">e.g: python run.py <span class="string">"Brooklyn parks"</span> 1000</span><br></pre></td></tr></table></figure>
+<h3><span id="env">Env</span></h3><p>Python 3.7</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">requests==2.8.0</span><br><span class="line">BeautifulSoup4==4.8.0</span><br><span class="line">lxml==4.4.1</span><br><span class="line">pybloom_live==3.0.0</span><br><span class="line">pymongo==3.9.0</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<h3><span id="key-methods">Key Methods:</span></h3><ol>
+<li><strong>Google API</strong><ul>
+<li>Used to generate the seed of our crawling process</li>
+</ul>
+</li>
+<li><strong>Bloom Filter</strong><ul>
+<li>Used to make sure the same url won’t be crawled twice. Better efficiency than HashMap when number of the result is large, with a possibility of mis-check.<br>To control the mis-check rate, used scalable bloom Filter</li>
+</ul>
+</li>
+<li><strong>Hash Map</strong><ul>
+<li>To identify whether a url is already in the priority queue</li>
+</ul>
+</li>
+<li><strong>Priority Queue</strong><ul>
+<li>To dynamicly update the priority of a page during the process of BFS.</li>
+</ul>
+</li>
+<li><strong>Robot File Parser</strong><ul>
+<li>According to <a href="https://www.robotstxt.org/robotstxt.html" target="_blank" rel="noopener">https://www.robotstxt.org/robotstxt.html</a> , the sites don’t want to be crawled may add this robots.txt on their site. So robot File parser is used to identify the sites don’t want to be crawled.</li>
+</ul>
+</li>
+<li><strong>Multi Thread Processing</strong><ul>
+<li>The bottleneck of web crawler is network IO and local file IO, when facing such IO operations, use multi thread method to accomplish faster crawling speed.</li>
+</ul>
+</li>
+<li><strong>Thread Pool</strong><ul>
+<li>Lots of threads will be created and destroyed frequently, with thread pool we can save time on process create and destroy for better efficiency.</li>
+<li>During the test we found that the threadPoolExecuter doesn’t work well with our logic</li>
+</ul>
+</li>
+<li><strong>Asyncio</strong><ul>
+<li>The main bottleneck of crawler is network I/O, and asynchronous computing can fulfill the requirement that a single thread working with many coroutines.</li>
+</ul>
+</li>
+<li><strong>MongoDB</strong><ul>
+<li>fast method to store the pages encountered.</li>
+<li>better organization of each urls’ information.</li>
+</ul>
+</li>
+</ol>
+<h3><span id="logic">Logic</span></h3><p>(To be completed)</p>
+<p>Crawl -&gt; Parse -&gt; Store -&gt; Rank </p>
+<p>Use multi threads method to accelerate. (Tested 3-20 pages per second.)</p>
+<p>Parse: Use Beautiful soup and regular expression to filter out the links</p>
+<p>Store: after parse, store the info to MongoDB</p>
+<p>Rank: at the end of every iteration, calculate the rank of pages in un-crawled subgraph and update their priority in the Priority Queue</p>
+<h3><span id="experiment">Experiment</span></h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">Paris Texas</span><br><span class="line">Crawler started from:    2019-09-26 19:21:18.958819</span><br><span class="line">Crawler finished in:     2019-09-26 20:38:39.886982</span><br><span class="line">Time Consumed:  1:17:20.928163</span><br><span class="line">Number of Sites encountered:  7876</span><br><span class="line">Number of pages crawled:  20000</span><br><span class="line"></span><br><span class="line">brooklyn parks</span><br><span class="line">Crawler started from:    2019-09-27 02:36:56.965808</span><br><span class="line">Crawler finished in:     2019-09-27 03:10:41.745376</span><br><span class="line">Time Consumed:  0:33:44.779568</span><br><span class="line">Number of Sites encountered:  167727</span><br><span class="line">Number of pages crawled:  20000</span><br></pre></td></tr></table></figure>
+
       
     </div>
     
@@ -343,8 +400,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/03/26/hello-world/" rel="next" title="Hello World">
-                <i class="fa fa-chevron-left"></i> Hello World
+              <a href="/2019/10/17/Search Engine/Inverted Index_1/" rel="next" title="">
+                <i class="fa fa-chevron-left"></i> 
               </a>
             
           </div>
@@ -352,10 +409,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/10/11/Leetcode-number_power/" rel="prev" title="How to calculate power of a number">
-                How to calculate power of a number <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -407,8 +460,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -468,6 +530,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#undefined"><span class="nav-number">1.</span> <span class="nav-text">Multi thread crawler</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">1.1.</span> <span class="nav-text">Metrics</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">1.2.</span> <span class="nav-text">Usage</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">1.3.</span> <span class="nav-text">Env</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">1.4.</span> <span class="nav-text">Key Methods:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">1.5.</span> <span class="nav-text">Logic</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">1.6.</span> <span class="nav-text">Experiment</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
