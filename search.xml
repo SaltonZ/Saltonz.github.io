@@ -117,9 +117,9 @@
         <category>Information Retrivement</category>
       </categories>
       <tags>
+        <tag>C++</tag>
         <tag>Search Engine</tag>
         <tag>Information Retrivement</tag>
-        <tag>C++</tag>
       </tags>
   </entry>
   <entry>
@@ -191,51 +191,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Smart_ptr</title>
-    <url>/2019/03/27/basic/smart_ptr/</url>
-    <content><![CDATA[<h2><span id="智能指针">智能指针</span></h2><p>在c++中，经常使用new,delete在堆上动态分配内存</p>
-<ul>
-<li>new: 为对象分配一个空间并返回指向该空间的指针</li>
-<li>delete: 指向一个动态独享的指针，销毁对象，并释放与之关联的内存</li>
-</ul>
-<p>动态分配内存常出现问题</p>
-<ul>
-<li>一、忘记释放内存/内存在运行到delete前中止， 造成内存泄漏</li>
-<li>二、在内存仍然有指针引用的情况下释放，产生引用非法内存的指针</li>
-</ul>
-<p>C++11中引入了智能指针：share_ptr允许多个指针指向一个对象，unique_ptr则独占所指向的对象。</p>
-<a id="more"></a>
-<h4><span id="share_ptr">share_ptr</span></h4><p>函数：</p>
-<ul>
-<li><p>make_shared\<t>(args) 返回一个shared_ptr，指向一个动态分配的类型为T的对象，使用args初始化该对象</t></p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="built_in">shared_ptr</span>&lt;<span class="keyword">int</span>&gt; p3 = make_shared&lt;<span class="keyword">int</span>&gt;(<span class="number">42</span>);</span><br><span class="line"><span class="built_in">shared_ptr</span>&lt;<span class="built_in">string</span>&gt; p4 = make_shared&lt;<span class="built_in">string</span>&gt;(<span class="number">10</span>,<span class="string">'9'</span>);</span><br><span class="line"><span class="built_in">shared_ptr</span>&lt;<span class="keyword">int</span>&gt; p5 = make_shared&lt;<span class="keyword">int</span>&gt;();</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>shared_ptr<t>p(q) p是shared_ptr q的拷贝，此操作会递增q中的计数器。</t></p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">auto</span> p = make_shared&lt;<span class="built_in">string</span>&gt;(<span class="number">10</span>,<span class="string">'9'</span>);</span><br><span class="line"><span class="function"><span class="keyword">auto</span> <span class="title">q</span><span class="params">(p)</span></span>;</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<p>我们可以认为每个shared_ptr都有一个关联的计数器，通常称其为引用计数，无论何时我们拷贝一个shared_ptr，计数器都会递增。当我们给shared_ptr赋予一个新值或是shared_ptr被销毁（例如一个局部的shared_ptr离开其作用域）时，计数器就会递减，一旦一个shared_ptr的计数器变为0,它就会自动释放自己所管理的对象。</p>
-<p>当指向一个对象的最后一个shared_ptr被销毁时，shared_ptr类会自动销毁此对象，它是通过析构函数完成销毁工作的。当动态对象不再被使用时，shared_ptr类还会自动释放动态对象，这一特性使得动态内存的使用变得非常容易。</p>
-<blockquote>
-<p>注意：shared_ptr有可能出现循环引用的情况，无法正确释放内存。<br>解决方案：weak_ptr</p>
-<blockquote>
-<p>将出现循环引用的shared_ptr保存下来，并且weak_prt中不增加引用计数。</p>
-</blockquote>
-</blockquote>
-<h4><span id="share_ptr实现">share_ptr实现</span></h4><p>模拟：<br><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="class"><span class="keyword">class</span> <span class="title">T</span>&gt;</span></span><br><span class="line"><span class="class"><span class="title">class</span> <span class="title">Shared_ptr</span>&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    Shared_ptr(T* ptr) : _ptr(ptr); _pCount(<span class="keyword">new</span> <span class="keyword">int</span>(<span class="number">1</span>))&#123;&#125;</span><br><span class="line"></span><br><span class="line">    Shared_ptr&amp;(<span class="keyword">const</span> Shared_ptr&amp; sp): _ptr(sp,_ptr); _pCount(sp._pCount)&#123;</span><br><span class="line">        (*_pCount)++;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    Shared_ptr&amp; <span class="keyword">operator</span> = (Shared_ptr&lt;T&gt;&amp; sp)&#123;</span><br><span class="line">        <span class="keyword">if</span>(<span class="keyword">this</span> != sp)&#123;</span><br><span class="line">            <span class="keyword">if</span>(--(*pCount) == <span class="number">0</span>)&#123;</span><br><span class="line">                <span class="keyword">delete</span> _ptr;</span><br><span class="line">                <span class="keyword">delete</span> _pCount;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            _ptr = sp._ptr;</span><br><span class="line">            _pCount = sp._pCount;</span><br><span class="line">            (*_pCount)++;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> *<span class="keyword">this</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ~Shared_ptr()&#123;</span><br><span class="line">        <span class="keyword">if</span>(--(*pCount) == <span class="number">0</span>)&#123;</span><br><span class="line">            <span class="keyword">delete</span> _ptr;</span><br><span class="line">            <span class="keyword">delete</span> _pCount;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    T&amp; <span class="keyword">operator</span>*()&#123;</span><br><span class="line">        <span class="keyword">return</span> *_ptr;</span><br><span class="line">    &#125;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    T* _ptr;</span><br><span class="line">    <span class="keyword">int</span> *_pCount;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h4><span id="unique_ptr">Unique_ptr</span></h4><p>某个时刻只能有一个unique_ptr指向一个给定对象，由于一个unique_ptr拥有它指向的对象，因此unique_ptr不支持普通的拷贝或赋值操作。</p>
-]]></content>
-      <categories>
-        <category>basic</category>
-      </categories>
-      <tags>
-        <tag>C++</tag>
-        <tag>OS</tag>
-        <tag>Concurrency</tag>
-        <tag>Lock</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Thread Locks in Cpp</title>
     <url>/2019/03/27/basic/lock_between_threads/</url>
     <content><![CDATA[<h2><span id="c-线程锁">C++ 线程锁</span></h2><h4><span id="1-互斥锁mutex">1. 互斥锁（Mutex）</span></h4><p>互斥锁是一个控制多个线程对他们共享资源访问的信号量。 如：线程池中有多个空闲线程和一个任务队列，所有线程都应该使用互斥锁互斥访问该任务队列，避免多个线程同时访问任务队列发生错乱。</p>
@@ -274,6 +229,51 @@
 <p>如果一个线程想要获取一个被使用的自旋锁，那么它会一致占用CPU请求这个自旋锁使得CPU不能去做其他的事情，直到获取这个锁为止，这就是“自旋”的含义。</p>
 <p><strong>在加锁时间短暂的环境下会极大的提高效率。但如果加锁时间过长，则会非常浪费CPU资源</strong></p>
 <p><a href="https://blog.csdn.net/fanyun_01/article/details/79406368" target="_blank" rel="noopener">https://blog.csdn.net/fanyun_01/article/details/79406368</a></p>
+]]></content>
+      <categories>
+        <category>basic</category>
+      </categories>
+      <tags>
+        <tag>C++</tag>
+        <tag>OS</tag>
+        <tag>Concurrency</tag>
+        <tag>Lock</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Smart_ptr</title>
+    <url>/2019/03/27/basic/smart_ptr/</url>
+    <content><![CDATA[<h2><span id="智能指针">智能指针</span></h2><p>在c++中，经常使用new,delete在堆上动态分配内存</p>
+<ul>
+<li>new: 为对象分配一个空间并返回指向该空间的指针</li>
+<li>delete: 指向一个动态独享的指针，销毁对象，并释放与之关联的内存</li>
+</ul>
+<p>动态分配内存常出现问题</p>
+<ul>
+<li>一、忘记释放内存/内存在运行到delete前中止， 造成内存泄漏</li>
+<li>二、在内存仍然有指针引用的情况下释放，产生引用非法内存的指针</li>
+</ul>
+<p>C++11中引入了智能指针：share_ptr允许多个指针指向一个对象，unique_ptr则独占所指向的对象。</p>
+<a id="more"></a>
+<h4><span id="share_ptr">share_ptr</span></h4><p>函数：</p>
+<ul>
+<li><p>make_shared\<t>(args) 返回一个shared_ptr，指向一个动态分配的类型为T的对象，使用args初始化该对象</t></p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="built_in">shared_ptr</span>&lt;<span class="keyword">int</span>&gt; p3 = make_shared&lt;<span class="keyword">int</span>&gt;(<span class="number">42</span>);</span><br><span class="line"><span class="built_in">shared_ptr</span>&lt;<span class="built_in">string</span>&gt; p4 = make_shared&lt;<span class="built_in">string</span>&gt;(<span class="number">10</span>,<span class="string">'9'</span>);</span><br><span class="line"><span class="built_in">shared_ptr</span>&lt;<span class="keyword">int</span>&gt; p5 = make_shared&lt;<span class="keyword">int</span>&gt;();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>shared_ptr<t>p(q) p是shared_ptr q的拷贝，此操作会递增q中的计数器。</t></p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">auto</span> p = make_shared&lt;<span class="built_in">string</span>&gt;(<span class="number">10</span>,<span class="string">'9'</span>);</span><br><span class="line"><span class="function"><span class="keyword">auto</span> <span class="title">q</span><span class="params">(p)</span></span>;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>我们可以认为每个shared_ptr都有一个关联的计数器，通常称其为引用计数，无论何时我们拷贝一个shared_ptr，计数器都会递增。当我们给shared_ptr赋予一个新值或是shared_ptr被销毁（例如一个局部的shared_ptr离开其作用域）时，计数器就会递减，一旦一个shared_ptr的计数器变为0,它就会自动释放自己所管理的对象。</p>
+<p>当指向一个对象的最后一个shared_ptr被销毁时，shared_ptr类会自动销毁此对象，它是通过析构函数完成销毁工作的。当动态对象不再被使用时，shared_ptr类还会自动释放动态对象，这一特性使得动态内存的使用变得非常容易。</p>
+<blockquote>
+<p>注意：shared_ptr有可能出现循环引用的情况，无法正确释放内存。<br>解决方案：weak_ptr</p>
+<blockquote>
+<p>将出现循环引用的shared_ptr保存下来，并且weak_prt中不增加引用计数。</p>
+</blockquote>
+</blockquote>
+<h4><span id="share_ptr实现">share_ptr实现</span></h4><p>模拟：<br><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="class"><span class="keyword">class</span> <span class="title">T</span>&gt;</span></span><br><span class="line"><span class="class"><span class="title">class</span> <span class="title">Shared_ptr</span>&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    Shared_ptr(T* ptr) : _ptr(ptr); _pCount(<span class="keyword">new</span> <span class="keyword">int</span>(<span class="number">1</span>))&#123;&#125;</span><br><span class="line"></span><br><span class="line">    Shared_ptr&amp;(<span class="keyword">const</span> Shared_ptr&amp; sp): _ptr(sp,_ptr); _pCount(sp._pCount)&#123;</span><br><span class="line">        (*_pCount)++;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    Shared_ptr&amp; <span class="keyword">operator</span> = (Shared_ptr&lt;T&gt;&amp; sp)&#123;</span><br><span class="line">        <span class="keyword">if</span>(<span class="keyword">this</span> != sp)&#123;</span><br><span class="line">            <span class="keyword">if</span>(--(*pCount) == <span class="number">0</span>)&#123;</span><br><span class="line">                <span class="keyword">delete</span> _ptr;</span><br><span class="line">                <span class="keyword">delete</span> _pCount;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            _ptr = sp._ptr;</span><br><span class="line">            _pCount = sp._pCount;</span><br><span class="line">            (*_pCount)++;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> *<span class="keyword">this</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ~Shared_ptr()&#123;</span><br><span class="line">        <span class="keyword">if</span>(--(*pCount) == <span class="number">0</span>)&#123;</span><br><span class="line">            <span class="keyword">delete</span> _ptr;</span><br><span class="line">            <span class="keyword">delete</span> _pCount;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    T&amp; <span class="keyword">operator</span>*()&#123;</span><br><span class="line">        <span class="keyword">return</span> *_ptr;</span><br><span class="line">    &#125;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    T* _ptr;</span><br><span class="line">    <span class="keyword">int</span> *_pCount;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4><span id="unique_ptr">Unique_ptr</span></h4><p>某个时刻只能有一个unique_ptr指向一个给定对象，由于一个unique_ptr拥有它指向的对象，因此unique_ptr不支持普通的拷贝或赋值操作。</p>
 ]]></content>
       <categories>
         <category>basic</category>
