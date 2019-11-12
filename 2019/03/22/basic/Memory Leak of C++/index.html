@@ -235,47 +235,9 @@
       
 
       
-        <li class="menu-item menu-item-search">
-          
-            <a href="javascript:;" class="popup-trigger">
-          
-            
-              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
-            
-            Search
-          </a>
-        </li>
-      
     </ul>
   
 
-  
-    <div class="site-search">
-      
-  
-  <div class="algolia-popup popup search-popup">
-    <div class="algolia-search">
-      <div class="algolia-search-input-icon">
-        <i class="fa fa-search"></i>
-      </div>
-      <div class="algolia-search-input" id="algolia-search-input"></div>
-    </div>
-
-    <div class="algolia-results">
-      <div id="algolia-stats"></div>
-      <div id="algolia-hits"></div>
-      <div id="algolia-pagination" class="algolia-pagination"></div>
-    </div>
-
-    <span class="popup-btn-close">
-      <i class="fa fa-times-circle"></i>
-    </span>
-  </div>
-
-
-
-
-    </div>
   
 </nav>
 
@@ -375,7 +337,7 @@
                   <i class="fa fa-comment-o"></i>
                 </span>
                 <a href="/2019/03/22/basic/Memory Leak of C++/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/03/22/basic/Memory Leak of C++/" itemprop="commentCount"></span>
+                  <span class="post-comments-count gitment-comments-count" data-xid="/2019/03/22/basic/Memory Leak of C++/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -540,11 +502,12 @@
 
   
     <div class="comments" id="comments">
+      
+        <div id="gitment-container"></div>
+      
     </div>
+
   
-
-
-
         </div>
         
           
@@ -874,49 +837,100 @@
 
 
 
+<!-- LOCAL: You can save these files to your site and update links -->
+    
+        
+        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
+        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
+    
+<!-- END LOCAL -->
+
+    
+      <style>
+        a.gitment-editor-footer-tip { display: none; }
+        .gitment-container.gitment-footer-container { display: none; }
+      </style>
+    
+
+    
+      <script type="text/javascript">
+      function renderGitment(){
+        var gitment = new Gitmint({
+            id: window.location.pathname, 
+            owner: 'saltonz',
+            repo: 'comment module for salton's blog',
+            
+            lang: "" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+            
+            oauth: {
+            
+            
+                client_secret: 'b24d8f10d7842d462f888d3e5d7b5f981adcf71d# EITHER this or proxy_gateway, Github access secret token for the Gitment',
+            
+                client_id: '4b732c65bd6365b7a8c9# MUST HAVE, Github client id for the Gitment'
+            }});
+        gitment.render('gitment-container');
+      }
+
+      
+      renderGitment();
+      
+      </script>
+    
 
 
 
-  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
-  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+
+
+<!-- LOCAL: You can save these files to your site and update links -->
+    
+        
+        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
+        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
+    
+<!-- END LOCAL -->
+
+    
+      <style>
+        a.gitment-editor-footer-tip { display: none; }
+        .gitment-container.gitment-footer-container { display: none; }
+      </style>
+    
+
+    
+      <script type="text/javascript">
+      function renderGitment(){
+        var gitment = new Gitmint({
+            id: window.location.pathname, 
+            owner: 'saltonz',
+            repo: 'comment module for salton's blog',
+            
+            lang: "" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+            
+            oauth: {
+            
+            
+                client_secret: 'b24d8f10d7842d462f888d3e5d7b5f981adcf71d# EITHER this or proxy_gateway, Github access secret token for the Gitment',
+            
+                client_id: '4b732c65bd6365b7a8c9# MUST HAVE, Github client id for the Gitment'
+            }});
+        gitment.render('gitment-container');
+      }
+
+      
+      renderGitment();
+      
+      </script>
+    
+
+
+
+
+
   
-  <script type="text/javascript">
-    var GUEST = ['nick','mail','link'];
-    var guest = 'nick,mail,link';
-    guest = guest.split(',').filter(item=>{
-      return GUEST.indexOf(item)>-1;
-    });
-    new Valine({
-        el: '#comments' ,
-        verify: false,
-        notify: false,
-        appId: 'RMfu7yDjXAStPn3CoXHnms8Y-gzGzoHsz# your leancloud application appid',
-        appKey: 'HD23ip2cvqLvcq2jP1iFf5dS# your leancloud application appkey',
-        placeholder: 'Write your comments about this blog here',
-        avatar:'/images/avatar.png',
-        guest_info:guest,
-        pageSize:'10' || 10,
-    });
-  </script>
 
 
-
-  
-
-
-
-
-  
-  
-  
-  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
-
-  
-  
-  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
-  
-
-  <script src="/js/src/algolia-search.js?v=5.1.4"></script>
 
 
 
