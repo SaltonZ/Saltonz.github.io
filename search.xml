@@ -1,0 +1,1289 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>Inverted Index - C++ based</title>
+    <url>/2019/10/19/Search%20Engine/Inverted%20Index_1/</url>
+    <content><![CDATA[<h1><span id="inverted-index-c-based">Inverted Index - C++ based</span></h1><p>Saitong Zhao</p>
+<h2><span id="brief-introduction-to-the-program">Brief Introduction to the program</span></h2><p>This C++ program is used to generate a inverted index for Web Search Engine from the crawled data of web crawler. </p>
+<p>The function of inverted index is:  for each query term, give back the document ID contains this term and the frequency this term showed up in the document.</p>
+<blockquote>
+<p>Only support English for now, seeking to support more languages such as Chinese in the future. </p>
+</blockquote>
+<h3><span id="input">Input</span></h3><p>The data-set I used is from <strong>Common Crawl</strong>, an data set contains PBs of data crawled from the Internet.</p>
+<blockquote>
+<p><a href="https://commoncrawl.org/the-data/" target="_blank" rel="noopener">https://commoncrawl.org/the-data/</a></p>
+</blockquote>
+<p>My program use the WET file format of Common Crawl dataset, because it is some how parsed and we don’t need to care much about web page parsing. </p>
+<a id="more"></a>
+<h3><span id="output">Output</span></h3><p>There are three outputs of this program.</p>
+<ol>
+<li><p>Inverted_Index</p>
+<p>This output is main Inverted Index itself, which is saved to disk as binary file in the format as <strong>inverted_index_{ part number }.dat</strong>. Which can be directly loaded to memory into an vector according to the memory offset.  With the parameters in the code, typically each part of inverted index is about 120 MB.</p>
+</li>
+<li><p>Lexicon_map</p>
+<p>This output is used to store the data for build a Hash Map before the Web Search Engine start working. </p>
+<p>Lexicon_map is a .txt file, for each line of lexicon map, the structure is:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[term] [inverted_index offset] [term_start_index] [term_end_index] [total number of doc contains this term]</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>term</strong>: A term is basically what we defined as an object we would like to find in documents. Such as word in this implementation.</li>
+<li><strong>inverted_index offset</strong>: Since the overall inverted index in build up with several parts of binary file. This parameter tells the term is located is which specific file.</li>
+<li><strong>term_start_index</strong>:  The first offset of the term’s information in the inverted index.</li>
+<li><strong>term_end_index</strong>: The last offset of the term’s information.</li>
+<li><strong>total_number</strong>: The total number of documents that contains this term.</li>
+</ul>
+</li>
+<li><p>Url_Document_map</p>
+<p>This output is used to map the url with the document. During the bootstrap of Web Search Engine, this file would be loaded into the memory to construct a hash map from document to url. For each line, the structure is:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[url] [documentID]</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h3><span id="running-environment">Running Environment</span></h3><p>Tested on <strong>Visual Studio 2017</strong>, <strong>windows 10</strong></p>
+<p>Some features of <strong>C++ 11</strong> is used.</p>
+<p>For better efficiency, remember to add optimizer <strong>-O2</strong> when compiling.</p>
+<p>Run on a <strong>x64</strong> PC and using x64 compiler, or the memory might not enough.</p>
+<p>If using any IDE, use Release mode to run.</p>
+<h3><span id="how-to-run">How to run</span></h3><p>Set up the file folders for output and source data, fill-in the config.cpp as your directory, compile and run on Visual Studio.</p>
+<h2><span id="code-structure-amp-utility">Code Structure &amp; Utility</span></h2><p><strong>&lt;config.h&gt; / &lt;config.cpp&gt;</strong>: </p>
+<blockquote>
+<p>Configure file for user to change their data set directory, output directories, and total number data file user want to process with this program.</p>
+</blockquote>
+<p><strong>&lt;file_util.h&gt;/&lt;file_util.cpp&gt;</strong>: </p>
+<blockquote>
+<p>Provided different functions to: </p>
+<ul>
+<li>Load file from disk directly to memory</li>
+<li>Save hashmap/map from memory to disk with different method (ascii)</li>
+<li>Save vector from memory to disk in binary mode</li>
+<li>Get the filenames recursively in a dictionary</li>
+</ul>
+</blockquote>
+<p><strong>&lt;merge.h&gt;/&lt;merge.cpp&gt;</strong>:</p>
+<blockquote>
+<p>Implement an I/O efficient merge sort algorithm for sorted files.</p>
+<p>Used to merge the intermediate file and generate final inverted index</p>
+</blockquote>
+<p><strong>&lt;inverted_index.cpp&gt;</strong>:</p>
+<blockquote>
+<p>Main function in this file.</p>
+<p>Used to parse, sort the in-file data and generate intermediate postings</p>
+</blockquote>
+<h2><span id="logic-of-the-program">Logic of the program</span></h2><h3><span id="part-i-parsing-sorting-and-intermediate-posting-generating">Part I - Parsing, Sorting and Intermediate Posting Generating</span></h3><p><strong>Load file</strong></p>
+<p>In this part a file about 400 MB is loaded into the memory. Several methods are tested and the direct call for C function <strong>fread</strong> is the fastest. (Because the ifstream’s buffer is only 512 Bytes, which is very inefficient when load a big file at a time.)</p>
+<p>Because this program is intended to handle all languages.(Some language characters are encoded within wide char <strong>wchar_t</strong>) So the File loaded to memory would be then converted to <strong>wstring</strong> format with <strong>utf-8</strong> encoding.</p>
+<p><strong>Parse</strong></p>
+<p>For each document loaded to the memory, the program would scan the whole document. During this loop, different documents would be parsed out according to the structure of .WET file. Moreover, the program will parse out the term in the document and insert them into a structure for further use. </p>
+<p>The way a term is defined in this program is a continuous string without any character that is not a number or English character. And the term’s length is less than 30 words. (In the parsed data, only a little bit of terms are beyond 15 characters)</p>
+<p><strong>Sort</strong></p>
+<p>For the I/O efficient merge sort later, the data in each posting is sorted by lexicographical order.</p>
+<p>During the parse phase, the term is inserted into a map along with the accordingly document ID and term frequency.  So the data is sorted. We just need to output the map iteratively, the intermediate posting is sorted.</p>
+<p>Insert to a Map might slower than a hash Map, because a <strong>O(lgn)</strong> reform of the RB tree is requires for every insert. But say we have total <strong>k</strong> intermediate postings, each have <strong>n</strong> terms. The complexity of each possible implementation is listed:</p>
+<blockquote>
+<p>Use map to generate sorted postings and then one-pass merge: <strong>k*(n+nlg(n)) + nlg(k)</strong></p>
+</blockquote>
+<blockquote>
+<p>Use hash map to generate postings, unix sort and then one-pass merge: <strong>k*n +k*nlg(n) + nlg(k)</strong> </p>
+</blockquote>
+<p>So basically the complexity is same.</p>
+<p><strong>Posting Generating</strong></p>
+<p>Because the data is too big too load in to memory, so as long as there are more than 2,000,000 terms in memory, the program would output it as an intermediate posting. Which is typically 180 Mb each. The intermediate postings are named in same format for further use.</p>
+<p><strong>Url -&gt; document Map</strong></p>
+<p>During the main loop, when encountering a new document(web page), the program would add a key-value pair to hash map. After all the documents in the data set is processed, the Url - Document map would be save to disk.</p>
+<p>Because the data set I used to test is relatively small (48 GB). So if this inverted index is going to be used distributed or dealing with large size of data, the Url - Document map need to be save to the disk periodically.</p>
+<p>The document ID is a global increasing integer, which is assigned to each documents by the order documents are parsed.</p>
+<h3><span id="part-ii-io-efficient-merge-and-lexicon-generating">Part II  - I/O Efficient Merge and  Lexicon Generating</span></h3><p><strong>Merge Sort</strong></p>
+<p>An I/O efficient merge sort algorithm is implemented for the merge sort.  For every intermediated  postings,  a stream is created to load data from. A <strong>Priority Queue</strong> (in C++ STL, priority_queue is implemented by a heap) is used to compare the current input from different intermediate postings. </p>
+<p>At first each postings would read one term and insert it into the priority queue. Then for each loop, the top of the priority queue is popped and the term’s document ID and frequency is loaded into a 2-D vector. And the corresponding stream would read a term from the intermediate posting, insert it priority Queue.</p>
+<p><strong>Inverted Index Output</strong></p>
+<p>When the 2-D vector has grown to a specific size, we need to output it from memory to the disk. Hence we don’t want a term to be split into two files. Because in the lexicon map, each term is pointing to a specific inverted_index file. So the program would wait until the newly loaded term into priority queue is a new term, and then save the 2-D vector to the disk.</p>
+<p>Because in C++, the data of vector is saved continuously in memory, we can save the data to memory with one <strong>fwrite</strong> in binary mode. Which is easier for us to use this index to query a term in the query processor.</p>
+<p><strong>Data Compression</strong>(To Do)</p>
+<p>Variable Char can be used to achieve the data compression for inverted index.</p>
+<p>Don’t need to save the docId, difference between docId instead.</p>
+<p><strong>Lexicon Map</strong></p>
+<p>During the processing of the intermediate postings, the lexicon Map would be built up as a hash map.  When ever there’s 100,000,000 entries in the hash map, the program would output a file to store the information of lexicon. </p>
+<h2><span id="efficiency-test">Efficiency test</span></h2><p>To test the efficiency, I used <strong>120</strong> WET files as input, the size of data is  about <strong>48</strong> GB. With a total of <strong>5350784</strong> pages and <strong>230020664</strong> terms as defined above.</p>
+<p>The first step of parse and sort took <strong>235</strong> minutes.</p>
+<p>The second step of merge took <strong>300</strong> minutes.</p>
+<p>The inverted index generated is <strong>13.4</strong> GB. Lexicon map generated is <strong>1.2</strong> GB.</p>
+<p>The speed of merge is slower than it suppose to be, and I think it is because of the using of file stream to read the intermediate file. There are two possible solutions to speed up. One is to manually set a comparatively larger buffer for the file stream in c++ STL. Another one is to directly map the memory to disk using memory map method.</p>
+<h2><span id="todo">ToDo</span></h2><ol>
+<li>Using data compression skills to compress the inverted index in the merge phase.</li>
+<li>Modify the merge phase code to make I/O faster (larger buffer / memory map), to speed up the merge phase.</li>
+<li>Maybe add some parameters to make the program more flexible, less hard code. </li>
+</ol>
+<p>Latest version at: <a href="https://github.com/saltonz/Inverted-Index" target="_blank" rel="noopener">https://github.com/saltonz/Inverted-Index</a></p>
+]]></content>
+      <categories>
+        <category>Information Retrivement</category>
+      </categories>
+      <tags>
+        <tag>C++</tag>
+        <tag>Search Engine</tag>
+        <tag>Information Retrivement</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Multi thread python crawler</title>
+    <url>/2019/09/28/Search%20Engine/Multi_Thread_Crawler/</url>
+    <content><![CDATA[<h2><span id="multi-thread-crawler">Multi thread crawler</span></h2><h3><span id="metrics">Metrics</span></h3><ul>
+<li><strong>Priority</strong>: related to the uncrawled graph - which one has more hyperline point to or have more score on PageRank</li>
+<li><strong>Novelty</strong>: Whether the site of a page has been crawled before.</li>
+<li><strong>Output</strong>: A log with a list of all visited <strong>URLs</strong> in the order they are visited, together with the information such as <strong>size of the page</strong> and <strong>depth</strong> of each page, <strong>priority score</strong> of the page when it was crawled and the <strong>timestamp</strong> of the download.</li>
+</ul>
+<h3><span id="usage">Usage</span></h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">python run.py <span class="string">"[Your Query]"</span> [max_number of pages you want to crawl]</span><br><span class="line"></span><br><span class="line">More than two parameters is invalid.</span><br><span class="line"></span><br><span class="line">e.g: python run.py <span class="string">"Brooklyn parks"</span> 1000</span><br></pre></td></tr></table></figure>
+<h3><span id="env">Env</span></h3><p>Python 3.7</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">requests==2.8.0</span><br><span class="line">BeautifulSoup4==4.8.0</span><br><span class="line">lxml==4.4.1</span><br><span class="line">pybloom_live==3.0.0</span><br><span class="line">pymongo==3.9.0</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<h3><span id="key-methods">Key Methods:</span></h3><ol>
+<li><strong>Google API</strong><ul>
+<li>Used to generate the seed of our crawling process</li>
+</ul>
+</li>
+<li><strong>Bloom Filter</strong><ul>
+<li>Used to make sure the same url won’t be crawled twice. Better efficiency than HashMap when number of the result is large, with a possibility of mis-check.<br>To control the mis-check rate, used scalable bloom Filter</li>
+</ul>
+</li>
+<li><strong>Hash Map</strong><ul>
+<li>To identify whether a url is already in the priority queue</li>
+</ul>
+</li>
+<li><strong>Priority Queue</strong><ul>
+<li>To dynamicly update the priority of a page during the process of BFS.</li>
+</ul>
+</li>
+<li><strong>Robot File Parser</strong><ul>
+<li>According to <a href="https://www.robotstxt.org/robotstxt.html" target="_blank" rel="noopener">https://www.robotstxt.org/robotstxt.html</a> , the sites don’t want to be crawled may add this robots.txt on their site. So robot File parser is used to identify the sites don’t want to be crawled.</li>
+</ul>
+</li>
+<li><strong>Multi Thread Processing</strong><ul>
+<li>The bottleneck of web crawler is network IO and local file IO, when facing such IO operations, use multi thread method to accomplish faster crawling speed.</li>
+</ul>
+</li>
+<li><strong>Thread Pool</strong><ul>
+<li>Lots of threads will be created and destroyed frequently, with thread pool we can save time on process create and destroy for better efficiency.</li>
+<li>During the test we found that the threadPoolExecuter doesn’t work well with our logic</li>
+</ul>
+</li>
+<li><strong>Asyncio</strong><ul>
+<li>The main bottleneck of crawler is network I/O, and asynchronous computing can fulfill the requirement that a single thread working with many coroutines.</li>
+</ul>
+</li>
+<li><strong>MongoDB</strong><ul>
+<li>fast method to store the pages encountered.</li>
+<li>better organization of each urls’ information.</li>
+</ul>
+</li>
+</ol>
+<h3><span id="logic">Logic</span></h3><p>Crawl -&gt; Parse -&gt; Store -&gt; Rank </p>
+<p>Use multi threads method to accelerate. (Tested 3-20 pages per second.)</p>
+<p>Parse: Use Beautiful soup and regular expression to filter out the links</p>
+<p>Store: after parse, store the info to MongoDB</p>
+<p>Rank: at the end of every iteration, calculate the rank of pages in un-crawled subgraph and update their priority in the Priority Queue</p>
+<h3><span id="experiment">Experiment</span></h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Paris Texas</span><br><span class="line">Crawler started from:    2019-09-26 19:21:18.958819</span><br><span class="line">Crawler finished in:     2019-09-26 20:38:39.886982</span><br><span class="line">Time Consumed:  1:17:20.928163</span><br><span class="line">Number of Sites encountered:  7876</span><br><span class="line">Number of pages crawled:  20000</span><br><span class="line"></span><br><span class="line">brooklyn parks</span><br><span class="line">Crawler started from:    2019-09-27 02:36:56.965808</span><br><span class="line">Crawler finished in:     2019-09-27 03:10:41.745376</span><br><span class="line">Time Consumed:  0:33:44.779568</span><br><span class="line">Number of Sites encountered:  167727</span><br><span class="line">Number of pages crawled:  20000</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>Information Retrivement</category>
+      </categories>
+      <tags>
+        <tag>Search Engine</tag>
+        <tag>Information Retrivement</tag>
+        <tag>Python</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Smart_ptr</title>
+    <url>/2019/03/27/basic/smart_ptr/</url>
+    <content><![CDATA[<h2><span id="智能指针">智能指针</span></h2><p>在c++中，经常使用new,delete在堆上动态分配内存</p>
+<ul>
+<li>new: 为对象分配一个空间并返回指向该空间的指针</li>
+<li>delete: 指向一个动态独享的指针，销毁对象，并释放与之关联的内存</li>
+</ul>
+<p>动态分配内存常出现问题</p>
+<ul>
+<li>一、忘记释放内存/内存在运行到delete前中止， 造成内存泄漏</li>
+<li>二、在内存仍然有指针引用的情况下释放，产生引用非法内存的指针</li>
+</ul>
+<p>C++11中引入了智能指针：share_ptr允许多个指针指向一个对象，unique_ptr则独占所指向的对象。</p>
+<a id="more"></a>
+<h4><span id="share_ptr">share_ptr</span></h4><p>函数：</p>
+<ul>
+<li><p>make_shared\<t>(args) 返回一个shared_ptr，指向一个动态分配的类型为T的对象，使用args初始化该对象</t></p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="built_in">shared_ptr</span>&lt;<span class="keyword">int</span>&gt; p3 = make_shared&lt;<span class="keyword">int</span>&gt;(<span class="number">42</span>);</span><br><span class="line"><span class="built_in">shared_ptr</span>&lt;<span class="built_in">string</span>&gt; p4 = make_shared&lt;<span class="built_in">string</span>&gt;(<span class="number">10</span>,<span class="string">'9'</span>);</span><br><span class="line"><span class="built_in">shared_ptr</span>&lt;<span class="keyword">int</span>&gt; p5 = make_shared&lt;<span class="keyword">int</span>&gt;();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>shared_ptr<t>p(q) p是shared_ptr q的拷贝，此操作会递增q中的计数器。</t></p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">auto</span> p = make_shared&lt;<span class="built_in">string</span>&gt;(<span class="number">10</span>,<span class="string">'9'</span>);</span><br><span class="line"><span class="function"><span class="keyword">auto</span> <span class="title">q</span><span class="params">(p)</span></span>;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>我们可以认为每个shared_ptr都有一个关联的计数器，通常称其为引用计数，无论何时我们拷贝一个shared_ptr，计数器都会递增。当我们给shared_ptr赋予一个新值或是shared_ptr被销毁（例如一个局部的shared_ptr离开其作用域）时，计数器就会递减，一旦一个shared_ptr的计数器变为0,它就会自动释放自己所管理的对象。</p>
+<p>当指向一个对象的最后一个shared_ptr被销毁时，shared_ptr类会自动销毁此对象，它是通过析构函数完成销毁工作的。当动态对象不再被使用时，shared_ptr类还会自动释放动态对象，这一特性使得动态内存的使用变得非常容易。</p>
+<blockquote>
+<p>注意：shared_ptr有可能出现循环引用的情况，无法正确释放内存。<br>解决方案：weak_ptr</p>
+<blockquote>
+<p>将出现循环引用的shared_ptr保存下来，并且weak_prt中不增加引用计数。</p>
+</blockquote>
+</blockquote>
+<h4><span id="share_ptr实现">share_ptr实现</span></h4><p>模拟：<br><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="class"><span class="keyword">class</span> <span class="title">T</span>&gt;</span></span><br><span class="line"><span class="class"><span class="title">class</span> <span class="title">Shared_ptr</span>&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    Shared_ptr(T* ptr) : _ptr(ptr); _pCount(<span class="keyword">new</span> <span class="keyword">int</span>(<span class="number">1</span>))&#123;&#125;</span><br><span class="line"></span><br><span class="line">    Shared_ptr&amp;(<span class="keyword">const</span> Shared_ptr&amp; sp): _ptr(sp,_ptr); _pCount(sp._pCount)&#123;</span><br><span class="line">        (*_pCount)++;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    Shared_ptr&amp; <span class="keyword">operator</span> = (Shared_ptr&lt;T&gt;&amp; sp)&#123;</span><br><span class="line">        <span class="keyword">if</span>(<span class="keyword">this</span> != sp)&#123;</span><br><span class="line">            <span class="keyword">if</span>(--(*pCount) == <span class="number">0</span>)&#123;</span><br><span class="line">                <span class="keyword">delete</span> _ptr;</span><br><span class="line">                <span class="keyword">delete</span> _pCount;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            _ptr = sp._ptr;</span><br><span class="line">            _pCount = sp._pCount;</span><br><span class="line">            (*_pCount)++;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> *<span class="keyword">this</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ~Shared_ptr()&#123;</span><br><span class="line">        <span class="keyword">if</span>(--(*pCount) == <span class="number">0</span>)&#123;</span><br><span class="line">            <span class="keyword">delete</span> _ptr;</span><br><span class="line">            <span class="keyword">delete</span> _pCount;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    T&amp; <span class="keyword">operator</span>*()&#123;</span><br><span class="line">        <span class="keyword">return</span> *_ptr;</span><br><span class="line">    &#125;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    T* _ptr;</span><br><span class="line">    <span class="keyword">int</span> *_pCount;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4><span id="unique_ptr">Unique_ptr</span></h4><p>某个时刻只能有一个unique_ptr指向一个给定对象，由于一个unique_ptr拥有它指向的对象，因此unique_ptr不支持普通的拷贝或赋值操作。</p>
+]]></content>
+      <categories>
+        <category>basic</category>
+      </categories>
+      <tags>
+        <tag>C++</tag>
+        <tag>OS</tag>
+        <tag>Concurrency</tag>
+        <tag>Lock</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Thread Locks in Cpp</title>
+    <url>/2019/03/27/basic/lock_between_threads/</url>
+    <content><![CDATA[<h2><span id="c-线程锁">C++ 线程锁</span></h2><h4><span id="1-互斥锁mutex">1. 互斥锁（Mutex）</span></h4><p>互斥锁是一个控制多个线程对他们共享资源访问的信号量。 如：线程池中有多个空闲线程和一个任务队列，所有线程都应该使用互斥锁互斥访问该任务队列，避免多个线程同时访问任务队列发生错乱。</p>
+<p>在某一时刻，只有一个线程能够访问互斥锁，在互斥锁释放之前所有其他线程都不能获取该互斥锁</p>
+<blockquote>
+<p>头文件:\<mutex><br>类型:std::mutex</mutex></p>
+</blockquote>
+<p>例子：<br>调用lock/unlock函数加锁<br><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;boost/thread/mutex.hpp&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;boost/thread/thread.hpp&gt;</span></span></span><br><span class="line"> </span><br><span class="line">boost::mutex mutex;</span><br><span class="line"><span class="keyword">int</span> count = <span class="number">0</span>;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Counter</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  mutex.lock();</span><br><span class="line"> </span><br><span class="line">  <span class="keyword">int</span> i = ++count;</span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"count == "</span> &lt;&lt; i &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line"> </span><br><span class="line"></span><br><span class="line">  mutex.unlock();  <span class="comment">// 如果前面的代码有异常，就调用不到unlock。</span></span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  boost::thread_group threads;  <span class="comment">// 创建一组线程。</span></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">4</span>; ++i) &#123;</span><br><span class="line">    threads.create_thread(&amp;Counter);</span><br><span class="line">  &#125;</span><br><span class="line"> </span><br><span class="line">  threads.join_all();  <span class="comment">// 等待所有线程结束。</span></span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<a id="more"></a>
+<p>例子：<br>使用lock_guard自动加锁<br><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;boost/thread/lock_guard.hpp&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;boost/thread/mutex.hpp&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;boost/thread/thread.hpp&gt;</span></span></span><br><span class="line"> </span><br><span class="line">boost::mutex mutex;</span><br><span class="line"><span class="keyword">int</span> count = <span class="number">0</span>;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Counter</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="comment">// lock_guard 在构造函数里加锁，在析构函数里解锁。</span></span><br><span class="line">  boost::lock_guard&lt;boost::mutex&gt; lock(mutex);</span><br><span class="line"> </span><br><span class="line">  <span class="keyword">int</span> i = ++count;</span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"count == "</span> &lt;&lt; i &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  boost::thread_group threads;</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">4</span>; ++i) &#123;</span><br><span class="line">    threads.create_thread(&amp;Counter);</span><br><span class="line">  &#125;</span><br><span class="line"> </span><br><span class="line">  threads.join_all();</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4><span id="2条件变量-ltcondition_variablegt">2.条件变量 &lt;condition_variable&gt;</span></h4><p>condition_variable类是一个同步原语，可以被用来阻塞一个线程或者同时阻塞多个线程，直到另一个线程既修改了共享变量（即“条件”)，也做了通知。</p>
+<blockquote>
+<p>想要修改共享变量（即“条件”）的线程必须：</p>
+<ol>
+<li>获得一个std::mutex(一般来说是通过std::lock_guard获得)</li>
+<li>当持有锁的时候，执行修改动作</li>
+<li>对std::condition_variable执行notify_one或notify_all(当做notify动作时，不必持有锁)</li>
+</ol>
+<p>即使共享变量是原子性的，它也必须在mutex的保护下被修改，这是为了能够将改动正确发布到正在等待的线程。</p>
+</blockquote>
+<blockquote>
+<p>任意要等待std::condition_variable的线程必须：</p>
+<ol>
+<li>获取std::unique_lock<a href="std::mutex" target="_blank" rel="noopener">std::mutex</a>，这个mutex正是用来保护共享变量（即“条件”）的</li>
+<li>执行wait, wait_for或者wait_until. 这些等待动作原子性地释放mutex，并使得线程的执行暂停</li>
+<li>当获得条件变量的通知，或者超时，或者一个虚假的唤醒，那么线程就会被唤醒，并且获得mutex. 然后线程应该检查条件是否成立，如果是虚假唤醒，就继续等待。</li>
+</ol>
+</blockquote>
+<p>例子：<br><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">    1. wait()函数的内部实现是：先释放互斥量的锁，然后阻塞,以等待条件为真；</span></span><br><span class="line"><span class="comment">    2. notify系列函数需在unlock之后再被调用。</span></span><br><span class="line"><span class="comment">    3. 套路是：</span></span><br><span class="line"><span class="comment">        a. A线程拿住锁，然后wait,此时已经释放锁，只是阻塞了在等待条件为真；</span></span><br><span class="line"><span class="comment">        b. B线程拿住锁，做一些业务处理，然后令条件为真，释放锁，再调用notify函数；</span></span><br><span class="line"><span class="comment">        c. A线程被唤醒，接着运行。</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"> </span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;thread&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;mutex&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;condition_variable&gt;</span></span></span><br><span class="line"> </span><br><span class="line"><span class="built_in">std</span>::mutex m;</span><br><span class="line"><span class="built_in">std</span>::condition_variable cv;</span><br><span class="line"><span class="built_in">std</span>::<span class="built_in">string</span> data;</span><br><span class="line"><span class="keyword">bool</span> ready = <span class="literal">false</span>;</span><br><span class="line"><span class="keyword">bool</span> processed = <span class="literal">false</span>;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">worker_thread</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// Wait until main() sends data</span></span><br><span class="line">        <span class="built_in">std</span>::unique_lock&lt;<span class="built_in">std</span>::mutex&gt; lk(m);</span><br><span class="line">        cv.wait(lk, []&#123;<span class="keyword">return</span> ready;&#125;);</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">std</span>::unique_lock&lt;<span class="built_in">std</span>::mutex&gt; lk(m);</span><br><span class="line">        <span class="comment">// after the wait, we own the lock.</span></span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"Worker thread is processing data\n"</span>;</span><br><span class="line">        data += <span class="string">" after processing"</span>;</span><br><span class="line">     </span><br><span class="line">        <span class="comment">// Send data back to main()</span></span><br><span class="line">        processed = <span class="literal">true</span>;</span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"Worker thread signals data processing completed\n"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    cv.notify_one();</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">std</span>::<span class="function">thread <span class="title">worker</span><span class="params">(worker_thread)</span></span>;</span><br><span class="line"> </span><br><span class="line">    data = <span class="string">"Example data"</span>;</span><br><span class="line">    <span class="comment">// send data to the worker thread</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">std</span>::unique_lock&lt;<span class="built_in">std</span>::mutex&gt; lk(m);</span><br><span class="line">        ready = <span class="literal">true</span>;</span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"main() signals data ready for processing\n"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    cv.notify_one();</span><br><span class="line"> </span><br><span class="line">    <span class="comment">// wait for the worker</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">std</span>::unique_lock&lt;<span class="built_in">std</span>::mutex&gt; lk(m);</span><br><span class="line">        cv.wait(lk, []&#123;<span class="keyword">return</span> processed;&#125;);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"Back in main(), data = "</span> &lt;&lt; data &lt;&lt; <span class="string">'\n'</span>; </span><br><span class="line">    worker.join();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>输出：<br>main() signals data ready for processing<br>Worker thread is processing data<br>Worker thread signals data processing completed<br>Back in main(), data = Example data after processing</p>
+</blockquote>
+<h4><span id="3自旋锁">3.自旋锁</span></h4><p>假设双核计算机有两个处理器core1,core2; 计算机上正在运行两个共享资源的线程T1,T2,分别在core1, core2中。</p>
+<p><strong>互斥锁</strong>是一种<strong>sleep-waiting</strong>的锁，假设线程T1获取互斥锁并且正在core1上运行时，线程T2也想要获取互斥锁，但是由于T1正在使用互斥锁使得T2被阻塞。当T2处于阻塞状态时，T2被放入到等待队列中去，处理器core2会去处理其他任务而不必一直等待（忙等）。</p>
+<p><strong>自旋锁</strong>是一种<strong>busy-waiting</strong>的锁，如果T1正在使用自旋锁，而T2也去申请这个自旋锁，此时T2肯定得不到这个自旋锁。与互斥锁相反的是，此时运行T2的处理器core2会一直不断地循环检查锁是否可用（自旋锁请求），直到获取到这个自旋锁为止。</p>
+<p>如果一个线程想要获取一个被使用的自旋锁，那么它会一致占用CPU请求这个自旋锁使得CPU不能去做其他的事情，直到获取这个锁为止，这就是“自旋”的含义。</p>
+<p><strong>在加锁时间短暂的环境下会极大的提高效率。但如果加锁时间过长，则会非常浪费CPU资源</strong></p>
+<p><a href="https://blog.csdn.net/fanyun_01/article/details/79406368" target="_blank" rel="noopener">https://blog.csdn.net/fanyun_01/article/details/79406368</a></p>
+]]></content>
+      <categories>
+        <category>basic</category>
+      </categories>
+      <tags>
+        <tag>C++</tag>
+        <tag>OS</tag>
+        <tag>Concurrency</tag>
+        <tag>Lock</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>OverWrite of cmp(cmp重载)</title>
+    <url>/2019/03/26/basic/overwrite_cmp/</url>
+    <content><![CDATA[<h2><span id="overwrite-rule-of-cmp-function-in-c">OverWrite Rule of cmp function in C++</span></h2><h2><span id="c-重载cmp">C++ 重载cmp</span></h2><h3><span id="void-sortiterator-start-iterator-end-strictweakordering-cmp">void sort(iterator start, iterator end, StrictWeakOrdering cmp);</span></h3><p>函数标准声明：<br><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">RandomAccessIterator</span>, <span class="title">class</span> <span class="title">Compare</span>&gt;</span></span><br><span class="line"><span class="class"><span class="title">void</span> <span class="title">sort</span> (<span class="title">RandomAccessIterator</span> <span class="title">first</span>, <span class="title">RandomAccessIterator</span> <span class="title">last</span>, <span class="title">Compare</span> <span class="title">comp</span>);</span></span><br></pre></td></tr></table></figure></p>
+<a id="more"></a>
+<p>例子（降序）：<br><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">cmp</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">return</span> a &gt; b; <span class="comment">// a &lt; b 为升序</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> a[<span class="number">11</span>] = &#123; <span class="number">-5</span>,<span class="number">2</span>,<span class="number">5</span>,<span class="number">7</span>,<span class="number">-11</span>,<span class="number">2</span>,<span class="number">-6</span>,<span class="number">8</span>,<span class="number">9</span>,<span class="number">6</span>,<span class="number">6</span> &#125;;</span><br><span class="line">	sort(a, a + <span class="number">11</span>, cmp);</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i  = <span class="number">0</span>; i &lt; <span class="number">10</span>; ++i)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="built_in">cout</span> &lt;&lt; a[i] &lt;&lt; <span class="string">" "</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">cout</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">	system(<span class="string">"pause"</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>输出：<br>9 8 7 6 6 5 2 2 -5 -6</p>
+</blockquote>
+<h3><span id="setmap">set/map</span></h3><p>set 与 map的cmp不再只是函数，而是函数对象<br><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">cmp</span>&#123;</span></span><br><span class="line">	<span class="function"><span class="keyword">bool</span> <span class="title">operator</span> <span class="params">()</span><span class="params">(<span class="keyword">const</span> <span class="keyword">int</span> a , <span class="keyword">const</span> <span class="keyword">int</span> b)</span></span></span><br><span class="line"><span class="function">	</span>&#123;</span><br><span class="line">		<span class="keyword">return</span> a &lt; b ;			<span class="comment">// 从小到大 </span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>例子(set):<br><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;cstring&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;set&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Person</span> &#123;</span></span><br><span class="line">	<span class="keyword">int</span> age;</span><br><span class="line">	<span class="keyword">char</span> name[<span class="number">20</span>];</span><br><span class="line">	Person(<span class="keyword">int</span> Age, <span class="keyword">const</span> <span class="keyword">char</span> Name[]) :age(Age) &#123; strcpy_s(name, Name); &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">cmp</span> &#123;</span></span><br><span class="line">	<span class="function"><span class="keyword">bool</span> <span class="title">operator</span> <span class="params">()</span><span class="params">(<span class="keyword">const</span> Person a, <span class="keyword">const</span> Person b)</span></span></span><br><span class="line"><span class="function">	</span>&#123;</span><br><span class="line">		<span class="keyword">return</span> a.age &lt; b.age;			<span class="comment">//从小到大 </span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="built_in">set</span>&lt;Person, cmp&gt; s;</span><br><span class="line">	<span class="function">Person <span class="title">n1</span><span class="params">(<span class="number">46</span>, <span class="string">"zst"</span>)</span></span>;</span><br><span class="line">	<span class="function">Person <span class="title">n2</span><span class="params">(<span class="number">-16</span>, <span class="string">"salton"</span>)</span></span>;			</span><br><span class="line">	<span class="function">Person <span class="title">n3</span><span class="params">(<span class="number">45</span>, <span class="string">"123"</span>)</span></span>;</span><br><span class="line">	<span class="function">Person <span class="title">n4</span><span class="params">(<span class="number">-25</span>, <span class="string">"test"</span>)</span></span>;</span><br><span class="line">	<span class="function">Person <span class="title">n5</span><span class="params">(<span class="number">34</span>, <span class="string">"zst"</span>)</span></span>;</span><br><span class="line">	<span class="function">Person <span class="title">n6</span><span class="params">(<span class="number">22</span>, <span class="string">"zst"</span>)</span></span>;</span><br><span class="line">	<span class="function">Person <span class="title">n7</span><span class="params">(<span class="number">2</span>, <span class="string">"zst"</span>)</span></span>;</span><br><span class="line">	s.insert(n1);</span><br><span class="line">	s.insert(n2);</span><br><span class="line">	s.insert(n3);</span><br><span class="line">	s.insert(n4);</span><br><span class="line">	s.insert(n5);</span><br><span class="line">	s.insert(n6);</span><br><span class="line">	s.insert(n7);</span><br><span class="line">	<span class="built_in">set</span>&lt;Person, cmp&gt;::iterator begin = s.begin();</span><br><span class="line">	<span class="built_in">set</span>&lt;Person, cmp&gt;::iterator end = s.end();</span><br><span class="line">	<span class="keyword">for</span> (<span class="built_in">set</span>&lt;Person, cmp&gt;::iterator i = begin; i != end; ++i)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="built_in">cout</span> &lt;&lt; i-&gt;age &lt;&lt; <span class="string">" "</span> &lt;&lt; i-&gt;name &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	system(<span class="string">"pause"</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>输出:<br>-25 test<br>-16 salton<br>2 zst<br>22 zst<br>34 zst<br>45 123<br>46 zst</p>
+</blockquote>
+<h3><span id="priority_queue-cmp">priority_queue cmp</span></h3><p>priority queue 的cmp同样是函数对象<br>对于pair&lt;int, char&gt;:<br><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">cmp</span>&#123;</span></span><br><span class="line">    <span class="function"><span class="keyword">bool</span> <span class="title">operator</span><span class="params">()</span><span class="params">(pair&lt;<span class="keyword">int</span>,<span class="keyword">char</span>&gt; a, pair&lt;<span class="keyword">int</span>,<span class="keyword">char</span>&gt; b)</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> a.first &gt; b.first;  <span class="comment">//以int 为索引排列的小顶堆</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;queue&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">cmp</span> &#123;</span></span><br><span class="line">	<span class="function"><span class="keyword">bool</span> <span class="title">operator</span><span class="params">()</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">int</span> j)</span> </span>&#123; <span class="keyword">return</span> i &gt; j; &#125; <span class="comment">//小顶堆</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	priority_queue&lt;<span class="keyword">int</span>, <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;, cmp&gt; q;</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++) &#123; </span><br><span class="line">		<span class="keyword">if</span> (q.size() &gt;= <span class="number">5</span>) &#123;              <span class="comment">//只保留最大的五个</span></span><br><span class="line">			<span class="keyword">if</span> (i &gt; q.top()) &#123;</span><br><span class="line">				q.pop();</span><br><span class="line">				q.push(i);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span> &#123;</span><br><span class="line">			q.push(i);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">while</span> (!q.empty()) &#123;</span><br><span class="line">		<span class="built_in">cout</span> &lt;&lt; q.top() &lt;&lt; <span class="string">' '</span>;</span><br><span class="line">		q.pop();</span><br><span class="line">	&#125;</span><br><span class="line">	system(<span class="string">"pause"</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>输出：<br>5 6 7 8 9</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>basic</category>
+      </categories>
+      <tags>
+        <tag>C++</tag>
+        <tag>stl</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Thread & Process</title>
+    <url>/2019/03/26/basic/Thread_Process/</url>
+    <content><![CDATA[<h1><span id="thread-amp-process">Thread &amp; Process</span></h1><h2><span id="进程">进程：</span></h2><ul>
+<li>从程序角度：<br>计算机中正在运行在内存中的程序  {代码 + 数据 + 堆栈 + PCB(进程控制块)}</li>
+<li>从操作系统角度：<br>进程是一个术语，在UNIX、Linux和其他一些操作系统中，当程序启动时（由用户输入shell命令或由另一程序启动），进程开始。每个进程的描述都是一个结构体的统称及进程控制块（PCB）linux下叫具体为task_struct。</li>
+</ul>
+<h4><span id="进程的状态">进程的状态：</span></h4><blockquote>
+<p>running （R）运行状态，该状态不只是指程序正在运行，还包括准备运行的状态。<br>sleeping （S）可中断睡眠状态 ，<br>disk sleeping（D）不可中断睡眠状态，系统的休眠等待，不可用户打断，有特殊方式唤醒<br>stopped（T）停止状态，通过发送sigstop信号停止，可以通过发送sigcont信号继续。<br>tracing stop（t）跟踪状态<br>dead（X）死亡状态，是一个返回状态，时间很短，<br>zombie（Z）僵尸状态，子进程先于父进程退出，而且父进程不关心子进程的退出状态，从而形成。<br><a id="more"></a></p>
+</blockquote>
+<h4><span id="创建一个进程">创建一个进程：</span></h4><ol>
+<li>分配一个PID- 从小到大找一个未被使用过的进程号（0号位内核进程）</li>
+<li>分配PCB，拷贝父进程PCB的绝大部分数据</li>
+<li>给子进程分配资源</li>
+<li>子进程复制父进程的地址空间</li>
+<li>子进程设置成就绪状态，放入就绪队列</li>
+</ol>
+<p><strong>函数：</strong></p>
+<blockquote>
+<p>pid_t <strong>fork</strong>(void): 当返回0时代表子进程，大于0时代表父进程</p>
+</blockquote>
+<p>e.g：<br><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line">​</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">　 <span class="built_in">printf</span>(<span class="string">"Before Fork\n"</span>);</span><br><span class="line">　 <span class="keyword">pid_t</span> pid = fork();</span><br><span class="line">　  <span class="keyword">if</span> (pid == <span class="number">0</span>)</span><br><span class="line">　　&#123;   </span><br><span class="line">  　　  <span class="built_in">printf</span>(<span class="string">"child\n"</span>);</span><br><span class="line">　　&#125;   </span><br><span class="line">　　<span class="keyword">else</span> <span class="keyword">if</span> (pid &gt; <span class="number">0</span>)</span><br><span class="line">　　&#123;   </span><br><span class="line"> 　　   <span class="built_in">printf</span>(<span class="string">"parent\n"</span>);</span><br><span class="line">　　&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>output:<br>　　Before Fork<br>　　parent<br>　　child </p>
+</blockquote>
+<p>fork 注意事项：</p>
+<ol>
+<li>fork父子进程交替进行，运行顺序与内核的进程调度有关</li>
+<li>父进程死亡后，子进程成为孤儿进程，由1号进程领养</li>
+<li>子进程死亡，成为僵尸进程</li>
+</ol>
+<h4><span id="linux中特殊进程">Linux中特殊进程：</span></h4><ul>
+<li>PID=0 - IDLE进程<ul>
+<li>由系统自动创建，运行在内核态，是系统创建的第一个进程</li>
+</ul>
+</li>
+<li><p>PID=1 - INIT进程</p>
+<ul>
+<li>由IDLE进程通过kernel_thread创建，在内核空间完成初始化后，加载init程序，并进入用户空间</li>
+<li>由0进程创建，完成系统的初始化. 是系统中所有其它用户进程的祖先进程 </li>
+<li>Linux中的所有进程都是有init进程创建并运行的。首先Linux内核启动，然后在用户空间中启动init进程，再启动其他系统进程。在系统启动完成完成后，init将变为守护进程监视系统其他进程。</li>
+</ul>
+</li>
+<li><p>PID=2 - kthreadd进程</p>
+<ul>
+<li>由init进程创建，并始终运行在内核空间，负责所有内核线程的调度与管理</li>
+<li>它的任务就是管理和调度其他内核线程kernel_thread, 会循环执行一个kthread的函数，该函数的作用就是运行kthread_create_list全局链表中维护的kthread, 当我们调用kernel_thread创建的内核线程会被加入到此链表中，因此所有的内核线程都是直接或者间接的以kthreadd为父进程</li>
+</ul>
+</li>
+</ul>
+<p>more about linux process: <a href="https://www.cnblogs.com/alantu2018/p/8526970.html" target="_blank" rel="noopener">https://www.cnblogs.com/alantu2018/p/8526970.html</a></p>
+<h2><span id="线程">线程</span></h2><p>线程是进程中的单一的顺序控制流程也可以叫做最小控制单元，线程是进程中执行单元，开启一个线程比开启一个进程更加节省资源。 </p>
+<h4><span id="线程的优点">线程的优点</span></h4><ol>
+<li>创建一个新线程的代价要比创建一个新进程小得多</li>
+<li>与进程之间的切换相比，线程之间的切换需要操作系统做的工作要少很多</li>
+<li>线程占用的资源要比进程少很多</li>
+<li>能充分利用多处理器的可并行数量</li>
+<li>在等待慢速I/O操作结束的同时，程序可执行其他的计算任务</li>
+<li>计算密集型应用，为了能在多处理器系统上运行，将计算分解到多个线程中实现</li>
+<li>I/O密集型应用，为了提高性能，将I/O操作重叠。线程可以同时等待不同的I/O操作。</li>
+</ol>
+<h2><span id="并发编程">并发编程</span></h2><p>并行： 两个或多个独立操作<strong>同时进行</strong>（同时做很多事情）<br>并发： 两个任务可以在重叠的<strong>时间段</strong>内启动，运行和完成。（一次做好很多事情）</p>
+<p><strong>C++ 11 中引进了多线程库</strong><br><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;thread&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">output</span><span class="params">(<span class="keyword">int</span> i)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; i &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">uint8_t</span> i = <span class="number">0</span>; i &lt; <span class="number">4</span>; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="function">thread <span class="title">t</span><span class="params">(output, i)</span></span>; <span class="comment">//创建线程t,执行output</span></span><br><span class="line">        t.detach(); <span class="comment">//该线程在后台允许，无需等待该线程完成，继续执行后面的语句。</span></span><br><span class="line">    &#125;</span><br><span class="line">        </span><br><span class="line">    getchar();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>output:<br>01</p>
+<p>2<br>3</p>
+<blockquote>
+<p>线程0未执行完毕，线程1开始执行</p>
+</blockquote>
+</blockquote>
+<p>结束进程</p>
+<ul>
+<li>detach()<br>  启动的进程资助在后台运行，当前代码继续执行，不等待新线程结束<br>  使用detach需注意创建的<strong>新线程对当前作用域变量的使用</strong></li>
+<li>join()<br>  等待启动的线程完成，才会往下继续执</li>
+</ul>
+<h4><span id="c线程间通信">C++线程间通信</span></h4><h5><span id="全局变量">全局变量</span></h5><p>通过全局变量来访问共同的数据段，这个全局变量可以是类中的成员变量（线程函数是类的成员函数），也可以是类外的实际全局变量（整个程序中所有地方都可以访问到）。多个线程访问同一个数据，那么就会涉及到一个问题：线程互斥，当一个线程在读，一个线程在写的时候，会有冲突，这个时候就需要用到线程互斥的处理方式：锁</p>
+<h5><span id="自定义消息">自定义消息</span></h5><p>借助于windows程序的消息通信机制，当两个线程之间至少有一个为UI线程，那么就可以直接通过SendMessage或者PostMessage来发送消息到指定线程进行响应。这种方法涉及到线程的切换，如果SendMessage/PostMessage指定的窗口是由调用线程创建，那么就是一个普通的子程序；如果指定窗口由另一个线程创建，也即UI线程，那么系统会挂起当前工作线程，切换到ui线程，并调用合适的窗口过程(PostMessage则直接进消息队列)。</p>
+<h5><span id="c11stdpromise-stdfuture">C++11：std::promise std::future</span></h5><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;       // std::cout</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;functional&gt;     // std::ref</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;thread&gt;         // std::thread</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;future&gt;         // std::promise, std::future</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">print_int</span><span class="params">(<span class="built_in">std</span>::future&lt;<span class="keyword">int</span>&gt;&amp; fut)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> x = fut.get(); <span class="comment">// 获取共享状态的值.</span></span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"value: "</span> &lt;&lt; x &lt;&lt; <span class="string">'\n'</span>; <span class="comment">// 打印 value: 10.</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span> <span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">std</span>::promise&lt;<span class="keyword">int</span>&gt; prom; <span class="comment">// 生成一个 std::promise&lt;int&gt; 对象.</span></span><br><span class="line">    <span class="built_in">std</span>::future&lt;<span class="keyword">int</span>&gt; fut = prom.get_future(); <span class="comment">// 和 future 关联.</span></span><br><span class="line">    std::thread t(print_int, std::ref(fut)); // 将 future 交给另外一个线程t.</span><br><span class="line">    prom.set_value(<span class="number">10</span>); <span class="comment">// 设置共享状态的值, 此处和线程t保持同步.</span></span><br><span class="line">    t.join();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>C++11 同时也实现了\<mutex>,互斥锁</mutex></p>
+<blockquote>
+<p>mutex.lock();<br>mutex.unlock();</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>basic</category>
+      </categories>
+      <tags>
+        <tag>C++</tag>
+        <tag>OS</tag>
+        <tag>Concurrency</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>C++ Memory Leak</title>
+    <url>/2019/03/22/basic/Memory%20Leak%20of%20C++/</url>
+    <content><![CDATA[<h2><span id="c-内存泄漏的常见情况">C++ 内存泄漏的常见情况</span></h2><h4><span id="在类的构造函数和析构函数中没有对应地调用new-和delete-函数">在类的构造函数和析构函数中没有对应地调用new 和delete 函数</span></h4><p>这种泄漏在两种情况下可能出现</p>
+<ol>
+<li>在堆里创建了对象占用了内存， 但没有显示地释放对象占用的内存</li>
+<li>在类的构造函数中动态地分配了内存，但在析构函数中没有释放内存<h4><span id="没有正确地清除嵌套的对象指针">没有正确地清除嵌套的对象指针</span></h4><br><a id="more"></a>
+<h4><span id="释放对象数组时在delete中没有使用方括号">释放对象数组时在delete中没有使用方括号</span></h4>指针被默认为只指向一个对象，对象数组中的其他对象的析构函数不会被调用，结果造成内存泄露。如果在方括号中间放了一个比对象数组大小还大的数字，那么编译器就会调用无效对象（内存溢出）的析构函数，会造成堆的奔溃。如果方括号中间的数字值比对象数组的大小小的话，编译器就不能调用足够多个析构函数，结果会造成内存泄露。<blockquote>
+<p><u>释放单个对象、单个基本数据类型的变量或者是基本数据类型的数组不需要大小参数，释放定义了析构函数的对象数组才需要大小参数。</u></p>
+</blockquote>
+</li>
+</ol>
+<h4><span id="指向对象的指针数组不等于对象数组">指向对象的指针数组不等于对象数组</span></h4><p>对象数组是指：数组中存放的是对象，只需要delete []p，即可调用对象数组中的每个对象的析构函数释放空间</p>
+<p>指向对象的指针数组是指：数组中存放的是指向对象的指针，不仅要释放每个对象的空间，还要释放每个指针的空间，delete []p只是释放了每个指针，但是并没有释放对象的空间，正确的做法，是通过一个循环，将每个对象释放了，然后再把指针释放了。</p>
+<h4><span id="缺少拷贝构造函数">缺少拷贝构造函数</span></h4><p>两次释放相同的内存是一种错误的做法，同时可能会造成堆的奔溃。</p>
+<p>按值传递会调用（拷贝）构造函数，引用传递不会调用。</p>
+<p>在C++中，如果没有定义拷贝构造函数，那么编译器就会调用默认的拷贝构造函数，会逐个成员拷贝的方式来复制数据成员，如果是以逐个成员拷贝的方式来复制指针被定义为将一个变量的地址赋给另一个变量。这种隐式的指针复制结果就是两个对象拥有指向同一个动态分配的内存空间的指针。当释放第一个对象的时候，它的析构函数就会释放与该对象有关的动态分配的内存空间。而释放第二个对象的时候，它的析构函数会释放相同的内存，这样是错误的。<br>所以，如果一个类里面有指针成员变量，要么必须显示的写拷贝构造函数和重载赋值运算符，要么禁用拷贝构造函数和重载赋值运算符。</p>
+<h4><span id="没有将基类的析构函数定义为虚函数">没有将基类的析构函数定义为虚函数</span></h4><p>当基类指针指向子类对象时，如果基类的析构函数不是virtual，那么子类的析构函数不会被调用，造成内存泄漏</p>
+<h2><span id="c的内存泄漏检测方法">C++的内存泄漏检测方法</span></h2><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">//用到的头文件</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> _CRTDBG_MAP_ALLOC  </span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;crtdbg.h&gt;</span></span></span><br></pre></td></tr></table></figure>
+<h4><span id="方法一">方法一</span></h4><p>在程序末尾加上 _CrtDumpMemoryLeaks(),<br>Debug 调试后，如果有内存泄漏，调试窗口会输出内存泄漏的块。<br><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line">nt _tmain(<span class="keyword">int</span> argc, _TCHAR* argv[])</span><br><span class="line">&#123;</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> *b = <span class="keyword">new</span> <span class="keyword">int</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">char</span> *b = <span class="keyword">new</span> <span class="keyword">char</span>[<span class="number">100</span>];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    _CrtDumpMemoryLeaks();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>Detected memory leaks!<br>Dumping objects -&gt;<br>{453} normal block at 0x02432CA8, 868 bytes long.<br> Data: <404303374> 34 30 34 33 30 33 33 37 34 00 00 00 00 00 00 00<br>{447} normal block at 0x024328B0, 868 bytes long.<br> Data: <404303374> 34 30 34 33 30 33 33 37 34 00 00 00 00 00 00 00<br>{441} normal block at 0x024324B8, 868 bytes long.</404303374></404303374></p>
+</blockquote>
+<p>输出包括一个块号和泄漏的大小<br>453就是我们需要的内存泄漏定位值，868 bytes long就是说这个地方有868比特内存没有释放。</p>
+<h4><span id="方法二">方法二</span></h4><p>使用 _CtrMemCheckPoint()<br><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"stdafx.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> _CRTDBG_MAP_ALLOOC</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;crtdbg.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> _tmain(<span class="keyword">int</span> argc, _TCHAR* argv[])</span><br><span class="line">&#123;</span><br><span class="line">    _CrtMemState  s1, s2, s3;</span><br><span class="line">    _CrtMemCheckpoint(&amp;s1);</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> *a= <span class="keyword">new</span> <span class="keyword">int</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">char</span> *b = <span class="keyword">new</span> <span class="keyword">char</span>[<span class="number">100</span>];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    _CrtMemCheckpoint(&amp;s2);</span><br><span class="line">    <span class="keyword">if</span> (_CrtMemDifference(&amp;s3, &amp;s1, &amp;s2)) _CrtMemDumpStatistics(&amp;s3);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//_CrtDumpMemoryLeaks();</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4><span id="定位">定位</span></h4><p>在main函数第一行加上：<strong>_CrtSetBreakAlloc(453)</strong>; 意思就是在申请453这块内存的位置中断<br>查看调用堆栈，并双击代码调用的最后一个函数就能定位到申请该内存的代码段。</p>
+<blockquote>
+<p><a href="https://blog.csdn.net/a369189453/article/details/81839053" target="_blank" rel="noopener">https://blog.csdn.net/a369189453/article/details/81839053</a></p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>basic</category>
+      </categories>
+      <tags>
+        <tag>C++</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Diffie Hellman Algorithm</title>
+    <url>/2019/03/20/Cryptographybasic4/</url>
+    <content><![CDATA[<h1><span id="diffie-hellman">Diffie-Hellman</span></h1><p><strong>Purpose:</strong> Enable two users to exchange a secret key securely that then can be used for subsequent encryption of messages </p>
+<p><strong>General idea:</strong> it is easy to calculate exponentials modulo a prime, but it is very difficult to calculate discrete logarithms.</p>
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Diffie-Hellman-Schl%C3%BCsselaustausch.svg/1200px-Diffie-Hellman-Schl%C3%BCsselaustausch.svg.png" alt=""></p>
+<p>As in the picture, Alice and Bob generate secret key K using Diffie-Hellman Algorithm.</p>
+<blockquote>
+<p>g,p are public information<br>a,b are secret information<br>$A=g^a mod(p)$<br>$B=g^b mod(p)$<br>$K=B^a mod(p)=A^b mod(p)$</p>
+</blockquote>
+<h1><span id="risk-of-d-h-algorithm">Risk of D-H algorithm</span></h1><p><img src="https://images2018.cnblogs.com/blog/653357/201805/653357-20180509203733832-1457088379.png" alt=""><br><img src="https://images2018.cnblogs.com/blog/653357/201805/653357-20180509204257982-320719224.png" alt=""></p>
+<p>In this situation, Mallory is an attacker between Alice and Bob start a Middle man attack.</p>
+<p>By modify the communication between Alice and Bob, Alice is in fact have the secret key between Alice and Mallory, while Bob have the secret key between Bob and Mallory.</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> math</span><br><span class="line"><span class="keyword">import</span> random</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">judge_prime</span><span class="params">(p)</span>:</span></span><br><span class="line"><span class="comment">#判断质数</span></span><br><span class="line">	<span class="keyword">if</span> p &lt;= <span class="number">1</span>:</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">False</span></span><br><span class="line">	i = <span class="number">2</span></span><br><span class="line">	<span class="keyword">while</span> i * i &lt;= p:</span><br><span class="line">		<span class="keyword">if</span> p % i == <span class="number">0</span>:</span><br><span class="line">			<span class="keyword">return</span> <span class="keyword">False</span></span><br><span class="line">		i += <span class="number">1</span></span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">True</span></span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_generator</span><span class="params">(p)</span>:</span></span><br><span class="line"><span class="comment">#得到所有的原根</span></span><br><span class="line">	a = <span class="number">2</span></span><br><span class="line">	list = []</span><br><span class="line">	<span class="keyword">while</span> a &lt; p:		</span><br><span class="line">		flag = <span class="number">1</span></span><br><span class="line">		<span class="keyword">while</span> flag != p:</span><br><span class="line">			<span class="keyword">if</span> (a ** flag) % p == <span class="number">1</span>:</span><br><span class="line">				<span class="keyword">break</span></span><br><span class="line">			flag += <span class="number">1</span></span><br><span class="line">		<span class="keyword">if</span> flag == (p - <span class="number">1</span>):</span><br><span class="line">			list.append(a)	</span><br><span class="line">		a += <span class="number">1</span></span><br><span class="line">	<span class="keyword">return</span> list</span><br><span class="line"> </span><br><span class="line"><span class="comment">#A，B得到各自的计算数	</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_calculation</span><span class="params">(p, a, X)</span>:</span></span><br><span class="line">	Y = (a ** X) % p</span><br><span class="line">	<span class="keyword">return</span> Y</span><br><span class="line"> </span><br><span class="line"><span class="comment">#A，B得到交换计算数后的密钥	</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_key</span><span class="params">(X, Y, p)</span>:</span></span><br><span class="line">	key = (Y ** X) % p</span><br><span class="line">	<span class="keyword">return</span> key</span><br><span class="line">	</span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">	</span><br><span class="line">	<span class="comment">#得到规定的素数</span></span><br><span class="line">	flag = <span class="keyword">False</span></span><br><span class="line">	<span class="keyword">while</span> flag == <span class="keyword">False</span>:</span><br><span class="line">		print(<span class="string">'Please input your number(It must be a prime!): '</span>, end = <span class="string">''</span>)</span><br><span class="line">		p = input()</span><br><span class="line">		p = int(p)</span><br><span class="line">		flag = judge_prime(p)</span><br><span class="line">	print(str(p) + <span class="string">' is a prime! '</span>)</span><br><span class="line">	</span><br><span class="line">	<span class="comment">#得到素数的一个原根</span></span><br><span class="line">	list = get_generator(p)</span><br><span class="line">	print(str(p) + <span class="string">' 的一个原根为：'</span>, end = <span class="string">''</span>)</span><br><span class="line">	print(list[<span class="number">-1</span>])</span><br><span class="line">	print(<span class="string">'------------------------------------------------------------------------------'</span>)</span><br><span class="line">	</span><br><span class="line">	<span class="comment">#得到A的私钥</span></span><br><span class="line">	XA = random.randint(<span class="number">0</span>, p<span class="number">-1</span>)</span><br><span class="line">	print(<span class="string">'A随机生成的私钥为：%d'</span> % XA)</span><br><span class="line">	</span><br><span class="line">	<span class="comment">#得到B的私钥</span></span><br><span class="line">	XB = random.randint(<span class="number">0</span>, p<span class="number">-1</span>)</span><br><span class="line">	print(<span class="string">'B随机生成的私钥为：%d'</span> % XB)</span><br><span class="line">	print(<span class="string">'------------------------------------------------------------------------------'</span>)</span><br><span class="line">	</span><br><span class="line">	<span class="comment">#得待A的计算数</span></span><br><span class="line">	YA = get_calculation(p, int(list[<span class="number">-1</span>]), XA)</span><br><span class="line">	print(<span class="string">'A的计算数为：%d'</span> % YA)</span><br><span class="line">	</span><br><span class="line">	<span class="comment">#得到B的计算数</span></span><br><span class="line">	YB = get_calculation(p, int(list[<span class="number">-1</span>]), XB)</span><br><span class="line">	print(<span class="string">'B的计算数为：%d'</span> % YB)</span><br><span class="line">	print(<span class="string">'------------------------------------------------------------------------------'</span>)</span><br><span class="line">	</span><br><span class="line">	<span class="comment">#交换后A的密钥</span></span><br><span class="line">	key_A = get_key(XA, YB, p)</span><br><span class="line">	print(<span class="string">'A的生成密钥为：%d'</span> % key_A)</span><br><span class="line">	</span><br><span class="line">	<span class="comment">#交换后B的密钥</span></span><br><span class="line">	key_B = get_key(XB, YA, p)</span><br><span class="line">	print(<span class="string">'B的生成密钥为：%d'</span> % key_B)</span><br><span class="line">	print(<span class="string">'---------------------------True or False------------------------------------'</span>)</span><br><span class="line">	</span><br><span class="line">	print(key_A == key_B)</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>Network Security</category>
+      </categories>
+      <tags>
+        <tag>Cryptography</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Cryptography Basic1</title>
+    <url>/2019/03/19/Cryotgraohybasic1/</url>
+    <content><![CDATA[<h1><span id="cryptography-basic">Cryptography Basic</span></h1><p><strong>Cipher</strong>: mathematic process usedfor encryption and decryption by cryptographic systems<br>Classification of cryptographic systems:</p>
+<ol>
+<li>Type of transformation<ul>
+<li>plaintext is transformed to ciphertext by some combination of stages of substitution(置换) and transposition(换位).</li>
+</ul>
+</li>
+<li>Number of Keys<ul>
+<li>Single key used by sender and receiver: symmetric, public key</li>
+<li>Sender and receiver each use different keys: asymmetric, public key</li>
+</ul>
+</li>
+<li>How plaintext is processed<ul>
+<li>One block at a time (block cipher), output block for each input block</li>
+<li>continuously (stream cipher)</li>
+</ul>
+</li>
+</ol>
+<a id="more"></a>
+<h2><span id="symmetric-encryption">Symmetric encryption</span></h2><p><img src="http://www.tech-faq.com/wp-content/uploads/2009/02/symmetric-and-asymmetric-ciphers.png" alt=""></p>
+<h3><span id="symmetric-encryption-requirements">Symmetric encryption Requirements</span></h3><ul>
+<li>Strong encryption algorithm</li>
+<li>Secret Key<br>  Sender and receiver must both have securely obtained copies of the key, and must keep it safe.<blockquote>
+<p>The algorithm doesn’t need to be kept Secret</p>
+</blockquote>
+</li>
+</ul>
+<h3><span id="feistel-cipher-structure">Feistel Cipher Structure</span></h3><p>Feistel Cipher is not a specific scheme of block cipher. It is a design model from which many different block ciphers are derived. DES is just one example of a Feistel Cipher. A cryptographic system based on Feistel cipher structure uses the same algorithm for both encryption and decryption.</p>
+<p><strong>Encryption Process</strong><br>The encryption process uses the Feistel structure consisting multiple rounds of processing of the plaintext, each round consisting of a “substitution” step followed by a permutation step.<br><img src="https://img-blog.csdn.net/20180226153642916?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZ2NfZ29uZ2NoYW8=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt=""></p>
+<ul>
+<li>input block divide into two halves(L,R)</li>
+<li>new block.R = F(K1,R) xor L</li>
+<li>Above substitution and permutation steps form a ‘round’. The number of rounds are specified by the algorithm design.</li>
+<li>In real implementation of the Feistel Cipher, such as DES, instead of using the whole encryption key during each round, a round-dependent key (a subkey) is derived from the encryption key. This means that each round uses a different key, although all these subkeys are related to the original key.</li>
+</ul>
+<p><strong>Decryption Process</strong></p>
+<blockquote>
+<p>The process of decryption in Feistel cipher is almost similar. Instead of starting with a block of plaintext, the ciphertext block is fed into the start of the Feistel structure and then the process thereafter is exactly the same as described in the given illustration.</p>
+<p>The process is said to be almost similar and not exactly same. In the case of decryption, the only difference is that the subkeys used in encryption are used in the reverse order.</p>
+</blockquote>
+<h3><span id="symmetric-block-encryption-algorithims">Symmetric block encryption algorithims</span></h3><table>
+<thead>
+<tr>
+<th>DES</th>
+<th>AES</th>
+<th>3DES</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Data Encryption Standard</td>
+<td>Advanced Data Encryption Standard</td>
+<td>Triple DES</td>
+</tr>
+</tbody>
+</table>
+<p>Block cipher is the most commonly used symmetric encryption algorithm mode.<br>Block cipher process the plaintext in fix-sized blocks and produces a block of ciphertext of equal size for each plaintext block<br><strong>Parameters</strong>:</p>
+<ul>
+<li>Block size: large block size increase security</li>
+<li>Key size: longer keys increase security</li>
+<li>Number of Rounds: multiple rounds increase security</li>
+<li>Subkey generation algorithm: greater complexity increase security</li>
+<li>Round function: greater complexity increase security</li>
+</ul>
+<h4><span id="des">DES</span></h4><p>DES (Data Encryption Standard) was most widely used from 1977-2001.</p>
+<ul>
+<li>64 bit blocks of plaintext processed at a time </li>
+<li>Key is 56 bits long, 16 subkeys are generated </li>
+<li>16 rounds of processing used in minor variation on Feistel network</li>
+</ul>
+<p>Major weakness: key length</p>
+<blockquote>
+<p>Triple DES is believed to be secure<br>AES is now adopted in U.S</p>
+</blockquote>
+<h4><span id="3des">3DES</span></h4><p>Use 3 keys and 3 executions of DES</p>
+<p>Cipher: C | Plaintext:P | Encryption: E |<br>Encryption:<br>$$C=E(K_3,D(K_2,E(K_1,P)))$$<br>Decryption:<br>$$P=D(K_3,E(K_2,D(K_1,C)))$$<br>Reason for the E-D-E and D-E-D mechanism: upward compatible</p>
+<h4><span id="aes">AES</span></h4><ul>
+<li>DES/3DES are slow in software</li>
+<li><p>AES have equal or better security and better efficiency</p>
+</li>
+<li><p>128 bit blocks of plaintext processed at a time </p>
+</li>
+<li>Key is 128, 192, or 256 bits long </li>
+<li>Assuming 128-bit key: key is expanded into array of 44 32-bit words, and each round key is composed of four words </li>
+<li>Does not use a Feistel structure </li>
+<li>Four stages are used in round, in various combinations: <ul>
+<li>Substitute bytes: using table lookup </li>
+<li>Shift rows: simple row-by-row permutation </li>
+<li>Mix columns: alters each byte in column as a function of all bytes in column </li>
+<li>Add round key: XOR current block with part of expanded key</li>
+</ul>
+</li>
+</ul>
+<h4><span id="cipher-block-mode-of-operation">Cipher Block Mode of Operation</span></h4><p><strong>ECB-Electronic Codebook Mode</strong><br><strong>CBC-Cipher Block Chaining Mode</strong><br><strong>CFB-Cipher Feedback Mode</strong><br><strong>CTR-Counter Mode</strong><br><strong>OFB-Output Feedback Mode</strong></p>
+<h3><span id="symmetric-stream-ciphers">Symmetric stream ciphers</span></h3><blockquote>
+<p>Stream ciphers are not as common, but have some particular uses<br>Often used in network protocols, don’t need to padding<br>e.g: RC4 algorithm<br>General idea</p>
+<ul>
+<li>Pseudorandom number generator produces an outputkeystream, which is unpredictable unless you have the key used as input </li>
+<li>Ciphertext is produced by XOR of keystream and plaintext</li>
+</ul>
+</blockquote>
+<p><img src="https://www.google.com/url?sa=i&amp;source=images&amp;cd=&amp;cad=rja&amp;uact=8&amp;ved=2ahUKEwigrM3qy43hAhWlmeAKHT3eDgMQjRx6BAgBEAU&amp;url=https%3A%2F%2Fcrypto.stackexchange.com%2Fquestions%2F33100%2Fdoes-a-stream-cipher-provide-perfect-secrecy&amp;psig=AOvVaw2XNK3YBoqMj7VzpXkAaOQh&amp;ust=1553063798263824" alt=""></p>
+<h4><span id="rc4-algorithm">RC4 algorithm</span></h4><p>Variable-length key, 1-256 bytes, initializes a 256-byte state vector S. At all times, S contains a permutation of all 8-bit numbers from 0 to 255. </p>
+<ul>
+<li>A byte k is generated from S by selecting one of the 256 entries. </li>
+<li>As each k is generated, entries of S are again permuted.</li>
+</ul>
+]]></content>
+      <categories>
+        <category>Network Security</category>
+      </categories>
+      <tags>
+        <tag>Cryptography</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Cipher Block Mode of Opertion</title>
+    <url>/2019/03/19/Cryptgraphybasic2/</url>
+    <content><![CDATA[<h1><span id="cipher-block-mode-of-operation">Cipher Block Mode of Operation</span></h1><p><strong>ECB-Electronic Codebook Mode</strong><br>Block of plaintext will be encrypted by the same key and directly become the cipher block.<br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/ECB_encryption.svg/601px-ECB_encryption.svg.png" alt=""></p>
+<ul>
+<li>特点：明文与密文一一对应，故重复的明文对应重复的密文。 只要观察一下密文就能知道明文中存在怎样的重复组合， 并可以此为线索来破译密码， 因此ECB模式是存在一定风险的。</li>
+<li>对ECB模式的攻击：<ul>
+<li>若转账请求包括三部分：<ul>
+<li>A-&gt;付款人账号</li>
+<li>B-&gt;收款人账号</li>
+<li>C-&gt;转账金额</li>
+</ul>
+</li>
+<li>若攻击者调换A，B，顺序，则在未破译密码的情况下操纵了明文</li>
+</ul>
+</li>
+</ul>
+<h2><span id="cbc-cipher-block-chaining-mode"><strong>CBC-Cipher Block Chaining Mode</strong></span></h2><p>Input to encryption is XOR of current Plaintext block and previous Ciphertext block(initialization vector for the first block).<br>Same key is used for each block.<br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/CBC_encryption.svg/601px-CBC_encryption.svg.png" alt=""><br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/CBC_decryption.svg/601px-CBC_decryption.svg.png" alt=""></p>
+<ul>
+<li>特点： <ul>
+<li>加密之前一定会与前一个密文分组进行异或运算，因此同样的明文加密得到的密文未必相同，故避免了ECB模式的缺陷</li>
+<li>加密过程中无法单独对一个中间的明文分组进行加密</li>
+<li>解密过程中，如果有一个密文分组损坏，最多两个明文分组会受到影响。如果密文分组中有比特丢失，则缺失比特位后面全部分组都无法解密</li>
+</ul>
+</li>
+<li>对CBC模式的攻击：<ul>
+<li><strong>填充提示攻击</strong><br>是一种利用分组密码中填充部分来进行攻击的方法。在分组密码中，当明文长度不为分组长度的整数倍时，需要在最后一个分组中填充一些数据使其凑满一个分组长度。在填充提示攻击中，攻击者会反复发送一段密文，每次发送时都对填充数据进行少许改变。由于接收者（服务器）在无法正确解密时会返回一个错误消息，攻击者通过这一错误消息就可以获得一部分与明文相关的信息。这一攻击并不仅限于CBC模式，而是适用所有需要进行分组填充的模式。<br>2014年对SSL3.0 造成了重大影响POODLE攻击实际上就是一种填充示攻击。</li>
+<li><strong>对初始化向量（IV）进行攻击</strong><br>初始化向量（IV）必须使用不可预测的随机数。然而在SSL/TLS的TLS1.0版本协议中，IV并没有使用不可预测的随机数，而是使用上一次CBC模式加密时的最后一个分组。为了防御攻击者对此进行攻击，TLS1.1以上的版本中改为了必须显示传送IV。</li>
+</ul>
+</li>
+</ul>
+<h2><span id="cfb-cipher-feedback-mode"><strong>CFB-Cipher Feedback Mode</strong></span></h2><p>CFB converts block cipher into stream cipher.<br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/CFB_encryption.svg/601px-CFB_encryption.svg.png" alt=""><br><img src="https://www.researchgate.net/profile/Yas_Alsultanny/publication/255581885/figure/fig1/AS:563789780013062@1511429366690/Block-diagram-of-the-encryption-of-the-CFB-mode.png" alt=""></p>
+<ul>
+<li>对CFB模式的攻击：<ul>
+<li>重放攻击：<br>第一天Alice 使用CFB模式向Bob发送了一条信息（五个分组）<br>第二天Alice 向Bob发送了另外一条信息（五个分组）<br>若使用相同的秘钥，<br>攻击者可以截获第一天后四个分组，并将第二天的后四个分组替换成第一天的</li>
+</ul>
+</li>
+</ul>
+<h2><span id="ctr-counter-mode"><strong>CTR-Counter Mode</strong></span></h2><p>CTR also convert block cipher into stream cipher<br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/CTR_encryption_2.svg/601px-CTR_encryption_2.svg.png" alt=""><br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/CTR_decryption_2.svg/601px-CTR_decryption_2.svg.png" alt=""></p>
+<ul>
+<li>特点<ul>
+<li>CTR模式的加密和解密使用了完全相同的模式，因此在程序实现上比较容易</li>
+<li>能够以任意的顺序对分组进行加密解密，也就意味着能够实现并行计算</li>
+</ul>
+</li>
+<li>攻击者<ul>
+<li>可以通过反转密文分组中的某些比特，引起解密后明文中响应比特也发生反转</li>
+</ul>
+</li>
+</ul>
+<h2><span id="ofb-output-feedback-mode"><strong>OFB-Output Feedback Mode</strong></span></h2><p>OFB is similar to CFB, with output of encryption function fed back to the shift register instead of ciphertext.<br>(Also, OFB mode operates on full blocks of plaintext and ciphertext, not on an s-bit subset.)<br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/OFB_encryption.svg/601px-OFB_encryption.svg.png" alt=""></p>
+<ul>
+<li>OFB 与CFB唯一的不同就是Encryption算法的输入<br>CFB Encryption 的输入是前一个密文分组<br>OFB Encryption 的输入时前一个Encryption的输出</li>
+</ul>
+]]></content>
+      <categories>
+        <category>Network Security</category>
+      </categories>
+      <tags>
+        <tag>Cryptography</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Java Learning note-2 (Hashmap & IO)</title>
+    <url>/2019/03/17/java_learning(2)/</url>
+    <content><![CDATA[<h1><span id="java_learning-note-2">Java_Learning Note -2</span></h1><h2><span id="hashmaphashtableconcurrenthashmap">Hashmap/Hashtable/ConcurrentHashMap</span></h2><p><strong>Hashtable</strong> </p>
+<ul>
+<li>底层数组+链表实现，无论key还是value都<strong>不能为null</strong>,线程<strong>安全</strong>，Synchronized,效率低</li>
+<li>初始size为11，扩容时newsize = oldsize*2 + 1</li>
+<li>计算index: index = (hash &amp; 0x7FFFFFFF) % tab.length</li>
+</ul>
+<p><strong>HashMap</strong></p>
+<ul>
+<li>底层数组+链表实现，<strong>可以储存null key 和 value</strong>, 线程<strong>不安全</strong></li>
+<li>初始size为16， 扩容newsize = oldsize*2</li>
+<li>扩容针对整个map,每次扩容时原来数组中元素依次重新计算存放位置，并重新插入</li>
+<li>插入元素后判断是否扩容</li>
+<li>当map中元素总数超过Entry数组的75%，触发扩容，为了减小链表长度</li>
+<li>计算index: index = hash &amp; (tab.length-1)<a id="more"></a>
+<strong>ConcorrentHashMap</strong></li>
+<li>底层采用分段的数组+链表实现，线程安全</li>
+<li>通过把整个Map分为N个Segment，可以提供相同的线程安全，但是效率提升N倍，默认提升16倍。</li>
+<li>Hashtable的synchronized是针对整张Hash表的，即每次锁住整张表让线程独占，ConcurrentHashMap允许多个修改操作并发进行，其关键在于使用了锁分离技术</li>
+<li>扩容：段内扩容（段内元素超过该段对应Entry数组长度的75%触发扩容，不会对整个Map进行扩容），插入前检测需不需要扩容，有效避免无效扩容</li>
+<li>Segment 是基于重入锁（ReentrantLock）：一个数据段竞争锁。每个 HashEntry 一个链表结构的元素，利用 Hash 算法得到索引确定归属的数据段，也就是对应到在修改时需要竞争获取的锁。ConcurrentHashMap 支持 CurrencyLevel（Segment 数组数量）的线程并发。每当一个线程占用锁访问一个 Segment 时，不会影响到其他的 Segment</li>
+<li>核心数据如 value，以及链表都是 volatile 修饰的，保证了获取时的可见性</li>
+</ul>
+<p>## </p>
+<h2><span id="streamio">Stream/IO</span></h2><h3><span id="控制台输入">控制台输入</span></h3><p>控制台输入由System.in完成。<br>可以把System.in包装在一个BufferedReader对象中来创建一个字符流。<br><figure class="highlight java"><table><tr><td class="code"><pre><span class="line">BufferedReader br = <span class="keyword">new</span> BufferedReader(<span class="keyword">new</span> InputStreamReader(System.in));</span><br><span class="line">``` </span><br><span class="line">BufferedReader对象创建后，可以使用br.read()读取一个字符，或者使用br.readLine()读取一个字符串。</span><br><span class="line">```java</span><br><span class="line">ch = br.read();</span><br><span class="line">str = br.readline();</span><br><span class="line">``` </span><br><span class="line"></span><br><span class="line">### 控制台输出</span><br><span class="line"></span><br><span class="line">控制台输出由print()和println()完成，这些类方法都由PrintStream定义，System.out是对该类对象的一个引用。同样，write()也可以用来往控制台写操作。</span><br><span class="line"></span><br><span class="line">### Scanner类</span><br><span class="line">(Java5新特征，通过Scanner类来获取用户的输入)</span><br><span class="line">```java</span><br><span class="line">Scanner s = <span class="keyword">new</span> Scanner(System.in);</span><br></pre></td></tr></table></figure></p>
+<p>使用next()与nextLine()方法来获取输入的字符串，在读取前用hasNext与hasNextLine判断是否还有要输入的数据。<br><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.Scanner;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ScannerDemo</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        Scanner scan = <span class="keyword">new</span> Scanner(System.in);</span><br><span class="line">        <span class="comment">// 从键盘接收数据</span></span><br><span class="line"> </span><br><span class="line">        <span class="comment">// nextLine方式接收字符串</span></span><br><span class="line">        System.out.println(<span class="string">"nextLine方式接收："</span>);</span><br><span class="line">        <span class="comment">// 判断是否还有输入</span></span><br><span class="line">        <span class="keyword">if</span> (scan.hasNextLine()) &#123;</span><br><span class="line">            String str2 = scan.nextLine();</span><br><span class="line">            System.out.println(<span class="string">"输入的数据为："</span> + str2);</span><br><span class="line">        &#125;</span><br><span class="line">        scan.close();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>Next与NextLine的区别<br>next():<br>1、一定要读取到有效字符后才可以结束输入。<br>2、对输入有效字符之前遇到的空白，next() 方法会自动将其去掉。<br>3、只有输入有效字符后才将其后面输入的空白作为分隔符或者结束符。<br>next() 不能得到带有空格的字符串。<br><br>nextLine()：<br>1、以Enter为结束符,也就是说 nextLine()方法返回的是输入回车之前的所有字符。<br>2、可以获得空白。</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>Java Learning note-1 (JVM-JMM)</title>
+    <url>/2019/03/17/JVM_basic/</url>
+    <content><![CDATA[<h1><span id="java-virtual-machine-jvm">Java Virtual Machine (JVM)</span></h1><p>The JVM is an abstract computing machine that enables a computer to run a Java program. There are three notions of JVM: <strong>specification</strong> (where working of JVM is specified. But the implementation has been provided by Sun and other companies), <strong>implementation</strong> (known as (JRE) Java Runtime Environment) and <strong>instance</strong> (after writing Java command, to run Java class, an instance of JVM is created).</p>
+<h2><span id="jvm-memory-model-jmm">JVM Memory Model (JMM)</span></h2><p><img src="https://cdn1.howtodoinjava.com/wp-content/uploads/2014/08/JVM-Memory-Area-Parts.jpg" alt=""></p>
+<a id="more"></a>
+<h3><span id="heap-area">Heap Area</span></h3><p>The heap area represents the runtime data area, from which the memory for all java <strong>class instances</strong> and <strong>arrays</strong> is allocated. The heap is <strong>created when the JVM starts up</strong> and may increase or decrease in size while the application runs. The heap can be of fixed size or variable size depending on the garbage collection strategy. By default, the maximum heap size is set to 64 MB.</p>
+<h4><span id="heap-memory-structure">Heap Memory structure</span></h4><p><img src="https://i2.wp.com/betsol.com/wp-content/uploads/2017/06/java-memory-management-1.jpg?resize=1024%2C425&amp;ssl=1" alt=""></p>
+<p>JVM Heap is physically divided into two different generations: nursery(young generation) and old space(old generation).</p>
+<p>The nursery is a part of the heap reserved for allocation of <strong>new objects.</strong> When the nursery becomes full, garbage is collected by running a special young collection, where all the objects that have lived long enough in the nursery are promoted (moved) to the old space, thus freeing up the nursery for more object allocation. This garbage collection is called <strong>Minor GC</strong>. The nursery is divide into three parts – <strong>Eden Memory</strong> and two <strong>Survivor Memory</strong> spaces.</p>
+<blockquote>
+<p>Important things about Nursery space:</p>
+<blockquote>
+<p>Most of the newly created objects are located in the Eden Memory space.</p>
+<p>When Eden space is filled with objects, Minor GC is performed and all the survivor objects are moved to one of the survivor spaces.</p>
+<p>Minor GC also checks the survivor objects and moves them to the other survivor space. So at a time, one of the survivor space is always empty</p>
+<p>Objects that have survived many cycles of GC, are moved to the old generation memory space. Usually it is done by setting a threshold for the age of the nursery objects before they become eligible to promote to old generation</p>
+</blockquote>
+</blockquote>
+<p>When the old generation becomes full, garbage is collected there and the process is called as old collection. Old generation memory contains the objects that are long lived and survived after many rounds of Minor GC. Usually garbage collection is performed in Old generation memory when it’s full. Old generation garbage collection is called as <strong>Major GC</strong> and usually takes longer time. The reasoning behind a nursery is that most objects are temporary and short lived. A young collection is designed to be swift at finding newly allocated objects that are still alive and moving them away from the nursery. Typically, a young collection frees a given amount of memory much faster than an old collection or a garbage collection of a single-generational heap (a heap without a nursery).</p>
+<h3><span id="method-area-and-runtime-constant-pool">Method area and runtime constant pool</span></h3><p>Method area stores <strong>per-class structures</strong> such as the <strong>runtime constant pool</strong>; <strong>field and method data</strong>; the code for methods and constructors, including the special methods used in class, instance, and interface initialization.</p>
+<p>The method area is created on the virtual machine startup. Although it is logically a part of the heap but it can or cannot be garbage collected, whereas we already read that garbage collection in heap is not optional; it’s mandatory. The method area may be of a fixed size or may be expanded as required by the computation and may be contracted if a larger method area becomes unnecessary. The memory for the method area does not need to be contiguous.</p>
+<h3><span id="jvm-stacks">JVM Stacks</span></h3><p>Each JVM threads has a private stack created at the same time as that of the thread. The stack stores frames. A frame is used to store data and partial results and to perform dynamic linking, return values for methods, and dispatch exceptions.</p>
+<p>It holds local variables and partial results and plays a part in the method invocation and return. Because this stack is never manipulated directly, except to push and pop frames, the frames may be heap allocated. Similar to the heap, the memory for this stack does not need to be contiguous.</p>
+<h3><span id="native-method-stacks">Native method stacks</span></h3><p>Native method stacks is called C stacks; it support native methods (methods written in a language other than the Java programming language), typically allocated per each thread when each thread is created. Java Virtual Machine implementations that cannot load native methods and that do not themselves rely on conventional stacks need not supply native method stacks.</p>
+<p>The size of native method stacks can be either fixed or dynamic.</p>
+<h3><span id="pc-registers">PC Registers</span></h3><p>Each of the JVM threads has its own program counter (pc) register. At any point, each of the JVM threads is executing the code of a single method, namely the current method for that thread.</p>
+<p>As the Java applications can contain some native code (for example, using native libraries), we have two different ways for native and non-native methods. If the method is not native (that is, a Java code), the PC register contains the address of the JVM instruction currently being executed. If the method is native, the value of the JVM’s PC register is undefined.</p>
+<h2><span id="garbage-collection">Garbage collection</span></h2><p>Garbage Collection is the process of freeing space in the heap for allocation of new objects. One of the best feature of Java is the automatic garbage collection. One of the basic way of garbage collection involves three steps:</p>
+<ul>
+<li>Marking: identifying which objects are in use and which ones are not in use</li>
+<li>Normal Deletion: Garbage Colletor removes the unused objects and reclaims the free space to be allocated to other objects</li>
+<li>Deletion with Compacting: After deletion, move all the survived objects together.</li>
+</ul>
+<h3><span id="mark-and-sweep-model-of-garbage-collection">Mark and Sweep Model of Garbage Collection</span></h3><p>JVM uses the mark and sweep garbage collection model for performing garbage collection of the whole heap. A mark and sweep garbage collection consists of two phases, the mark phase and the sweep phase.</p>
+<p>During the mark phase, all the objects that are reachable from Java threads, native handlers and other root sources are marked as alive, as well as the objects that are reachable from these objects and so forth. This process identifies and marks all objects that are still used, and the rest can be considered garbage.</p>
+<p>During the sweep phase, the heap is traversed to find the gaps between the live objects. These gaps are recorded in a free list and are made available for new object allocation.</p>
+<h3><span id="java-garbage-collection-types">Java Garbage Collection Types</span></h3><ul>
+<li><strong>Serial GC</strong> (-XX:+UseSerialGC): Serial GC uses the simple mark-sweep-compact approach for young and old generations garbage collection that is, Minor and Major GC</li>
+<li><strong>Parallel GC</strong> (-XX:+UseParallelGC): Parallel GC is same as Serial GC except that, it spawns N threads for young generation garbage collection where N is the number of CPU cores in the system. We can control the number of threads using</li>
+<li><strong>Parallel Old GC</strong> (-XX:+UseParallelOldGC): This is same as Parallel GC except that it uses multiple threads for both young generation and old generation garbage collection</li>
+<li><strong>Concurrent Mark Sweep (CMS) Collector</strong> (-XX:+UseConcMarkSweepGC): CMS is also referred as concurrent low pause collector. It does the garbage collection for old generation. CMS collector tries to minimize the pauses due to garbage collection by doing most of the garbage collection work concurrently within the application threads. CMS collector on young generation uses the same algorithm as that of the parallel collector. This garbage collector is suitable for responsive applications where we can’t afford longer pause times.</li>
+<li><strong>G1 Garbage Collector (-XX:+UseG1GC)</strong>: The garbage first or G1 Garbage Collector is available from Java 7 and its long term goal is to replace the CMS collector. The G1 collector is a parallel, concurrent and incrementally compact low-pause garbage collector. Garbage first collector doesn’t work like other collectors and there is no concept of young and old generation space. It divides the heap space into multiple equal-sized heap regions. When a garbage collector is invoked, it first collects the region with lesser live data, hence “Garbage First”</li>
+</ul>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>Notes for DB Principle- Intermediate SQL</title>
+    <url>/2019/03/10/DB-ch4/</url>
+    <content><![CDATA[<h1><span id="chapter-4-intermediate-sql">Chapter 4: Intermediate SQL</span></h1><p>[TOC]</p>
+<a id="more"></a>
+<h2><span id="join-expressions">Join Expressions</span></h2><p>Join operations take two relations and return as a result another relation.</p>
+<p>A join operation is a Cartesian product which requires that tuples in the two relations match<b>(under some condition)</b> </p>
+<p>Join operations are typically used as subquery expressions in the from clause.</p>
+<blockquote>
+<p><strong>Outer Join</strong><br>An extension of the join operation that avoids loss of information.<br>Join and then adds tuples form one relation that does not match tuples in the other relation to the result of the join<br>Uses null values.</p>
+<blockquote>
+<p>Left outer Join:<br>Reserve the attributes don’t match in the left relation<br>Right outer Join:<br>Reserve the attributes don’t match in the right relation<br>Full outer Join:<br>Reserve the attributes don’t match in both relations</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p><strong>Join Conditions</strong><br>defines which tuples in the two relations match and what attributes are present in the result of the join.</p>
+</blockquote>
+<blockquote>
+<p><strong>E.g:</strong><br>courser INNER JOIN prereq ON<br>course.course_id = prereq.course_id</p>
+<blockquote>
+<p>Find the course ID, semeseter, year and title of each course offered by the Comp. Sci. department:<br><strong>select</strong> section.course_id, semester, year, title<br><strong>from</strong> section, course<br><strong>where</strong> section.course_id = course.course_id <strong>and</strong> dept_name = ‘Comp. Sci.’<br><br><br>same with:<br><strong>select</strong> section.course_id, semester, year, title<br><strong>from</strong> section <strong>join</strong> course<br><strong>where</strong> dept_name = ‘Comp. Sci.’</p>
+</blockquote>
+</blockquote>
+<h2><span id="views">Views</span></h2><p>In some cases it is not desirable for all users to see the entire logical model.<br>A <strong>view</strong> provides <u>a mechanism to hide certain data from the view of vertain users</u><br>Any relation that is not of the <u>conceptual model</u> but is made visible to a user as a “virtual relation” is called a view.<br></p>
+<h3><span id="view-definition">View Definition</span></h3><p>A view is defined using the <strong>create view</strong> statement with the forum:<br><br><strong>create view</strong> v <strong>as</strong> &lt; query expression&gt; <br><br>and the view name is represented by <em>v</em></p>
+<p>View definition is not the same as <strong><del>creating a new relation</del></strong> but <strong>evaluating the query expression</strong></p>
+<p>Rather, a view definition causes the <strong>saving of an expression</strong>. The expression is substituted into queries using the view.</p>
+<h3><span id="example-views">Example Views</span></h3><blockquote>
+<p>A view of instructors without their salary:<br><strong>create view</strong> faculty <strong>as</strong><br><strong>select</strong> ID, name, dept_name<br><strong>from</strong> instructors</p>
+</blockquote>
+<blockquote>
+<p>Find all instructors in the Biology department<br><strong>select</strong> name<br><strong>from</strong> faculty<br><strong>where</strong> dept_name = ‘Biology’</p>
+</blockquote>
+<blockquote>
+<p>Create a view of department salary totals<br><strong>create view</strong> departments_total_salary(dept_name, total_salary) <strong>as</strong><br><strong>select</strong> dept_name, <strong>sum</strong>(salary)<br><strong>from</strong> instructors<br><strong>group by</strong> dept_name </p>
+</blockquote>
+<h3><span id="views-defined-using-other-views">Views defined using other views</span></h3><ul>
+<li>One view may be used in the expression defining of another view</li>
+<li>A view relation v1 is said to <strong>depend directly</strong> on a relavition v2 if v2 is used in the expression defining v1</li>
+<li>A view relation v1 is said to <strong>depend</strong> on view relation v2 if either v1 depends directly to v2 or there is a path of dependencies from v1 to v2 </li>
+<li>A view relation v is said to be <strong>recursive</strong>  if it depends on itself.</li>
+</ul>
+<h3><span id="view-expansion">View expansion</span></h3><ul>
+<li>A way to define the meaning of views defined in terms of other views</li>
+<li>Let view v1 be defined by an expression e1 that may itself contain uses of view relations</li>
+<li>View expansion of an expression repeats the following replacement step:<blockquote>
+<p><strong>repeat</strong><br>Find any view relation vi in e1<br>Replace the view relation vi by the expression deﬁning vi<br><strong>until</strong> no more view relations are present in e1  </p>
+</blockquote>
+</li>
+</ul>
+<h3><span id="update-of-a-view">Update of a View</span></h3><p>“faculty” is a view</p>
+<blockquote>
+<p><strong>insert into</strong> faculty <strong>values</strong>(‘30765’, ‘Green’, ‘Music’)</p>
+</blockquote>
+<p><strong>some updates can’t be translated uniquely</strong></p>
+<blockquote>
+<p><strong>create view</strong> instructor_info as<br><strong>select</strong> ID, name, building<br><strong>from</strong> instructor, department<br><strong>where</strong> instructor.dept_name= department.dept_name; </p>
+</blockquote>
+<blockquote>
+<p><strong>insert into</strong> instructor values(‘69987’, ‘White’, ‘Taylor’)</p>
+<blockquote>
+<p>If Talyor in multi departments, which department should be?<br>What if Talyor don’t belong to any department.</p>
+</blockquote>
+</blockquote>
+<p><strong>Most SQL inplementions only allow updated on simple views</strong><br>●  The <strong>from</strong> clause has <strong>only one database relation</strong>.<br>●  The <strong>select</strong> clause contains <strong>only attribute names of the relation</strong>, and does not have any expressions, aggregates, or distinct speciﬁcation.<br>●  Any attribute not listed in the select clause can be set to null<br>●  The query does not have a group by or having clause.</p>
+<h2><span id="transactions">Transactions</span></h2><p>Unit of work<br>Atomic Transaction:either fully executed or rolled back as if it never occured.<br>Isolation from concurrent Transactions<br>Transaction begin implicitly and ended by commit work or roll back work<br>But on most databases, each SQL statement commits automatically</p>
+<h2><span id="integrity-constraints">Integrity Constraints</span></h2><p>Integrity constraints guard against accidental damage to the database, by ensuring that authorized changes to the database do not result in a loss of data consistency.</p>
+<ul>
+<li>e.g: A customer must have a phone number</li>
+</ul>
+<p><strong>constraints on a single relation</strong>:</p>
+<blockquote>
+<p><strong>not null</strong></p>
+<blockquote>
+<p>Declare name and budget to be not null </p>
+</blockquote>
+<p><strong>unique(A1, A2, …, $A_m$)</strong></p>
+<blockquote>
+<ul>
+<li>The unique specification states the attibutes(A1, A2, …, $A_m$) form a canditate key</li>
+<li>Canditates keys are permittede to be null</li>
+</ul>
+</blockquote>
+<p><strong>check(P)</strong><br> where P is a predicate<br> (predicate: 谓词，返回值是真值的函数<br> E.g: Like, Between, In, Exists)</p>
+<blockquote>
+<p>The CHECK constraint is used to limit the value range that can be placed in a column.<br><br>If you define a CHECK constraint on a single column it allows only certain values for this column.<br><br>If you define a CHECK constraint on a table it can limit the values in certain columns based on values in other columns in the row.</p>
+</blockquote>
+</blockquote>
+<p> <strong>Referencial Integrity</strong><br> Ensures that a value that appears in one relation for a given set of attributes also appears for a certain set of attributes in another relation. </p>
+<p><strong>cascade</strong></p>
+<blockquote>
+<p>cascade 表示级联操作，就是说，如果主键表中被参考字段更新，外键表中也更新，主键表中的记录被删除，外键表中改行也相应删除</p>
+<blockquote>
+<p>on delete cascade<br> on update cascade</p>
+</blockquote>
+</blockquote>
+<h2><span id="sql-build-in-data-types">SQL Build in Data Types</span></h2><ul>
+<li>date: Dates<br>E.g: <strong>date</strong> “2019-3-11”</li>
+<li>time: time of day<br>E.g: <strong>time</strong> ‘09:00:30’<ul>
+<li>timestamp: date + time<br>*interval period of time<blockquote>
+<p>Subtracting a time/date/timestamp value from another gives an interval value<br>Interval values can be used to added to time/date/timestamp values</p>
+</blockquote>
+</li>
+</ul>
+</li>
+</ul>
+<h2><span id="other-features">Other Features</span></h2><ul>
+<li><strong>create index</strong> studentID index <strong>on</strong> student(ID)</li>
+<li>large objects<blockquote>
+<p>book review <strong>clob</strong> :</p>
+<blockquote>
+<p>character large object,store tect into DBs and support key word search and other Features</p>
+</blockquote>
+<p>image <strong>blob</strong>, movie <strong>blob</strong>:</p>
+<blockquote>
+<p>binary large object,<br>don’t store image in table, pointer to binary image instead</p>
+</blockquote>
+</blockquote>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>Databases</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>DNSpoofing Lab Assignment</title>
+    <url>/2019/03/09/DNSpoofing-Lab/</url>
+    <content><![CDATA[<h1><span id="assignment-of-lab2"><center>Assignment of Lab2</center></span></h1><p><strong><center>DNSpoofing on a LAN</center></strong></p>
+<center> Saitong Zhao sz2641 N15871333 </center>
+
+<p>[TOC]</p>
+<h2><span id="exercise">Exercise</span></h2><h3><span id="1-normal-dhcp-and-dns-resolution-of-the-banks-hostname">1. Normal DHCP and DNS resolution of the bank’s hostname</span></h3><p><strong>flowchart</strong>:<br><img src="https://s2.ax1x.com/2019/03/11/ACmyhq.jpg" alt="pic1"><br><a id="more"></a><br><strong>Terminal Output</strong>:</p>
+<blockquote>
+<p><strong>Client(nslookup)</strong>:</p>
+<blockquote>
+<p>Server:         10.10.1.2<br>Address:        10.10.1.2#53<br><br>Non-authoritative answer:<br>Name:   bankofhamilton.com<br>Address: 66.55.106.88</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p><strong>DNS-good/server</strong></p>
+<blockquote>
+<p><strong>dnsmasq-dhcp</strong></p>
+<blockquote>
+<p>DHCPDISCOVER(eth1) 10.10.1.29 02:c6:48:64:56:73<br>DHCPOFFER(eth1) 10.10.1.29 02:c6:48:64:56:73<br>DHCPREQUEST(eth1) 10.10.1.29 02:c6:48:64:56:73<br>DHCPACK(eth1) 10.10.1.29 02:c6:48:64:56:73 client</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p><strong>Tcpdump</strong></p>
+<blockquote>
+<p>16:28:13.153292 IP 0.0.0.0.68 &gt; 255.255.255.255.67: BOOTP/DHCP, Request from 02:c6:48:64:56:73, length 300<br>16:28:13.654247 IP 10.10.1.2.67 &gt; 10.10.1.29.68: BOOTP/DHCP, Reply, length 300<br>16:28:13.657393 IP 0.0.0.0.68 &gt; 255.255.255.255.67: BOOTP/DHCP, Request from 02:c6:48:64:56:73, length 300<br>16:28:14.192612 IP 10.10.1.2.67 &gt; 10.10.1.29.68: BOOTP/DHCP, Reply, length 300<br><br>16:39:18.589209 IP 10.10.1.29.49400 &gt; 10.10.1.2.53: 24581+ A? bankofhamilton.com. (36)<br>16:39:19.116951 IP 10.10.1.2.53 &gt; 10.10.1.29.49400: 24581 1/4/0 A 66.55.106.88 (134)</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<h3><span id="2-arp-spoofing">2. ARP Spoofing</span></h3><p><strong>flowchart</strong>:<br><img src="https://s2.ax1x.com/2019/03/11/ACmsNn.jpg" alt="pic2"><br><strong>Terminal output</strong>:</p>
+<blockquote>
+<p><strong>Client</strong>:</p>
+<blockquote>
+<p><strong>first arp check(1)</strong>:</p>
+<blockquote>
+<p>dns-good-link-0 (10.10.1.2) at 02:40:9a:33:35:ad [ether] on eth1</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p><strong>Second arp check(3)</strong></p>
+<blockquote>
+<p>attacker-link-0 (10.10.1.254) at 02:84:62:f7:3e:f6 [ether] on eth1<br>dns-good-link-0 (10.10.1.2) at 02:84:62:f7:3e:f6 [ether] on eth1</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p><strong>nslookup(5)</strong></p>
+<blockquote>
+<p>Server:         10.10.1.2<br>Address:        10.10.1.2#53<br><br>Non-authoritative answer:<br>Name:   bankofhamilton.com<br>Address: 128.163.233.173</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<blockquote>
+<p><strong>DNS-good</strong></p>
+<blockquote>
+<p><strong>Tcpdump(6)</strong><br>Client send query to attacker</p>
+<blockquote>
+<p>17:42:37.523962 02:c6:48:64:56:73 &gt; 02:84:62:f7:3e:f6, ethertype IPv4 (0x0800), length 78: 10.10.1.29.50608 &gt; 10.10.1.2.53: 18540+ A? bankofhamilton.com. (36) </p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p>Attacker send query to server</p>
+<blockquote>
+<p>17:42:37.822971 02:84:62:f7:3e:f6 &gt; 02:40:9a:33:35:ad, ethertype IPv4 (0x0800), length 78: 10.10.1.29.50614 &gt; 10.10.1.2.53: 18630+ A? bankofhamilton.com. (36)</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p>Attacker send response to client</p>
+<blockquote>
+<p>17:42:37.824572 02:84:62:f7:3e:f6 &gt; 02:c6:48:64:56:73, ethertype IPv4 (0x0800), length 94: 10.10.1.2.53 &gt; 10.10.1.29.50614: 18540 1/0/0 A 128.163.233.173 (52)</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p>Server send response to attacker</p>
+<blockquote>
+<p>17:42:38.023812 02:40:9a:33:35:ad &gt; 02:84:62:f7:3e:f6, ethertype IPv4 (0x0800), length 94: 10.10.1.2.53 &gt; 10.10.1.29.50614: 18630 1/0/0 A 66.55.106.88 (52)</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<blockquote>
+<p><strong>Attacker</strong>:</p>
+<blockquote>
+<p><strong>Arpspoof(2)</strong></p>
+<blockquote>
+<p>2:84:62:f7:3e:f6 2:40:9a:33:35:ad 0806 42: arp reply 10.10.1.29 is-at 2:84:62:f7:3e:f6<br>2:84:62:f7:3e:f6 2:c6:48:64:56:73 0806 42: arp reply 10.10.1.2 is-at 2:84:62:f7:3e:f6</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<blockquote>
+<blockquote>
+<p><strong>Start DNS spoof(4)</strong></p>
+<blockquote>
+<p>dnsspoof: listening on eth1 [udp dst port 53 and not src 10.10.1.254]</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<h3><span id="3-dhcp-masquerade">3. DHCP masquerade</span></h3><p><strong>flow chart</strong>:<br><img src="https://s2.ax1x.com/2019/03/11/ACmrAs.jpg" alt="pic3"><br><strong>Terminal output</strong>:</p>
+<blockquote>
+<p><strong>Client</strong></p>
+<blockquote>
+<p><strong>ifconfig</strong></p>
+<blockquote>
+<p>eth1      Link encap:Ethernet  HWaddr 02:c6:48:64:56:73<br>inet addr:<strong>10.10.1.29</strong>  Bcast:10.10.1.255  Mask:255.255.255.0<br>inet6 addr: fe80::c6:48ff:fe64:5673/64 Scope:Link<br>UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1<br>RX packets:7634 errors:0 dropped:0 overruns:0 frame:0<br>TX packets:2674 errors:0 dropped:0 overruns:0 carrier:0<br>collisions:0 txqueuelen:1000<br>RX bytes:449827 (449.8 KB)  TX bytes:192370 (192.3 KB)</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p><strong>cat /etc/resolv.conf</strong></p>
+<blockquote>
+<p># Dynamic resolv.conf(5) file for glibc resolver(3) generated by resolvconf(8)<br>#     DO NOT EDIT THIS FILE BY HAND – YOUR CHANGES WILL BE OVERWRITTEN<br>nameserver <strong>10.10.1.254</strong></p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p><strong>nslookup</strong></p>
+<blockquote>
+<p>Server:         10.10.1.254<br>Address:        10.10.1.254#53<br><br>Name:   bankofhamilton.com<br>Address: 128.163.233.173</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<blockquote>
+<p><strong>DNS-good/Server</strong></p>
+<blockquote>
+<p><strong>dnsmasq</strong></p>
+<blockquote>
+<p>dnsmasq-dhcp: DHCPRELEASE(eth1) 10.10.1.29 02:c6:48:64:56:73<br>dnsmasq-dhcp: DHCPDISCOVER(eth1) 10.10.1.29 02:c6:48:64:56:73<br>dnsmasq-dhcp: DHCPOFFER(eth1) 10.10.1.29 02:c6:48:64:56:73</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p><strong>tcpdump(DNS)</strong><br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">18:21:53.794731 02:c6:48:64:56:73 &gt; ff:ff:ff:ff:ff:ff, ethertype IPv4 (0x0800), length 342: (tos 0x10, ttl 128, id 0, offset 0, flags [none], proto UDP (17), length 328)</span><br><span class="line">    0.0.0.0.68 &gt; 255.255.255.255.67: BOOTP/DHCP, Request from 02:c6:48:64:56:73, length 300, xid 0x35fe887c, Flags [none]</span><br><span class="line">          Client-Ethernet-Address 02:c6:48:64:56:73</span><br><span class="line">          Vendor-rfc1048 Extensions</span><br><span class="line">            Magic Cookie 0x63825363</span><br><span class="line">            DHCP-Message Option 53, length 1: Discover</span><br><span class="line">            Requested-IP Option 50, length 4: 10.10.1.29</span><br><span class="line">            Hostname Option 12, length 6: &quot;client&quot;</span><br><span class="line">            Parameter-Request Option 55, length 7:</span><br><span class="line">              Subnet-Mask, BR, Time-Zone, Default-Gateway</span><br><span class="line">              Domain-Name, Domain-Name-Server, Option 119</span><br><span class="line">18:21:53.798385 02:c6:48:64:56:73 &gt; ff:ff:ff:ff:ff:ff, ethertype IPv4 (0x0800), length 342: (tos 0x10, ttl 128, id 0, offset 0, flags [none], proto UDP (17), length 328)</span><br><span class="line">    0.0.0.0.68 &gt; 255.255.255.255.67: BOOTP/DHCP, Request from 02:c6:48:64:56:73, length 300, xid 0x35fe887c, Flags [none]</span><br><span class="line">          Client-Ethernet-Address 02:c6:48:64:56:73</span><br><span class="line">          Vendor-rfc1048 Extensions</span><br><span class="line">            Magic Cookie 0x63825363</span><br><span class="line">            DHCP-Message Option 53, length 1: Request</span><br><span class="line">            Server-ID Option 54, length 4: 10.10.1.254</span><br><span class="line">            Requested-IP Option 50, length 4: 10.10.1.29</span><br><span class="line">            Hostname Option 12, length 6: &quot;client&quot;</span><br><span class="line">            Parameter-Request Option 55, length 7:</span><br><span class="line">              Subnet-Mask, BR, Time-Zone, Default-Gateway</span><br><span class="line">              Domain-Name, Domain-Name-Server, Option 119</span><br><span class="line">18:21:54.292102 02:40:9a:33:35:ad &gt; 02:c6:48:64:56:73, ethertype IPv4 (0x0800), length 342: (tos 0xc0, ttl 64, id 6183, offset 0, flags [none], proto UDP (17), length 328)</span><br><span class="line">    10.10.1.2.67 &gt; 10.10.1.29.68: BOOTP/DHCP, Reply, length 300, xid 0x35fe887c, Flags [none]</span><br><span class="line">          Your-IP 10.10.1.29</span><br><span class="line">          Server-IP 10.10.1.2</span><br><span class="line">          Client-Ethernet-Address 02:c6:48:64:56:73</span><br><span class="line">          Vendor-rfc1048 Extensions</span><br><span class="line">            Magic Cookie 0x63825363</span><br><span class="line">            DHCP-Message Option 53, length 1: Offer</span><br><span class="line">            Server-ID Option 54, length 4: 10.10.1.2</span><br><span class="line">            Lease-Time Option 51, length 4: 259200</span><br><span class="line">            RN Option 58, length 4: 129600</span><br><span class="line">            RB Option 59, length 4: 226800</span><br><span class="line">            Subnet-Mask Option 1, length 4: 255.255.255.0</span><br><span class="line">            BR Option 28, length 4: 10.10.1.255</span><br><span class="line">            Default-Gateway Option 3, length 4: 10.10.1.2</span><br><span class="line">            Domain-Name-Server Option 6, length 4: 10.10.1.2</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+</blockquote>
+<blockquote>
+<blockquote>
+<p><strong>tcpdump(UDP)</strong></p>
+<blockquote>
+<p>NULL</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<blockquote>
+<p><strong>Attacker</strong></p>
+<blockquote>
+<p><strong>dnsmasq</strong></p>
+<blockquote>
+<p>dnsmasq-dhcp: DHCPDISCOVER(eth1) 10.10.1.29 02:c6:48:64:56:73<br>dnsmasq-dhcp: DHCPOFFER(eth1) 10.10.1.29 02:c6:48:64:56:73<br>dnsmasq-dhcp: DHCPREQUEST(eth1) 10.10.1.29 02:c6:48:64:56:73<br>dnsmasq-dhcp: DHCPACK(eth1) 10.10.1.29 02:c6:48:64:56:73 client<br><strong>tcpdump(DNS)</strong><br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">18:21:53.798403 02:c6:48:64:56:73 &gt; ff:ff:ff:ff:ff:ff, ethertype IPv4 (0x0800), length 342: (tos 0x10, ttl 128, id 0, offset 0, flags [none], proto UDP (17), length 328)</span><br><span class="line">    0.0.0.0.68 &gt; 255.255.255.255.67: BOOTP/DHCP, Request from 02:c6:48:64:56:73, length 300, xid 0x35fe887c, Flags [none]</span><br><span class="line">          Client-Ethernet-Address 02:c6:48:64:56:73</span><br><span class="line">          Vendor-rfc1048 Extensions</span><br><span class="line">            Magic Cookie 0x63825363</span><br><span class="line">            DHCP-Message Option 53, length 1: Discover</span><br><span class="line">            Requested-IP Option 50, length 4: 10.10.1.29</span><br><span class="line">            Hostname Option 12, length 6: &quot;client&quot;</span><br><span class="line">            Parameter-Request Option 55, length 7:</span><br><span class="line">              Subnet-Mask, BR, Time-Zone, Default-Gateway</span><br><span class="line">              Domain-Name, Domain-Name-Server, Option 119</span><br><span class="line">18:21:53.799365 02:84:62:f7:3e:f6 &gt; 02:c6:48:64:56:73, ethertype IPv4 (0x0800), length 342: (tos 0xc0, ttl 64, id 13002, offset 0, flags [none], proto UDP (17), length 328)</span><br><span class="line">    10.10.1.254.67 &gt; 10.10.1.29.68: BOOTP/DHCP, Reply, length 300, xid 0x35fe887c, Flags [none]</span><br><span class="line">          Your-IP 10.10.1.29</span><br><span class="line">          Server-IP 10.10.1.254</span><br><span class="line">          Client-Ethernet-Address 02:c6:48:64:56:73</span><br><span class="line">          Vendor-rfc1048 Extensions</span><br><span class="line">            Magic Cookie 0x63825363</span><br><span class="line">            DHCP-Message Option 53, length 1: Offer</span><br><span class="line">            Server-ID Option 54, length 4: 10.10.1.254</span><br><span class="line">            Lease-Time Option 51, length 4: 259200</span><br><span class="line">            RN Option 58, length 4: 129600</span><br><span class="line">            RB Option 59, length 4: 226800</span><br><span class="line">            Subnet-Mask Option 1, length 4: 255.255.255.0</span><br><span class="line">            BR Option 28, length 4: 10.10.1.255</span><br><span class="line">            Default-Gateway Option 3, length 4: 10.10.1.254</span><br><span class="line">            Domain-Name-Server Option 6, length 4: 10.10.1.254</span><br><span class="line">18:21:53.801998 02:c6:48:64:56:73 &gt; ff:ff:ff:ff:ff:ff, ethertype IPv4 (0x0800), length 342: (tos 0x10, ttl 128, id 0, offset 0, flags [none], proto UDP (17), length 328)</span><br><span class="line">    0.0.0.0.68 &gt; 255.255.255.255.67: BOOTP/DHCP, Request from 02:c6:48:64:56:73, length 300, xid 0x35fe887c, Flags [none]</span><br><span class="line">          Client-Ethernet-Address 02:c6:48:64:56:73</span><br><span class="line">          Vendor-rfc1048 Extensions</span><br><span class="line">            Magic Cookie 0x63825363</span><br><span class="line">            DHCP-Message Option 53, length 1: Request</span><br><span class="line">            Server-ID Option 54, length 4: 10.10.1.254</span><br><span class="line">            Requested-IP Option 50, length 4: 10.10.1.29</span><br><span class="line">            Hostname Option 12, length 6: &quot;client&quot;</span><br><span class="line">            Parameter-Request Option 55, length 7:</span><br><span class="line">              Subnet-Mask, BR, Time-Zone, Default-Gateway</span><br><span class="line">              Domain-Name, Domain-Name-Server, Option 119</span><br><span class="line">18:21:53.822093 02:84:62:f7:3e:f6 &gt; 02:c6:48:64:56:73, ethertype IPv4 (0x0800), length 342: (tos 0xc0, ttl 64, id 13004, offset 0, flags [none], proto UDP (17), length 328)</span><br><span class="line">    10.10.1.254.67 &gt; 10.10.1.29.68: BOOTP/DHCP, Reply, length 300, xid 0x35fe887c, Flags [none]</span><br><span class="line">          Your-IP 10.10.1.29</span><br><span class="line">          Server-IP 10.10.1.254</span><br><span class="line">          Client-Ethernet-Address 02:c6:48:64:56:73</span><br><span class="line">          Vendor-rfc1048 Extensions</span><br><span class="line">            Magic Cookie 0x63825363</span><br><span class="line">            DHCP-Message Option 53, length 1: ACK</span><br><span class="line">            Server-ID Option 54, length 4: 10.10.1.254</span><br><span class="line">            Lease-Time Option 51, length 4: 259200</span><br><span class="line">            RN Option 58, length 4: 129600</span><br><span class="line">            RB Option 59, length 4: 226800</span><br><span class="line">            Subnet-Mask Option 1, length 4: 255.255.255.0</span><br><span class="line">            BR Option 28, length 4: 10.10.1.255</span><br><span class="line">            Default-Gateway Option 3, length 4: 10.10.1.254</span><br><span class="line">            Domain-Name-Server Option 6, length 4: 10.10.1.254</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+</blockquote>
+</blockquote>
+<blockquote>
+<blockquote>
+<p><strong>tcpdump(udp)</strong></p>
+<blockquote>
+<p>18:45:05.564333 IP 10.10.1.29.52972 &gt; 10.10.1.254.53: 56895+ A? bankofhamilton.com. (36)<br>18:45:05.564544 IP 10.10.1.254.53 &gt; 10.10.1.29.52972: 56895* 1/0/0 A 128.163.233.173 (52)</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<h2><span id="questions">Questions</span></h2><h3><span id="q1">Q1</span></h3><p><strong>If we hadn’t put that big “FAKE” notice over the logo, would you be able to detect the DNS spoofing attack on loading the bank’s web page in your browser?</strong></p>
+<blockquote>
+<p><strong>Yes</strong>. Because when we run the command <strong>“nslookup bankofhamilton.com”</strong> we can see from the output of the terminal that the ip address we get is not the correct ip address of bankofhamilton.com.</p>
+</blockquote>
+<h3><span id="q2">Q2</span></h3><p><strong>The Diamond Banking website lets users input their username and password on a form on a web page that is loaded over HTTP. But when the user presses “Login”, the form sends the username and password to a page that is loaded over HTTPS, i.e. the username and password are sent over an encrypted connection. Explain why this is not sufficient to protect the users’ login information. What kind of attack are users left vulnerable to? How would using HTTPS for the entire site protect users against this kind of attack?</strong></p>
+<blockquote>
+<p>In this mechnism, a hacker can start middle-man attack. Because HTTPS only protect the protocol higher than TLS/SSL layer, but when an attacker using ARP Spoofing or DHCP masquerade, the attacker can get all the communications between the user and the website.<br>And Because of the Login page is loaded over HTTP, which means not encrypted, the attacker can know when the user is tramsmitting the encrypted packet with username and password. Moreover, the attacker can capture the packet with login information, when he want to login as the user, he can just re-transmit the packet to the website.<br><br>When using HTTPS for the whole site, all the communications between the user and website are encrypted, so the attacker won’t know whice packet is the user used for transmitting the login information.</p>
+</blockquote>
+<h3><span id="q3">Q3</span></h3><p><strong>Would DNSSEC protect against this kind of attack? Explain your answer.</strong></p>
+<blockquote>
+<p><strong>Yes</strong>. Because with DNSSEC, all answers from DNSSEC protected zones are digitally signed. By checking the digital signature, a DNS resolver is able to check whether the information is identical to the information served on the authoritative DNS server. The DNS request from a unautnenticated host will be denied.</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>Network Security</category>
+      </categories>
+      <tags>
+        <tag>Dnspoof</tag>
+        <tag>lab assignment</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Network Protocol Security</title>
+    <url>/2019/03/09/ch4-Network%20protocol/</url>
+    <content><![CDATA[<h1><span id="chapter-4-network-protocol-security">Chapter 4: Network Protocol Security</span></h1><p>[TOC]</p>
+<h1><span id="4-security-of-network-protocols">4-Security of Network Protocols</span></h1><h2><span id="basic-networkingwhat-security-assurances-what-problems">Basic Networking:what security assurances? What problems?</span></h2><h3><span id="example">Example</span></h3><p>In HTTP Process</p>
+<blockquote>
+<p>Can I be confident that I was indeed corresponding with the url, and ths HTTP response came from them?</p>
+</blockquote>
+<blockquote>
+<p>Can the remote site be confident about who they were corresponding with and that the HTTP response came from me?</p>
+</blockquote>
+<blockquote>
+<p>Is the data inside the HTTP request and respnse confidential?</p>
+</blockquote>
+<a id="more"></a>
+<blockquote>
+<p>Can I be sure that the data I received in the HTTP response was not tempered with? <strong>data integrity</strong></p>
+</blockquote>
+<blockquote>
+<p>Can the remote site be sure that the HTTP request they received was not tempered with? </p>
+</blockquote>
+<blockquote>
+<p>Could the remote site restrict my access based on my network address?</p>
+</blockquote>
+<blockquote>
+<blockquote>
+<p>In HTTP protocol: No peer identity authentication, no traffic flow confidentiality<br>And no data confidentiality, no assurance of data integrity.</p>
+</blockquote>
+</blockquote>
+<h2><span id="packet-sniffing">Packet Sniffing</span></h2><p>Anybody with the physical access to the local network can ‘listen’ to all the traffic traversing a link.</p>
+<p><strong>MAC flooding attack can turn a switch into a hub</strong></p>
+<ul>
+<li>Normally, a switch learns which host is on which port and then send unicast traffic only to the network segment where that host is connected.</li>
+<li>Attacker can generate fake traffic to fill MAC address table on switch with fake entries, so there is no memory for real entries.</li>
+<li>Traffic will be flooded out of all ports.<blockquote>
+<p>Hints:<br>Key differences between hubs, switches and bridges is that hub operate at Layer 1 of the OSI model, while bridges and switches operate at Layer 2 work with MAC address.<br>Hubs broadcast incoming traffic on all ports, whereas bridges and switches only route traffic towards their addressed destinations.</p>
+</blockquote>
+</li>
+</ul>
+<p><strong>MAC address spoofing</strong><br>Trivial change to the MAC address of a network interface card in softwore<br><strong>Useage</strong>: </p>
+<ul>
+<li>Bypass any MAC address filtering</li>
+<li>Impersonate another host</li>
+</ul>
+<p><strong>IP address spoofing</strong><br>Because there’s no source IP authentication -&gt; “Anyone” can put an arbitary source IP into a packet and send it out.</p>
+<blockquote>
+<p>Implications:<br>Anonymous attack: no accountability<br>Can’t get non-repudiation from addresses alone.</p>
+</blockquote>
+<p><strong>TCP Connetcion spoofing</strong><br>Need to guess a resonable sequence number. Easy if we can sniff.</p>
+<p><strong>Where to put security facilities</strong>(int TCP/IP protocal stack)</p>
+<ul>
+<li>Network level:  IP/IPSec</li>
+<li>Transport level: SSL or TLS</li>
+<li>Application level: Kerberos/ MIME<h2><span id="ssltls">SSL/TLS</span></h2><h3><span id="tls">TLS</span></h3></li>
+<li>One of the most widely used security services.</li>
+<li>TLS is an Internet standard evolved from SSL</li>
+<li>TLS is a general purpose service implemented as a set of protocols that rely on TCP<blockquote>
+<p>TLS could be provided as part of the underlying protocol and therefore be transparent to applications.</p>
+</blockquote>
+</li>
+</ul>
+<h3><span id="tls-architecture"><strong>TLS Architecture</strong></span></h3><blockquote>
+<p>TLS Connetcion</p>
+<blockquote>
+<ul>
+<li>A transport provides a suitable type of service</li>
+<li>For TLS, such connections are peer-to-peer relations</li>
+<li>Connections are transient(暂时的)</li>
+<li>Every connection is associated with one session</li>
+</ul>
+</blockquote>
+<p>TLS session</p>
+<blockquote>
+<ul>
+<li>An association between a client and a server</li>
+<li>Created by handshake protocol</li>
+<li>Define a set of cryptographic security parameters which can be shared among multiple connections</li>
+<li>Are used to avoid the expensive negotiation of new security parameters for each connection.</li>
+</ul>
+</blockquote>
+</blockquote>
+<p><strong>For a connection with TLS</strong><br><strong>Data confidentiality</strong>: symmetric cryptography on all data transmitted. Keys generated at the first of each connection<br><strong>Peer identity authentication</strong>: using public key certificates.<br><strong>Data Integrity</strong>: using a MAC appended to each transmitted message.</p>
+<h3><span id="tls-handshake">TLS handshake</span></h3><ul>
+<li>Most complex part of TLS - used before any application data tramsmitted</li>
+<li>Support the server and client authenticate</li>
+<li>Negotiate an encryption and MAC algorithm and cryptographic key to use</li>
+<li>Handshake with an asymmetric cipher to establish<blockquote>
+<p>Step 1： Client Hello<br>Client send a client hello message to server with a client-generated random number, Support Ciphers and SSL Version…</p>
+</blockquote>
+</li>
+</ul>
+<blockquote>
+<p>Step 2: Server Hello<br>Server send server hello message to client with another ramdon number, selected Cipher Suites</p>
+</blockquote>
+<blockquote>
+<p>Step 3: certificate<br>Server send its certificate to client for authentication. Client will get the public key from it after authentication.</p>
+</blockquote>
+<blockquote>
+<p>Step 4: Server Key Exchange()<br>Needed in Diffie-Hellmen for transmitting D-H parameters, not needed in RSA.</p>
+</blockquote>
+<blockquote>
+<p>Step 5: Certificate Request()<br>Server request certificate from client.对安全要求高的场景可选</p>
+</blockquote>
+<blockquote>
+<p>Step 6: Certificate Verify<br>After client verify the certificate from server, generate a random number Random3, and encrypt it with server’s public key and generate the <strong>Premaster Key</strong></p>
+</blockquote>
+<blockquote>
+<p>Step 7: Client Key Exchange<br>Client send the Premaster Key to server, then server decrypt the Premaster Key and get Random3.</p>
+</blockquote>
+<blockquote>
+<p>Step 8: Change Cipher Spec(Client)<br>Client tell server that the next messages will be encrypted by the keys negotiated before.</p>
+</blockquote>
+<blockquote>
+<p>Step 9: Encrypted Handshake Message(Client)</p>
+</blockquote>
+<blockquote>
+<p>Step 10: Change Cipher Spec</p>
+</blockquote>
+<blockquote>
+<p>Step 10:Encrypted Handshake Message(Server)</p>
+</blockquote>
+<blockquote>
+<p>Step 11: Application data</p>
+</blockquote>
+<h2><span id="httpshttp-over-ssltls">HTTPS(HTTP over SSL/TLS)</span></h2><ul>
+<li>Combination with HTTP and SSL/TLS</li>
+<li>HTTPS uses 443 port, instead of 80 for HTTP<blockquote>
+<p>Encrypted elemets in HTTPS:</p>
+<blockquote>
+<p>URL of the request document<br>Contents of the document<br>Contents of browser forms<br>Cookies sent between browser and server<br>Contents of HTTP header</p>
+</blockquote>
+</blockquote>
+</li>
+</ul>
+<p><strong>Why use HTTPS for “regular” traffic?</strong><br>Assure integrity, Protect users privacy, Ranking factor for serach engines, No longer a meaningful performance penalty.</p>
+<h2><span id="ipsec">IPSec</span></h2><p>IPSec is a suite of protocols that interact with one another to provide secure private communications across IP networks. These protocols allow the system to establish and maintain secure tunnels with peer security gateways.</p>
+<h3><span id="why-at-ip-layer">Why at IP Layer?</span></h3><ul>
+<li>Security concerns affect all layers</li>
+<li>Organization can ensure secure networks for all applications, not only those using security mechanisms.</li>
+</ul>
+<h3><span id="transport-mode-vs-tunnel-mode">Transport mode vs. tunnel mode</span></h3><ul>
+<li>Transport mode: protects <strong>payload</strong> of IP packet, used for end-to-end comunication between two hosts.</li>
+<li>Tunnel mode: protects <strong>entire</strong> IP packet, including header. After extra IPSec header is added, the entire packet is encapsulated in a new IP packet with new outer IP header.</li>
+<li>New packet may have differnet source and destination IP address - internal IP header is invisiable to intermediate routers.</li>
+</ul>
+<h3><span id="transport-mode">Transport mode:</span></h3><blockquote>
+<p>provide protection primiarily on upper layer protocols</p>
+<blockquote>
+<p>Exmaples include TCP/UDP segment or ICMP packet</p>
+</blockquote>
+<p>Typically used on end-to-end communication between two hosts<br><strong>ESP</strong> in transport mode encrypts and optionally authenticates <strong>IP payload</strong> but not ip header.<br><strong>AH</strong> in transport mode authenticates the IP payload and select portions of the IP header.</p>
+</blockquote>
+<h3><span id="tunnel-mode">Tunnel mode</span></h3><blockquote>
+<p>provide protection to the entire IP packet.<br>Used when one or both ends of a security association are a security gateway<br>A number of hosts behind the firewall may engaged in secure communications without implementing IPSec<br><strong>ESP</strong> in transport mode encrypts and optionally authenticates <strong>entire Inner IP packet</strong>, including the inner IP header.<br><strong>AH</strong> in transport mode authenticates the entire IP packet and the selected portions of the outer IP header.</p>
+</blockquote>
+<h2><span id="email-security">Email Security</span></h2>]]></content>
+      <categories>
+        <category>Network Security</category>
+      </categories>
+      <tags>
+        <tag>TLS</tag>
+        <tag>Sniffing</tag>
+        <tag>IPsec</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Basic Concepts</title>
+    <url>/2019/01/20/tencent/</url>
+    <content><![CDATA[<h1><span id="笔记1">笔记（1）</span></h1><h3><span id="静态变量全局变量和局部变量">静态变量，全局变量和局部变量</span></h3><blockquote>
+<p><strong>从作用域看</strong><br>1&gt;全局变量具有全局作用域。全局变量只需在一个源文件中定义，就可以作用于所有的源文件。当然，其他不包含全局变量定义的源文件需要用extern关键字再次声明这个全局变量。<br><br>2&gt;静态局部变量具有局部作用域，它只被初始化一次，自从第一次被初始化直到程序运行结束都一直存在，它和全局变量的区别在于全局变量对所有的函数都是可见的，而静态局部变量只对定义自己的函数体始终可见。<br><br>3&gt;局部变量也只有局部作用域，它是自动对象（auto），它在程序运行期间不是一直存在，而是只在函数执行期间存在，函数的一次调用执行结束后，变量被撤销，其所占用的内存也被收回。<br><br>4&gt;静态全局变量也具有全局作用域，它与全局变量的区别在于如果程序包含多个文件的话，它作用于定义它的文件里，不能作用到其它文件里，即被static关键字修饰过的变量具有文件作用域。这样即使两个不同的源文件都定义了相同名字的静态全局变量，它们也是不同的变量。</p>
+</blockquote>
+<blockquote>
+<p><strong>从内存分配空间看</strong><br>1&gt;<u>全局变量，静态局部变量，静态全局变量都在静态存储区分配空间，而局部变量在栈里分配空间</u></p>
+</blockquote>
+<h3><span id="c-堆栈">C++ 堆，栈</span></h3><p>C++中，内存分为五个区</p>
+<blockquote>
+<p>栈：由编译器在需要时自动分配，不需要时自动清除的变量存储区，通常存放局部变量<br><br>堆：由new分配的内存块，由程序员释放，一般一个new与一个delete对应，若没有释放，资源将有操作系统在程序结束后紫都回收<br><br>自由存储区：有malloc等分配的内存块，和堆十分相似,用free来释放<br><br>全局/静态存储区：全局变量和静态变量被分配到同一块内存中<br>常量存储区：一块特殊存储区，里边存放常量，不允许修改</p>
+</blockquote>
+<blockquote>
+<p><strong>堆与栈的讨论</strong></p>
+<blockquote>
+<p><strong>管理方式</strong>：堆中资源由程序员控制（容易产生memory leak）， 栈资源由编译器自动管理，无需手工控制。<br><br><strong>系统响应</strong>：对于堆，硬知道系统有一个记录空闲内存地址的链表，当系统收到程序申请时，遍历该链表，寻找第一个空间大于申请空间的堆节点，在链表中删除该节点，并将该节点空间分配给程序。<br>对于栈，只要栈的剩余空间大于所申请空间，系统为程序提供内存，否则报异常提示栈溢出。<br><br><strong>空间大小</strong>：堆是不连续的内存区域，堆的大小受限于系统中有效的虚拟内存，因此堆的空间更灵活，比较大。而栈是一块连续的内存区域，大小是操作系统预定好的。<br><br><strong>碎片问题</strong>：对于堆，频繁的new/delete会造成大量碎片，使程序的效率降低，他是一个先进后出的队列，进出一一对应，不会产生碎片。<br><br><strong>分配方式</strong>：堆是动态分配，栈有静态分配和动态分配。静态分配由编译器完成，动态分配有allocal函数分配。<br><br><strong>分配效率</strong>：堆的效率比栈低很多</p>
+</blockquote>
+</blockquote>
+<h3><span id="二叉树的遍历">二叉树的遍历</span></h3><blockquote>
+<blockquote>
+<p>前序：根左右<br>中序/对称：左根右<br>后序：左右根</p>
+</blockquote>
+</blockquote>
+<h3><span id="sql语句执行顺序">SQL语句执行顺序</span></h3><blockquote>
+<p>select-from-where-group by-having-order by</p>
+</blockquote>
+<h3><span id="http返回码">http返回码</span></h3><blockquote>
+<p>常用:</p>
+<blockquote>
+<p>200 服务器成功返回网页<br>404 请求的网页不存在<br>503 服务不可用</p>
+</blockquote>
+<p>1**(临时响应)<br>表示临时响应并需要请求者继续执行操作的状态代码</p>
+<blockquote>
+<p>100（继续） 请求者应当继续提出请求，服务器返回此代码表示已收到请求得第一部分，正在等待其余部分<br>101(切换协议) 请求者已要求服务器切换协议，服务器已确认并准备切换</p>
+</blockquote>
+<p>2**（成功）<br>表示成功处理了请求的状态代码</p>
+<blockquote>
+<p>200（成功) 服务器已成功处理了请求。 通常，这表示服务器提供了请求的网页。<br>201（已创建）请求成功并且服务器创建了新的资源。<br>202（已接受） 服务器已接受请求，但尚未处理。<br>203（非授权信息）服务器已成功处理了请求，但返回的信息可能来自另一来源<br>204（无内容）服务器成功处理了请求，但没有返回任何内<br>205（重置内容）服务器成功处理了请求，但没有返回任何内容。<br>206（部分内容）服务器成功处理了部分 GET 请求。</p>
+</blockquote>
+<p>3**（重定向）<br>表示要完成请求，需要进一步操作。 通常，这些状态代码用来重定向。</p>
+<blockquote>
+<p>300（多种选择）针对请求，服务器可执行多种操作。 服务器可根据请求者 (user agent) 选择一项操作，或提供操作列表供请求者选择。<br>301（永久移动）请求的网页已永久移动到新位置。 服务器返回此响应（对 GET 或 HEAD 请求的响应）时，会自动将请求者转到新位置。<br>302（临时移动）服务器目前从不同位置的网页响应请求，但请求者应继续使用原有位置来进行以后的请求。<br>303（查看其他位置）请求者应当对不同的位置使用单独的 GET 请求来检索响应时，服务器返回此代码。<br>304（未修改）自从上次请求后，请求的网页未修改过。 服务器返回此响应时，不会返回网页内容。<br>305（使用代理）请求者只能使用代理访问请求的网页。 如果服务器返回此响应，还表示请求者应使用代理。<br>307（临时重定向）服务器目前从不同位置的网页响应请求，但请求者应继续使用原有位置来进行以后的请求。</p>
+</blockquote>
+<p>4**（请求错误）<br>这些状态代码表示请求可能出错，妨碍了服务器的处理。</p>
+<blockquote>
+<p>400（错误请求）服务器不理解请求的语法。<br>401（未授权）请求要求身份验证。 对于需要登录的网页，服务器可能返回此响应。<br>403（禁止）服务器拒绝请求。<br>404（未找到）服务器找不到请求的网页。<br>405（方法禁用）禁用请求中指定的方法。<br>406（不接受）无法使用请求的内容特性响应请求的网页。<br>407（需要代理授权）此状态代码与 401（未授权）类似，但指定请求者应当授权使用代理。<br>408（请求超时）服务器等候请求时发生超时。<br>409（冲突）服务器在完成请求时发生冲突。 服务器必须在响应中包含有关冲突的信息。<br>410（已删除）如果请求的资源已永久删除，服务器就会返回此响应。<br>411（需要有效长度）服务器不接受不含有效内容长度标头字段的请求。<br>412（未满足前提条件）服务器未满足请求者在请求中设置的其中一个前提条件。<br>413（请求实体过大）服务器无法处理请求，因为请求实体过大，超出服务器的处理能力。<br>414（请求的 URI 过长）请求的 URI（通常为网址）过长，服务器无法处理。<br>415（不支持的媒体类型）请求的格式不受请求页面的支持。<br>416（请求范围不符合要求）如果页面无法提供请求的范围，则服务器会返回此状态代码。<br>417（未满足期望值）服务器未满足”期望”请求标头字段的要求。</p>
+</blockquote>
+<p>5**（服务器错误）<br>这些状态代码表示服务器在尝试处理请求时发生内部错误。 这些错误可能是服务器本身的错误，而不是请求出错。</p>
+<blockquote>
+<p>500（服务器内部错误）服务器遇到错误，无法完成请求。<br>501（尚未实施）服务器不具备完成请求的功能。 例如，服务器无法识别请求方法时可能会返回此代码。<br>502（错误网关）服务器作为网关或代理，从上游服务器收到无效响应。<br>503（服务不可用）服务器目前无法使用（由于超载或停机维护）。 通常，这只是暂时状态。<br>504（网关超时）服务器作为网关或代理，但是没有及时从上游服务器收到请求。<br>505（HTTP 版本不受支持）服务器不支持请求中所用的 HTTP 协议版本。</p>
+</blockquote>
+</blockquote>
+]]></content>
+      <categories>
+        <category>基础</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>How to calculate power of a number</title>
+    <url>/2018/10/11/Leetcode-number_power/</url>
+    <content><![CDATA[<h1><span id="how-to-calculate-power-of-a-number">How to calculate power of a number</span></h1><hr>
+<p>Implement pow(x, n), which calculates x raised to the power n.<br>$$ x^n $$</p>
+<h3><span id="solution-1">Solution 1</span></h3><p>Recursive solution: pow(x,n) means <strong>x</strong> multiplied by <strong>x</strong> for <strong>n</strong> times. And <strong>(x^n)=[(x^(n/2))^2]</strong>. So with this recursive solution, we can reduce the time complexity from <strong>O(n)</strong> to <strong>O(lgn)</strong>.</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">double</span> <span class="title">myPow</span><span class="params">(<span class="keyword">double</span> x, <span class="keyword">int</span> n)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(n&lt;<span class="number">0</span>) <span class="keyword">return</span> <span class="number">1</span>/x * myPow(<span class="number">1</span>/x, -(n+<span class="number">1</span>));</span><br><span class="line">    <span class="keyword">if</span>(n==<span class="number">0</span>) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">if</span>(n==<span class="number">2</span>) <span class="keyword">return</span> x*x;</span><br><span class="line">    <span class="keyword">if</span>(n%<span class="number">2</span>==<span class="number">0</span>) <span class="keyword">return</span> myPow( myPow(x, n/<span class="number">2</span>), <span class="number">2</span>);</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">return</span> x*myPow( myPow(x, n/<span class="number">2</span>), <span class="number">2</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3><span id="solution-2">Solution 2</span></h3><p>Just like the first solution. But in this solution we define a double variable <strong>t</strong> to represent for <strong>(x^(n/2))</strong>, and the method we deal with the sign of <strong>n</strong> is differnet.</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">double</span> <span class="title">myPow</span><span class="params">(<span class="keyword">double</span> x, <span class="keyword">int</span> n)</span> </span>&#123; </span><br><span class="line">    <span class="keyword">if</span>(n==<span class="number">0</span>) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">double</span> t = myPow(x,n/<span class="number">2</span>);</span><br><span class="line">    <span class="keyword">if</span>(n%<span class="number">2</span>) <span class="keyword">return</span> n&lt;<span class="number">0</span> ? <span class="number">1</span>/x*t*t : x*t*t;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">return</span> t*t;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3><span id="solution-3">Solution 3</span></h3><p>In this solution, the trick of deal with the sign of <strong>n</strong> is different, using the property between <strong>x</strong> and <strong>n</strong> and normalize them from the very beginning.</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">double</span> <span class="title">myPow</span><span class="params">(<span class="keyword">double</span> x, <span class="keyword">int</span> n)</span> </span>&#123; </span><br><span class="line">    <span class="keyword">if</span>(n==<span class="number">0</span>) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">if</span>(n&lt;<span class="number">0</span>)&#123;</span><br><span class="line">        n = -n;</span><br><span class="line">        x = <span class="number">1</span>/x;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> n%<span class="number">2</span>==<span class="number">0</span> ? myPow(x*x, n/<span class="number">2</span>) : x*myPow(x*x, n/<span class="number">2</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3><span id="solution-4">Solution 4</span></h3><p>Instead of recursion, this solution use the method of iteration and complete the resursive steps before with the while loop. </p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">double</span> <span class="title">myPow</span><span class="params">(<span class="keyword">double</span> x, <span class="keyword">int</span> n)</span> </span>&#123; </span><br><span class="line">    <span class="keyword">if</span>(n==<span class="number">0</span>) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">if</span>(n&lt;<span class="number">0</span>) &#123;</span><br><span class="line">        n = -n;</span><br><span class="line">        x = <span class="number">1</span>/x;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">double</span> ans = <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">while</span>(n&gt;<span class="number">0</span>)&#123;</span><br><span class="line">        <span class="keyword">if</span>(n&amp;<span class="number">1</span>) ans *= x;</span><br><span class="line">        x *= x;</span><br><span class="line">        n &gt;&gt;= <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3><span id="solution-5">Solution 5</span></h3><p>This solution is a little tricky. For the input range of <strong>n</strong> is [0,31], and for any interger represent in bit format, the number is $$ k_0<em>2^0+k_1</em>2^1+k_2<em>2^2+…+k_{31}</em>2<em>31 $$<br>And pow(x,2^m) can be constructed easily as $$ pow(x,2^m) = pow(x,2^(m-1))</em>pow(x,2^(m-1)) $$.</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">double pow(double x, int n) &#123;</span><br><span class="line">   	if(n&lt;0)&#123;</span><br><span class="line">   		x = 1.0/x;</span><br><span class="line">   		n = -n;</span><br><span class="line">   	&#125;</span><br><span class="line">   	int unsigned m = n;</span><br><span class="line">       double tbl[32] = &#123;0&#125;;</span><br><span class="line">       double result = 1;</span><br><span class="line">       tbl[0] = x;</span><br><span class="line">       for(int i=1;i&lt;32;i++)&#123;</span><br><span class="line">           tbl[i] = tbl[i-1]*tbl[i-1];</span><br><span class="line">       &#125;</span><br><span class="line">       for(int i=0;i&lt;32;i++)&#123;</span><br><span class="line">           if( m &amp; (0x1&lt;&lt;i) )</span><br><span class="line">           result *= tbl[i];</span><br><span class="line">       &#125;</span><br><span class="line">       return result;</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>Algorithms</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>Machine Learning Homework</title>
+    <url>/2018/10/10/Machine-Learning-Homework/</url>
+    <content><![CDATA[]]></content>
+  </entry>
+  <entry>
+    <title>Hello World</title>
+    <url>/2018/03/26/hello-world/</url>
+    <content><![CDATA[<h1><span id="hello-world">Hello world</span></h1><p>@(hello world)[salton|1]</p>
+<blockquote>
+</blockquote>
+<p><strong>Area of focus: </strong> Algorithm/Computer Vision/Machine Learning/Computer Network</p>
+]]></content>
+      <categories>
+        <category>hello</category>
+      </categories>
+  </entry>
+</search>
