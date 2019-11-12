@@ -474,6 +474,24 @@
     
 
     
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:</strong>
+    Salton Zhao
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link:</strong>
+    <a href="https://saltonz.github.io/2019/03/19/Cryptgraphybasic2/" title="Cipher Block Mode of Opertion">https://saltonz.github.io/2019/03/19/Cryptgraphybasic2/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice: </strong>
+    All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> unless stating additionally.
+  </li>
+</ul>
+
+      </div>
+    
 
     <footer class="post-footer">
       
@@ -507,8 +525,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/03/17/java_learning(2)/" rel="next" title="Java Learning note-2 (Hashmap & IO)">
-                <i class="fa fa-chevron-left"></i> Java Learning note-2 (Hashmap & IO)
+              <a href="/2019/03/19/Cryotgraohybasic1/" rel="next" title="Cryptography Basic1">
+                <i class="fa fa-chevron-left"></i> Cryptography Basic1
               </a>
             
           </div>
@@ -517,8 +535,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/03/19/Cryotgraohybasic1/" rel="prev" title="Cryptography Basic1">
-                Cryptography Basic1 <i class="fa fa-chevron-right"></i>
+              <a href="/2019/03/20/Cryptographybasic4/" rel="prev" title="Diffie Hellman Algorithm">
+                Diffie Hellman Algorithm <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -632,6 +650,22 @@
           
 
           
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/saltonz" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:sz2641@nyu.edu" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
 
           
           
@@ -738,6 +772,12 @@
       </div>
     
 
+    
+      <div id="needsharebutton-float">
+        <span class="btn">
+          <i class="fa fa-share-alt" aria-hidden="true"></i>
+        </span>
+      </div>
     
 
   </div>
@@ -881,7 +921,7 @@
         appId: 'RMfu7yDjXAStPn3CoXHnms8Y-gzGzoHsz# your leancloud application appid',
         appKey: 'HD23ip2cvqLvcq2jP1iFf5dS# your leancloud application appkey',
         placeholder: 'Write your comments about this blog here',
-        avatar:'mm',
+        avatar:'/images/avatar.png',
         guest_info:guest,
         pageSize:'10' || 10,
     });
@@ -1241,6 +1281,18 @@
       
       new needShareButton('#needsharebutton-postbottom', pbOptions);
     
+    
+      flOptions = {};
+      
+          flOptions.iconStyle = "box";
+      
+          flOptions.boxForm = "horizontal";
+      
+          flOptions.position = "middleRight";
+      
+          flOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-float', flOptions);
     
   </script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 

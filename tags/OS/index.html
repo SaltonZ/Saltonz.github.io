@@ -301,9 +301,9 @@
 
       <h3 class="post-title">
         
-            <a class="post-title-link" href="/2019/03/27/basic/lock_between_threads/" itemprop="url">
+            <a class="post-title-link" href="/2019/03/27/basic/smart_ptr/" itemprop="url">
               
-                <span itemprop="name">Thread Locks in Cpp</span>
+                <span itemprop="name">Smart_ptr</span>
               
             </a>
         
@@ -327,9 +327,9 @@
 
       <h3 class="post-title">
         
-            <a class="post-title-link" href="/2019/03/27/basic/smart_ptr/" itemprop="url">
+            <a class="post-title-link" href="/2019/03/27/basic/lock_between_threads/" itemprop="url">
               
-                <span itemprop="name">Smart_ptr</span>
+                <span itemprop="name">Thread Locks in Cpp</span>
               
             </a>
         
@@ -456,6 +456,22 @@
           
 
           
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/saltonz" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:sz2641@nyu.edu" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
 
           
           
@@ -546,6 +562,12 @@
       </div>
     
 
+    
+      <div id="needsharebutton-float">
+        <span class="btn">
+          <i class="fa fa-share-alt" aria-hidden="true"></i>
+        </span>
+      </div>
     
 
   </div>
@@ -685,7 +707,7 @@
         appId: 'RMfu7yDjXAStPn3CoXHnms8Y-gzGzoHsz# your leancloud application appid',
         appKey: 'HD23ip2cvqLvcq2jP1iFf5dS# your leancloud application appkey',
         placeholder: 'Write your comments about this blog here',
-        avatar:'mm',
+        avatar:'/images/avatar.png',
         guest_info:guest,
         pageSize:'10' || 10,
     });
@@ -1045,6 +1067,18 @@
       
       new needShareButton('#needsharebutton-postbottom', pbOptions);
     
+    
+      flOptions = {};
+      
+          flOptions.iconStyle = "box";
+      
+          flOptions.boxForm = "horizontal";
+      
+          flOptions.position = "middleRight";
+      
+          flOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-float', flOptions);
     
   </script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 

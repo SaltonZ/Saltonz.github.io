@@ -720,18 +720,176 @@
       
         
           
-            <h1><span id="diffie-hellman">Diffie-Hellman</span></h1><p><strong>Purpose:</strong> Enable two users to exchange a secret key securely that then can be used for subsequent encryption of messages </p>
-<p><strong>General idea:</strong> it is easy to calculate exponentials modulo a prime, but it is very difficult to calculate discrete logarithms.</p>
-<p><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Diffie-Hellman-Schl%C3%BCsselaustausch.svg/1200px-Diffie-Hellman-Schl%C3%BCsselaustausch.svg.png" alt=""></p>
-<p>As in the picture, Alice and Bob generate secret key K using Diffie-Hellman Algorithm.</p>
-<blockquote>
-<p>g,p are public information<br>a,b are secret information<br>$A=g^a mod(p)$<br>$B=g^b mod(p)$<br>$K=B^a mod(p)=A^b mod(p)$</p>
-</blockquote>
-<h1><span id="risk-of-d-h-algorithm">Risk of D-H algorithm</span></h1><p><img src="https://images2018.cnblogs.com/blog/653357/201805/653357-20180509203733832-1457088379.png" alt=""><br><img src="https://images2018.cnblogs.com/blog/653357/201805/653357-20180509204257982-320719224.png" alt=""></p>
-<p>In this situation, Mallory is an attacker between Alice and Bob start a Middle man attack.</p>
-<p>By modify the communication between Alice and Bob, Alice is in fact have the secret key between Alice and Mallory, while Bob have the secret key between Bob and Mallory.</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> math</span><br><span class="line"><span class="keyword">import</span> random</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">judge_prime</span><span class="params">(p)</span>:</span></span><br><span class="line"><span class="comment">#判断质数</span></span><br><span class="line">	<span class="keyword">if</span> p &lt;= <span class="number">1</span>:</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">False</span></span><br><span class="line">	i = <span class="number">2</span></span><br><span class="line">	<span class="keyword">while</span> i * i &lt;= p:</span><br><span class="line">		<span class="keyword">if</span> p % i == <span class="number">0</span>:</span><br><span class="line">			<span class="keyword">return</span> <span class="keyword">False</span></span><br><span class="line">		i += <span class="number">1</span></span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">True</span></span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_generator</span><span class="params">(p)</span>:</span></span><br><span class="line"><span class="comment">#得到所有的原根</span></span><br><span class="line">	a = <span class="number">2</span></span><br><span class="line">	list = []</span><br><span class="line">	<span class="keyword">while</span> a &lt; p:		</span><br><span class="line">		flag = <span class="number">1</span></span><br><span class="line">		<span class="keyword">while</span> flag != p:</span><br><span class="line">			<span class="keyword">if</span> (a ** flag) % p == <span class="number">1</span>:</span><br><span class="line">				<span class="keyword">break</span></span><br><span class="line">			flag += <span class="number">1</span></span><br><span class="line">		<span class="keyword">if</span> flag == (p - <span class="number">1</span>):</span><br><span class="line">			list.append(a)	</span><br><span class="line">		a += <span class="number">1</span></span><br><span class="line">	<span class="keyword">return</span> list</span><br><span class="line"> </span><br><span class="line"><span class="comment">#A，B得到各自的计算数	</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_calculation</span><span class="params">(p, a, X)</span>:</span></span><br><span class="line">	Y = (a ** X) % p</span><br><span class="line">	<span class="keyword">return</span> Y</span><br><span class="line"> </span><br><span class="line"><span class="comment">#A，B得到交换计算数后的密钥	</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_key</span><span class="params">(X, Y, p)</span>:</span></span><br><span class="line">	key = (Y ** X) % p</span><br><span class="line">	<span class="keyword">return</span> key</span><br><span class="line">	</span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">	</span><br><span class="line">	<span class="comment">#得到规定的素数</span></span><br><span class="line">	flag = <span class="keyword">False</span></span><br><span class="line">	<span class="keyword">while</span> flag == <span class="keyword">False</span>:</span><br><span class="line">		print(<span class="string">'Please input your number(It must be a prime!): '</span>, end = <span class="string">''</span>)</span><br><span class="line">		p = input()</span><br><span class="line">		p = int(p)</span><br><span class="line">		flag = judge_prime(p)</span><br><span class="line">	print(str(p) + <span class="string">' is a prime! '</span>)</span><br><span class="line">	</span><br><span class="line">	<span class="comment">#得到素数的一个原根</span></span><br><span class="line">	list = get_generator(p)</span><br><span class="line">	print(str(p) + <span class="string">' 的一个原根为：'</span>, end = <span class="string">''</span>)</span><br><span class="line">	print(list[<span class="number">-1</span>])</span><br><span class="line">	print(<span class="string">'------------------------------------------------------------------------------'</span>)</span><br><span class="line">	</span><br><span class="line">	<span class="comment">#得到A的私钥</span></span><br><span class="line">	XA = random.randint(<span class="number">0</span>, p<span class="number">-1</span>)</span><br><span class="line">	print(<span class="string">'A随机生成的私钥为：%d'</span> % XA)</span><br><span class="line">	</span><br><span class="line">	<span class="comment">#得到B的私钥</span></span><br><span class="line">	XB = random.randint(<span class="number">0</span>, p<span class="number">-1</span>)</span><br><span class="line">	print(<span class="string">'B随机生成的私钥为：%d'</span> % XB)</span><br><span class="line">	print(<span class="string">'------------------------------------------------------------------------------'</span>)</span><br><span class="line">	</span><br><span class="line">	<span class="comment">#得待A的计算数</span></span><br><span class="line">	YA = get_calculation(p, int(list[<span class="number">-1</span>]), XA)</span><br><span class="line">	print(<span class="string">'A的计算数为：%d'</span> % YA)</span><br><span class="line">	</span><br><span class="line">	<span class="comment">#得到B的计算数</span></span><br><span class="line">	YB = get_calculation(p, int(list[<span class="number">-1</span>]), XB)</span><br><span class="line">	print(<span class="string">'B的计算数为：%d'</span> % YB)</span><br><span class="line">	print(<span class="string">'------------------------------------------------------------------------------'</span>)</span><br><span class="line">	</span><br><span class="line">	<span class="comment">#交换后A的密钥</span></span><br><span class="line">	key_A = get_key(XA, YB, p)</span><br><span class="line">	print(<span class="string">'A的生成密钥为：%d'</span> % key_A)</span><br><span class="line">	</span><br><span class="line">	<span class="comment">#交换后B的密钥</span></span><br><span class="line">	key_B = get_key(XB, YA, p)</span><br><span class="line">	print(<span class="string">'B的生成密钥为：%d'</span> % key_B)</span><br><span class="line">	print(<span class="string">'---------------------------True or False------------------------------------'</span>)</span><br><span class="line">	</span><br><span class="line">	print(key_A == key_B)</span><br></pre></td></tr></table></figure>
+          Diffie-HellmanPurpose: Enable two users to exchange a secret key securely that then can be used for subsequent encryption of messages 
+General idea: i
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/03/20/Cryptographybasic4/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://saltonz.github.io/2019/03/19/Cryptgraphybasic2/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Salton Zhao">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Salton's">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/03/19/Cryptgraphybasic2/" itemprop="url">Cipher Block Mode of Opertion</a></h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-03-19T00:00:00-04:00">
+                2019-03-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
           
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/Network-Security/" itemprop="url" rel="index">
+                    <span itemprop="name">Network Security</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/03/19/Cryptgraphybasic2/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/03/19/Cryptgraphybasic2/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+          Cipher Block Mode of OperationECB-Electronic Codebook ModeBlock of plaintext will be encrypted by the same key and directly become the cipher block.
+
+
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/03/19/Cryptgraphybasic2/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -937,208 +1095,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://saltonz.github.io/2019/03/19/Cryptgraphybasic2/">
-
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Salton Zhao">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Salton's">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/03/19/Cryptgraphybasic2/" itemprop="url">Cipher Block Mode of Opertion</a></h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-03-19T00:00:00-04:00">
-                2019-03-19
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/Network-Security/" itemprop="url" rel="index">
-                    <span itemprop="name">Network Security</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/03/19/Cryptgraphybasic2/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/03/19/Cryptgraphybasic2/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1><span id="cipher-block-mode-of-operation">Cipher Block Mode of Operation</span></h1><p><strong>ECB-Electronic Codebook Mode</strong><br>Block of plaintext will be encrypted by the same key and directly become the cipher block.<br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/ECB_encryption.svg/601px-ECB_encryption.svg.png" alt=""></p>
-<ul>
-<li>特点：明文与密文一一对应，故重复的明文对应重复的密文。 只要观察一下密文就能知道明文中存在怎样的重复组合， 并可以此为线索来破译密码， 因此ECB模式是存在一定风险的。</li>
-<li>对ECB模式的攻击：<ul>
-<li>若转账请求包括三部分：<ul>
-<li>A-&gt;付款人账号</li>
-<li>B-&gt;收款人账号</li>
-<li>C-&gt;转账金额</li>
-</ul>
-</li>
-<li>若攻击者调换A，B，顺序，则在未破译密码的情况下操纵了明文</li>
-</ul>
-</li>
-</ul>
-<h2><span id="cbc-cipher-block-chaining-mode"><strong>CBC-Cipher Block Chaining Mode</strong></span></h2><p>Input to encryption is XOR of current Plaintext block and previous Ciphertext block(initialization vector for the first block).<br>Same key is used for each block.<br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/CBC_encryption.svg/601px-CBC_encryption.svg.png" alt=""><br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/CBC_decryption.svg/601px-CBC_decryption.svg.png" alt=""></p>
-<ul>
-<li>特点： <ul>
-<li>加密之前一定会与前一个密文分组进行异或运算，因此同样的明文加密得到的密文未必相同，故避免了ECB模式的缺陷</li>
-<li>加密过程中无法单独对一个中间的明文分组进行加密</li>
-<li>解密过程中，如果有一个密文分组损坏，最多两个明文分组会受到影响。如果密文分组中有比特丢失，则缺失比特位后面全部分组都无法解密</li>
-</ul>
-</li>
-<li>对CBC模式的攻击：<ul>
-<li><strong>填充提示攻击</strong><br>是一种利用分组密码中填充部分来进行攻击的方法。在分组密码中，当明文长度不为分组长度的整数倍时，需要在最后一个分组中填充一些数据使其凑满一个分组长度。在填充提示攻击中，攻击者会反复发送一段密文，每次发送时都对填充数据进行少许改变。由于接收者（服务器）在无法正确解密时会返回一个错误消息，攻击者通过这一错误消息就可以获得一部分与明文相关的信息。这一攻击并不仅限于CBC模式，而是适用所有需要进行分组填充的模式。<br>2014年对SSL3.0 造成了重大影响POODLE攻击实际上就是一种填充示攻击。</li>
-<li><strong>对初始化向量（IV）进行攻击</strong><br>初始化向量（IV）必须使用不可预测的随机数。然而在SSL/TLS的TLS1.0版本协议中，IV并没有使用不可预测的随机数，而是使用上一次CBC模式加密时的最后一个分组。为了防御攻击者对此进行攻击，TLS1.1以上的版本中改为了必须显示传送IV。</li>
-</ul>
-</li>
-</ul>
-<h2><span id="cfb-cipher-feedback-mode"><strong>CFB-Cipher Feedback Mode</strong></span></h2><p>CFB converts block cipher into stream cipher.<br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/CFB_encryption.svg/601px-CFB_encryption.svg.png" alt=""><br><img src="https://www.researchgate.net/profile/Yas_Alsultanny/publication/255581885/figure/fig1/AS:563789780013062@1511429366690/Block-diagram-of-the-encryption-of-the-CFB-mode.png" alt=""></p>
-<ul>
-<li>对CFB模式的攻击：<ul>
-<li>重放攻击：<br>第一天Alice 使用CFB模式向Bob发送了一条信息（五个分组）<br>第二天Alice 向Bob发送了另外一条信息（五个分组）<br>若使用相同的秘钥，<br>攻击者可以截获第一天后四个分组，并将第二天的后四个分组替换成第一天的</li>
-</ul>
-</li>
-</ul>
-<h2><span id="ctr-counter-mode"><strong>CTR-Counter Mode</strong></span></h2><p>CTR also convert block cipher into stream cipher<br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/CTR_encryption_2.svg/601px-CTR_encryption_2.svg.png" alt=""><br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/CTR_decryption_2.svg/601px-CTR_decryption_2.svg.png" alt=""></p>
-<ul>
-<li>特点<ul>
-<li>CTR模式的加密和解密使用了完全相同的模式，因此在程序实现上比较容易</li>
-<li>能够以任意的顺序对分组进行加密解密，也就意味着能够实现并行计算</li>
-</ul>
-</li>
-<li>攻击者<ul>
-<li>可以通过反转密文分组中的某些比特，引起解密后明文中响应比特也发生反转</li>
-</ul>
-</li>
-</ul>
-<h2><span id="ofb-output-feedback-mode"><strong>OFB-Output Feedback Mode</strong></span></h2><p>OFB is similar to CFB, with output of encryption function fed back to the shift register instead of ciphertext.<br>(Also, OFB mode operates on full blocks of plaintext and ciphertext, not on an s-bit subset.)<br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/OFB_encryption.svg/601px-OFB_encryption.svg.png" alt=""></p>
-<ul>
-<li>OFB 与CFB唯一的不同就是Encryption算法的输入<br>CFB Encryption 的输入是前一个密文分组<br>OFB Encryption 的输入时前一个Encryption的输出</li>
-</ul>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1221,6 +1177,22 @@
 
           
 
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/saltonz" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:sz2641@nyu.edu" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
           
 
           
@@ -1312,6 +1284,12 @@
       </div>
     
 
+    
+      <div id="needsharebutton-float">
+        <span class="btn">
+          <i class="fa fa-share-alt" aria-hidden="true"></i>
+        </span>
+      </div>
     
 
   </div>
@@ -1451,7 +1429,7 @@
         appId: 'RMfu7yDjXAStPn3CoXHnms8Y-gzGzoHsz# your leancloud application appid',
         appKey: 'HD23ip2cvqLvcq2jP1iFf5dS# your leancloud application appkey',
         placeholder: 'Write your comments about this blog here',
-        avatar:'mm',
+        avatar:'/images/avatar.png',
         guest_info:guest,
         pageSize:'10' || 10,
     });
@@ -1811,6 +1789,18 @@
       
       new needShareButton('#needsharebutton-postbottom', pbOptions);
     
+    
+      flOptions = {};
+      
+          flOptions.iconStyle = "box";
+      
+          flOptions.boxForm = "horizontal";
+      
+          flOptions.position = "middleRight";
+      
+          flOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-float', flOptions);
     
   </script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 
