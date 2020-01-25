@@ -1,6 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Swarm Robotics Project</title>
+    <url>/2020/01/02/Swarm%20Robotics%20Project/</url>
+    <content><![CDATA[<h1><span id="swarm-robotics-simulation-project">Swarm Robotics Simulation Project</span></h1><h2><span id="url-for-this-project">Url  for this project</span></h2><ul>
+<li><p>Code: <a href="https://github.com/saltonz/Swarm-Robotics-Control" target="_blank" rel="noopener">https://github.com/saltonz/Swarm-Robotics-Control</a></p>
+</li>
+<li><p>Video: <a href="https://www.youtube.com/watch?v=57zwhvkJIPQ" target="_blank" rel="noopener">https://www.youtube.com/watch?v=57zwhvkJIPQ</a></p>
+</li>
+</ul>
+<h2><span id="description">Description</span></h2><p>Swarm Robotics control.</p>
+<p>The goal contains formation control, consensus, moving object to targets. Using consensus protocol with leader, artificial potential field to achieve the goals. Another approach is to use rigidity matrix.</p>
+<p>The frequency of controller is 60 Hz </p>
+<p>Details are introduced in the report paper on github.</p>
+<h2><span id="requirements">Requirements</span></h2><blockquote>
+<ul>
+<li>Python 3.7</li>
+<li>PyBullet <a href="https://github.com/bulletphysics/bullet3/tree/master/docs" target="_blank" rel="noopener">https://github.com/bulletphysics/bullet3/tree/master/docs</a></li>
+</ul>
+</blockquote>
+<p>Install PyBullet</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip install pybullet</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">conda install -c hcc pybullet</span><br></pre></td></tr></table></figure>
+<h2><span id="files">Files</span></h2><p><strong>/models/</strong></p>
+<blockquote>
+<p>Resources</p>
+</blockquote>
+<p><strong>/python/</strong></p>
+<blockquote>
+<p>Code</p>
+</blockquote>
+<ul>
+<li><p>Swarm_simulation.py :</p>
+<p>Define the simulation world.</p>
+</li>
+<li><p>Run_simulation.py:</p>
+<p>Runner of simulation</p>
+</li>
+<li><p>Robot.py</p>
+<p>The definition of robot. Along with control law.</p>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>Robotics</category>
+      </categories>
+  </entry>
+  <entry>
     <title>Inverted Index - C++ based</title>
     <url>/2019/10/19/Search%20Engine/Inverted%20Index_1/</url>
     <content><![CDATA[<h1><span id="inverted-index-c-based">Inverted Index - C++ based</span></h1><p>Saitong Zhao</p>
@@ -191,6 +237,51 @@
       </tags>
   </entry>
   <entry>
+    <title>Smart_ptr</title>
+    <url>/2019/03/27/basic/smart_ptr/</url>
+    <content><![CDATA[<h2><span id="智能指针">智能指针</span></h2><p>在c++中，经常使用new,delete在堆上动态分配内存</p>
+<ul>
+<li>new: 为对象分配一个空间并返回指向该空间的指针</li>
+<li>delete: 指向一个动态独享的指针，销毁对象，并释放与之关联的内存</li>
+</ul>
+<p>动态分配内存常出现问题</p>
+<ul>
+<li>一、忘记释放内存/内存在运行到delete前中止， 造成内存泄漏</li>
+<li>二、在内存仍然有指针引用的情况下释放，产生引用非法内存的指针</li>
+</ul>
+<p>C++11中引入了智能指针：share_ptr允许多个指针指向一个对象，unique_ptr则独占所指向的对象。</p>
+<a id="more"></a>
+<h4><span id="share_ptr">share_ptr</span></h4><p>函数：</p>
+<ul>
+<li><p>make_shared\<t>(args) 返回一个shared_ptr，指向一个动态分配的类型为T的对象，使用args初始化该对象</t></p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="built_in">shared_ptr</span>&lt;<span class="keyword">int</span>&gt; p3 = make_shared&lt;<span class="keyword">int</span>&gt;(<span class="number">42</span>);</span><br><span class="line"><span class="built_in">shared_ptr</span>&lt;<span class="built_in">string</span>&gt; p4 = make_shared&lt;<span class="built_in">string</span>&gt;(<span class="number">10</span>,<span class="string">'9'</span>);</span><br><span class="line"><span class="built_in">shared_ptr</span>&lt;<span class="keyword">int</span>&gt; p5 = make_shared&lt;<span class="keyword">int</span>&gt;();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>shared_ptr<t>p(q) p是shared_ptr q的拷贝，此操作会递增q中的计数器。</t></p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">auto</span> p = make_shared&lt;<span class="built_in">string</span>&gt;(<span class="number">10</span>,<span class="string">'9'</span>);</span><br><span class="line"><span class="function"><span class="keyword">auto</span> <span class="title">q</span><span class="params">(p)</span></span>;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>我们可以认为每个shared_ptr都有一个关联的计数器，通常称其为引用计数，无论何时我们拷贝一个shared_ptr，计数器都会递增。当我们给shared_ptr赋予一个新值或是shared_ptr被销毁（例如一个局部的shared_ptr离开其作用域）时，计数器就会递减，一旦一个shared_ptr的计数器变为0,它就会自动释放自己所管理的对象。</p>
+<p>当指向一个对象的最后一个shared_ptr被销毁时，shared_ptr类会自动销毁此对象，它是通过析构函数完成销毁工作的。当动态对象不再被使用时，shared_ptr类还会自动释放动态对象，这一特性使得动态内存的使用变得非常容易。</p>
+<blockquote>
+<p>注意：shared_ptr有可能出现循环引用的情况，无法正确释放内存。<br>解决方案：weak_ptr</p>
+<blockquote>
+<p>将出现循环引用的shared_ptr保存下来，并且weak_prt中不增加引用计数。</p>
+</blockquote>
+</blockquote>
+<h4><span id="share_ptr实现">share_ptr实现</span></h4><p>模拟：<br><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="class"><span class="keyword">class</span> <span class="title">T</span>&gt;</span></span><br><span class="line"><span class="class"><span class="title">class</span> <span class="title">Shared_ptr</span>&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    Shared_ptr(T* ptr) : _ptr(ptr); _pCount(<span class="keyword">new</span> <span class="keyword">int</span>(<span class="number">1</span>))&#123;&#125;</span><br><span class="line"></span><br><span class="line">    Shared_ptr&amp;(<span class="keyword">const</span> Shared_ptr&amp; sp): _ptr(sp,_ptr); _pCount(sp._pCount)&#123;</span><br><span class="line">        (*_pCount)++;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    Shared_ptr&amp; <span class="keyword">operator</span> = (Shared_ptr&lt;T&gt;&amp; sp)&#123;</span><br><span class="line">        <span class="keyword">if</span>(<span class="keyword">this</span> != sp)&#123;</span><br><span class="line">            <span class="keyword">if</span>(--(*pCount) == <span class="number">0</span>)&#123;</span><br><span class="line">                <span class="keyword">delete</span> _ptr;</span><br><span class="line">                <span class="keyword">delete</span> _pCount;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            _ptr = sp._ptr;</span><br><span class="line">            _pCount = sp._pCount;</span><br><span class="line">            (*_pCount)++;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> *<span class="keyword">this</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ~Shared_ptr()&#123;</span><br><span class="line">        <span class="keyword">if</span>(--(*pCount) == <span class="number">0</span>)&#123;</span><br><span class="line">            <span class="keyword">delete</span> _ptr;</span><br><span class="line">            <span class="keyword">delete</span> _pCount;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    T&amp; <span class="keyword">operator</span>*()&#123;</span><br><span class="line">        <span class="keyword">return</span> *_ptr;</span><br><span class="line">    &#125;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    T* _ptr;</span><br><span class="line">    <span class="keyword">int</span> *_pCount;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4><span id="unique_ptr">Unique_ptr</span></h4><p>某个时刻只能有一个unique_ptr指向一个给定对象，由于一个unique_ptr拥有它指向的对象，因此unique_ptr不支持普通的拷贝或赋值操作。</p>
+]]></content>
+      <categories>
+        <category>basic</category>
+      </categories>
+      <tags>
+        <tag>C++</tag>
+        <tag>OS</tag>
+        <tag>Concurrency</tag>
+        <tag>Lock</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Thread Locks in Cpp</title>
     <url>/2019/03/27/basic/lock_between_threads/</url>
     <content><![CDATA[<h2><span id="c-线程锁">C++ 线程锁</span></h2><h4><span id="1-互斥锁mutex">1. 互斥锁（Mutex）</span></h4><p>互斥锁是一个控制多个线程对他们共享资源访问的信号量。 如：线程池中有多个空闲线程和一个任务队列，所有线程都应该使用互斥锁互斥访问该任务队列，避免多个线程同时访问任务队列发生错乱。</p>
@@ -229,51 +320,6 @@
 <p>如果一个线程想要获取一个被使用的自旋锁，那么它会一致占用CPU请求这个自旋锁使得CPU不能去做其他的事情，直到获取这个锁为止，这就是“自旋”的含义。</p>
 <p><strong>在加锁时间短暂的环境下会极大的提高效率。但如果加锁时间过长，则会非常浪费CPU资源</strong></p>
 <p><a href="https://blog.csdn.net/fanyun_01/article/details/79406368" target="_blank" rel="noopener">https://blog.csdn.net/fanyun_01/article/details/79406368</a></p>
-]]></content>
-      <categories>
-        <category>basic</category>
-      </categories>
-      <tags>
-        <tag>C++</tag>
-        <tag>OS</tag>
-        <tag>Concurrency</tag>
-        <tag>Lock</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Smart_ptr</title>
-    <url>/2019/03/27/basic/smart_ptr/</url>
-    <content><![CDATA[<h2><span id="智能指针">智能指针</span></h2><p>在c++中，经常使用new,delete在堆上动态分配内存</p>
-<ul>
-<li>new: 为对象分配一个空间并返回指向该空间的指针</li>
-<li>delete: 指向一个动态独享的指针，销毁对象，并释放与之关联的内存</li>
-</ul>
-<p>动态分配内存常出现问题</p>
-<ul>
-<li>一、忘记释放内存/内存在运行到delete前中止， 造成内存泄漏</li>
-<li>二、在内存仍然有指针引用的情况下释放，产生引用非法内存的指针</li>
-</ul>
-<p>C++11中引入了智能指针：share_ptr允许多个指针指向一个对象，unique_ptr则独占所指向的对象。</p>
-<a id="more"></a>
-<h4><span id="share_ptr">share_ptr</span></h4><p>函数：</p>
-<ul>
-<li><p>make_shared\<t>(args) 返回一个shared_ptr，指向一个动态分配的类型为T的对象，使用args初始化该对象</t></p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="built_in">shared_ptr</span>&lt;<span class="keyword">int</span>&gt; p3 = make_shared&lt;<span class="keyword">int</span>&gt;(<span class="number">42</span>);</span><br><span class="line"><span class="built_in">shared_ptr</span>&lt;<span class="built_in">string</span>&gt; p4 = make_shared&lt;<span class="built_in">string</span>&gt;(<span class="number">10</span>,<span class="string">'9'</span>);</span><br><span class="line"><span class="built_in">shared_ptr</span>&lt;<span class="keyword">int</span>&gt; p5 = make_shared&lt;<span class="keyword">int</span>&gt;();</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>shared_ptr<t>p(q) p是shared_ptr q的拷贝，此操作会递增q中的计数器。</t></p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">auto</span> p = make_shared&lt;<span class="built_in">string</span>&gt;(<span class="number">10</span>,<span class="string">'9'</span>);</span><br><span class="line"><span class="function"><span class="keyword">auto</span> <span class="title">q</span><span class="params">(p)</span></span>;</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<p>我们可以认为每个shared_ptr都有一个关联的计数器，通常称其为引用计数，无论何时我们拷贝一个shared_ptr，计数器都会递增。当我们给shared_ptr赋予一个新值或是shared_ptr被销毁（例如一个局部的shared_ptr离开其作用域）时，计数器就会递减，一旦一个shared_ptr的计数器变为0,它就会自动释放自己所管理的对象。</p>
-<p>当指向一个对象的最后一个shared_ptr被销毁时，shared_ptr类会自动销毁此对象，它是通过析构函数完成销毁工作的。当动态对象不再被使用时，shared_ptr类还会自动释放动态对象，这一特性使得动态内存的使用变得非常容易。</p>
-<blockquote>
-<p>注意：shared_ptr有可能出现循环引用的情况，无法正确释放内存。<br>解决方案：weak_ptr</p>
-<blockquote>
-<p>将出现循环引用的shared_ptr保存下来，并且weak_prt中不增加引用计数。</p>
-</blockquote>
-</blockquote>
-<h4><span id="share_ptr实现">share_ptr实现</span></h4><p>模拟：<br><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="class"><span class="keyword">class</span> <span class="title">T</span>&gt;</span></span><br><span class="line"><span class="class"><span class="title">class</span> <span class="title">Shared_ptr</span>&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    Shared_ptr(T* ptr) : _ptr(ptr); _pCount(<span class="keyword">new</span> <span class="keyword">int</span>(<span class="number">1</span>))&#123;&#125;</span><br><span class="line"></span><br><span class="line">    Shared_ptr&amp;(<span class="keyword">const</span> Shared_ptr&amp; sp): _ptr(sp,_ptr); _pCount(sp._pCount)&#123;</span><br><span class="line">        (*_pCount)++;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    Shared_ptr&amp; <span class="keyword">operator</span> = (Shared_ptr&lt;T&gt;&amp; sp)&#123;</span><br><span class="line">        <span class="keyword">if</span>(<span class="keyword">this</span> != sp)&#123;</span><br><span class="line">            <span class="keyword">if</span>(--(*pCount) == <span class="number">0</span>)&#123;</span><br><span class="line">                <span class="keyword">delete</span> _ptr;</span><br><span class="line">                <span class="keyword">delete</span> _pCount;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            _ptr = sp._ptr;</span><br><span class="line">            _pCount = sp._pCount;</span><br><span class="line">            (*_pCount)++;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> *<span class="keyword">this</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ~Shared_ptr()&#123;</span><br><span class="line">        <span class="keyword">if</span>(--(*pCount) == <span class="number">0</span>)&#123;</span><br><span class="line">            <span class="keyword">delete</span> _ptr;</span><br><span class="line">            <span class="keyword">delete</span> _pCount;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    T&amp; <span class="keyword">operator</span>*()&#123;</span><br><span class="line">        <span class="keyword">return</span> *_ptr;</span><br><span class="line">    &#125;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    T* _ptr;</span><br><span class="line">    <span class="keyword">int</span> *_pCount;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h4><span id="unique_ptr">Unique_ptr</span></h4><p>某个时刻只能有一个unique_ptr指向一个给定对象，由于一个unique_ptr拥有它指向的对象，因此unique_ptr不支持普通的拷贝或赋值操作。</p>
 ]]></content>
       <categories>
         <category>basic</category>
@@ -643,42 +689,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Java Learning note-2 (Hashmap & IO)</title>
-    <url>/2019/03/17/java_learning(2)/</url>
-    <content><![CDATA[<h1><span id="java_learning-note-2">Java_Learning Note -2</span></h1><h2><span id="hashmaphashtableconcurrenthashmap">Hashmap/Hashtable/ConcurrentHashMap</span></h2><p><strong>Hashtable</strong> </p>
-<ul>
-<li>底层数组+链表实现，无论key还是value都<strong>不能为null</strong>,线程<strong>安全</strong>，Synchronized,效率低</li>
-<li>初始size为11，扩容时newsize = oldsize*2 + 1</li>
-<li>计算index: index = (hash &amp; 0x7FFFFFFF) % tab.length</li>
-</ul>
-<p><strong>HashMap</strong></p>
-<ul>
-<li>底层数组+链表实现，<strong>可以储存null key 和 value</strong>, 线程<strong>不安全</strong></li>
-<li>初始size为16， 扩容newsize = oldsize*2</li>
-<li>扩容针对整个map,每次扩容时原来数组中元素依次重新计算存放位置，并重新插入</li>
-<li>插入元素后判断是否扩容</li>
-<li>当map中元素总数超过Entry数组的75%，触发扩容，为了减小链表长度</li>
-<li>计算index: index = hash &amp; (tab.length-1)<a id="more"></a>
-<strong>ConcorrentHashMap</strong></li>
-<li>底层采用分段的数组+链表实现，线程安全</li>
-<li>通过把整个Map分为N个Segment，可以提供相同的线程安全，但是效率提升N倍，默认提升16倍。</li>
-<li>Hashtable的synchronized是针对整张Hash表的，即每次锁住整张表让线程独占，ConcurrentHashMap允许多个修改操作并发进行，其关键在于使用了锁分离技术</li>
-<li>扩容：段内扩容（段内元素超过该段对应Entry数组长度的75%触发扩容，不会对整个Map进行扩容），插入前检测需不需要扩容，有效避免无效扩容</li>
-<li>Segment 是基于重入锁（ReentrantLock）：一个数据段竞争锁。每个 HashEntry 一个链表结构的元素，利用 Hash 算法得到索引确定归属的数据段，也就是对应到在修改时需要竞争获取的锁。ConcurrentHashMap 支持 CurrencyLevel（Segment 数组数量）的线程并发。每当一个线程占用锁访问一个 Segment 时，不会影响到其他的 Segment</li>
-<li>核心数据如 value，以及链表都是 volatile 修饰的，保证了获取时的可见性</li>
-</ul>
-<p>## </p>
-<h2><span id="streamio">Stream/IO</span></h2><h3><span id="控制台输入">控制台输入</span></h3><p>控制台输入由System.in完成。<br>可以把System.in包装在一个BufferedReader对象中来创建一个字符流。<br><figure class="highlight java"><table><tr><td class="code"><pre><span class="line">BufferedReader br = <span class="keyword">new</span> BufferedReader(<span class="keyword">new</span> InputStreamReader(System.in));</span><br><span class="line">``` </span><br><span class="line">BufferedReader对象创建后，可以使用br.read()读取一个字符，或者使用br.readLine()读取一个字符串。</span><br><span class="line">```java</span><br><span class="line">ch = br.read();</span><br><span class="line">str = br.readline();</span><br><span class="line">``` </span><br><span class="line"></span><br><span class="line">### 控制台输出</span><br><span class="line"></span><br><span class="line">控制台输出由print()和println()完成，这些类方法都由PrintStream定义，System.out是对该类对象的一个引用。同样，write()也可以用来往控制台写操作。</span><br><span class="line"></span><br><span class="line">### Scanner类</span><br><span class="line">(Java5新特征，通过Scanner类来获取用户的输入)</span><br><span class="line">```java</span><br><span class="line">Scanner s = <span class="keyword">new</span> Scanner(System.in);</span><br></pre></td></tr></table></figure></p>
-<p>使用next()与nextLine()方法来获取输入的字符串，在读取前用hasNext与hasNextLine判断是否还有要输入的数据。<br><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.Scanner;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ScannerDemo</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        Scanner scan = <span class="keyword">new</span> Scanner(System.in);</span><br><span class="line">        <span class="comment">// 从键盘接收数据</span></span><br><span class="line"> </span><br><span class="line">        <span class="comment">// nextLine方式接收字符串</span></span><br><span class="line">        System.out.println(<span class="string">"nextLine方式接收："</span>);</span><br><span class="line">        <span class="comment">// 判断是否还有输入</span></span><br><span class="line">        <span class="keyword">if</span> (scan.hasNextLine()) &#123;</span><br><span class="line">            String str2 = scan.nextLine();</span><br><span class="line">            System.out.println(<span class="string">"输入的数据为："</span> + str2);</span><br><span class="line">        &#125;</span><br><span class="line">        scan.close();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<blockquote>
-<p>Next与NextLine的区别<br>next():<br>1、一定要读取到有效字符后才可以结束输入。<br>2、对输入有效字符之前遇到的空白，next() 方法会自动将其去掉。<br>3、只有输入有效字符后才将其后面输入的空白作为分隔符或者结束符。<br>next() 不能得到带有空格的字符串。<br><br>nextLine()：<br>1、以Enter为结束符,也就是说 nextLine()方法返回的是输入回车之前的所有字符。<br>2、可以获得空白。</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-  </entry>
-  <entry>
     <title>Java Learning note-1 (JVM-JMM)</title>
     <url>/2019/03/17/JVM_basic/</url>
     <content><![CDATA[<h1><span id="java-virtual-machine-jvm">Java Virtual Machine (JVM)</span></h1><p>The JVM is an abstract computing machine that enables a computer to run a Java program. There are three notions of JVM: <strong>specification</strong> (where working of JVM is specified. But the implementation has been provided by Sun and other companies), <strong>implementation</strong> (known as (JRE) Java Runtime Environment) and <strong>instance</strong> (after writing Java command, to run Java class, an instance of JVM is created).</p>
@@ -724,12 +734,12 @@
 </ul>
 ]]></content>
       <categories>
-        <category>Java</category>
+        <category>basic</category>
       </categories>
   </entry>
   <entry>
     <title>Notes for DB Principle- Intermediate SQL</title>
-    <url>/2019/03/10/DB-ch4/</url>
+    <url>/2019/03/10/basic/DB-ch4/</url>
     <content><![CDATA[<h1><span id="chapter-4-intermediate-sql">Chapter 4: Intermediate SQL</span></h1><p>[TOC]</p>
 <a id="more"></a>
 <h2><span id="join-expressions">Join Expressions</span></h2><p>Join operations take two relations and return as a result another relation.</p>
@@ -849,7 +859,7 @@
 </ul>
 ]]></content>
       <categories>
-        <category>Databases</category>
+        <category>basic</category>
       </categories>
   </entry>
   <entry>
@@ -1193,64 +1203,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Basic Concepts</title>
-    <url>/2019/01/20/tencent/</url>
-    <content><![CDATA[<h1><span id="笔记1">笔记（1）</span></h1><h3><span id="静态变量全局变量和局部变量">静态变量，全局变量和局部变量</span></h3><blockquote>
-<p><strong>从作用域看</strong><br>1&gt;全局变量具有全局作用域。全局变量只需在一个源文件中定义，就可以作用于所有的源文件。当然，其他不包含全局变量定义的源文件需要用extern关键字再次声明这个全局变量。<br><br>2&gt;静态局部变量具有局部作用域，它只被初始化一次，自从第一次被初始化直到程序运行结束都一直存在，它和全局变量的区别在于全局变量对所有的函数都是可见的，而静态局部变量只对定义自己的函数体始终可见。<br><br>3&gt;局部变量也只有局部作用域，它是自动对象（auto），它在程序运行期间不是一直存在，而是只在函数执行期间存在，函数的一次调用执行结束后，变量被撤销，其所占用的内存也被收回。<br><br>4&gt;静态全局变量也具有全局作用域，它与全局变量的区别在于如果程序包含多个文件的话，它作用于定义它的文件里，不能作用到其它文件里，即被static关键字修饰过的变量具有文件作用域。这样即使两个不同的源文件都定义了相同名字的静态全局变量，它们也是不同的变量。</p>
-</blockquote>
-<blockquote>
-<p><strong>从内存分配空间看</strong><br>1&gt;<u>全局变量，静态局部变量，静态全局变量都在静态存储区分配空间，而局部变量在栈里分配空间</u></p>
-</blockquote>
-<h3><span id="c-堆栈">C++ 堆，栈</span></h3><p>C++中，内存分为五个区</p>
-<blockquote>
-<p>栈：由编译器在需要时自动分配，不需要时自动清除的变量存储区，通常存放局部变量<br><br>堆：由new分配的内存块，由程序员释放，一般一个new与一个delete对应，若没有释放，资源将有操作系统在程序结束后紫都回收<br><br>自由存储区：有malloc等分配的内存块，和堆十分相似,用free来释放<br><br>全局/静态存储区：全局变量和静态变量被分配到同一块内存中<br>常量存储区：一块特殊存储区，里边存放常量，不允许修改</p>
-</blockquote>
-<blockquote>
-<p><strong>堆与栈的讨论</strong></p>
-<blockquote>
-<p><strong>管理方式</strong>：堆中资源由程序员控制（容易产生memory leak）， 栈资源由编译器自动管理，无需手工控制。<br><br><strong>系统响应</strong>：对于堆，硬知道系统有一个记录空闲内存地址的链表，当系统收到程序申请时，遍历该链表，寻找第一个空间大于申请空间的堆节点，在链表中删除该节点，并将该节点空间分配给程序。<br>对于栈，只要栈的剩余空间大于所申请空间，系统为程序提供内存，否则报异常提示栈溢出。<br><br><strong>空间大小</strong>：堆是不连续的内存区域，堆的大小受限于系统中有效的虚拟内存，因此堆的空间更灵活，比较大。而栈是一块连续的内存区域，大小是操作系统预定好的。<br><br><strong>碎片问题</strong>：对于堆，频繁的new/delete会造成大量碎片，使程序的效率降低，他是一个先进后出的队列，进出一一对应，不会产生碎片。<br><br><strong>分配方式</strong>：堆是动态分配，栈有静态分配和动态分配。静态分配由编译器完成，动态分配有allocal函数分配。<br><br><strong>分配效率</strong>：堆的效率比栈低很多</p>
-</blockquote>
-</blockquote>
-<h3><span id="二叉树的遍历">二叉树的遍历</span></h3><blockquote>
-<blockquote>
-<p>前序：根左右<br>中序/对称：左根右<br>后序：左右根</p>
-</blockquote>
-</blockquote>
-<h3><span id="sql语句执行顺序">SQL语句执行顺序</span></h3><blockquote>
-<p>select-from-where-group by-having-order by</p>
-</blockquote>
-<h3><span id="http返回码">http返回码</span></h3><blockquote>
-<p>常用:</p>
-<blockquote>
-<p>200 服务器成功返回网页<br>404 请求的网页不存在<br>503 服务不可用</p>
-</blockquote>
-<p>1**(临时响应)<br>表示临时响应并需要请求者继续执行操作的状态代码</p>
-<blockquote>
-<p>100（继续） 请求者应当继续提出请求，服务器返回此代码表示已收到请求得第一部分，正在等待其余部分<br>101(切换协议) 请求者已要求服务器切换协议，服务器已确认并准备切换</p>
-</blockquote>
-<p>2**（成功）<br>表示成功处理了请求的状态代码</p>
-<blockquote>
-<p>200（成功) 服务器已成功处理了请求。 通常，这表示服务器提供了请求的网页。<br>201（已创建）请求成功并且服务器创建了新的资源。<br>202（已接受） 服务器已接受请求，但尚未处理。<br>203（非授权信息）服务器已成功处理了请求，但返回的信息可能来自另一来源<br>204（无内容）服务器成功处理了请求，但没有返回任何内<br>205（重置内容）服务器成功处理了请求，但没有返回任何内容。<br>206（部分内容）服务器成功处理了部分 GET 请求。</p>
-</blockquote>
-<p>3**（重定向）<br>表示要完成请求，需要进一步操作。 通常，这些状态代码用来重定向。</p>
-<blockquote>
-<p>300（多种选择）针对请求，服务器可执行多种操作。 服务器可根据请求者 (user agent) 选择一项操作，或提供操作列表供请求者选择。<br>301（永久移动）请求的网页已永久移动到新位置。 服务器返回此响应（对 GET 或 HEAD 请求的响应）时，会自动将请求者转到新位置。<br>302（临时移动）服务器目前从不同位置的网页响应请求，但请求者应继续使用原有位置来进行以后的请求。<br>303（查看其他位置）请求者应当对不同的位置使用单独的 GET 请求来检索响应时，服务器返回此代码。<br>304（未修改）自从上次请求后，请求的网页未修改过。 服务器返回此响应时，不会返回网页内容。<br>305（使用代理）请求者只能使用代理访问请求的网页。 如果服务器返回此响应，还表示请求者应使用代理。<br>307（临时重定向）服务器目前从不同位置的网页响应请求，但请求者应继续使用原有位置来进行以后的请求。</p>
-</blockquote>
-<p>4**（请求错误）<br>这些状态代码表示请求可能出错，妨碍了服务器的处理。</p>
-<blockquote>
-<p>400（错误请求）服务器不理解请求的语法。<br>401（未授权）请求要求身份验证。 对于需要登录的网页，服务器可能返回此响应。<br>403（禁止）服务器拒绝请求。<br>404（未找到）服务器找不到请求的网页。<br>405（方法禁用）禁用请求中指定的方法。<br>406（不接受）无法使用请求的内容特性响应请求的网页。<br>407（需要代理授权）此状态代码与 401（未授权）类似，但指定请求者应当授权使用代理。<br>408（请求超时）服务器等候请求时发生超时。<br>409（冲突）服务器在完成请求时发生冲突。 服务器必须在响应中包含有关冲突的信息。<br>410（已删除）如果请求的资源已永久删除，服务器就会返回此响应。<br>411（需要有效长度）服务器不接受不含有效内容长度标头字段的请求。<br>412（未满足前提条件）服务器未满足请求者在请求中设置的其中一个前提条件。<br>413（请求实体过大）服务器无法处理请求，因为请求实体过大，超出服务器的处理能力。<br>414（请求的 URI 过长）请求的 URI（通常为网址）过长，服务器无法处理。<br>415（不支持的媒体类型）请求的格式不受请求页面的支持。<br>416（请求范围不符合要求）如果页面无法提供请求的范围，则服务器会返回此状态代码。<br>417（未满足期望值）服务器未满足”期望”请求标头字段的要求。</p>
-</blockquote>
-<p>5**（服务器错误）<br>这些状态代码表示服务器在尝试处理请求时发生内部错误。 这些错误可能是服务器本身的错误，而不是请求出错。</p>
-<blockquote>
-<p>500（服务器内部错误）服务器遇到错误，无法完成请求。<br>501（尚未实施）服务器不具备完成请求的功能。 例如，服务器无法识别请求方法时可能会返回此代码。<br>502（错误网关）服务器作为网关或代理，从上游服务器收到无效响应。<br>503（服务不可用）服务器目前无法使用（由于超载或停机维护）。 通常，这只是暂时状态。<br>504（网关超时）服务器作为网关或代理，但是没有及时从上游服务器收到请求。<br>505（HTTP 版本不受支持）服务器不支持请求中所用的 HTTP 协议版本。</p>
-</blockquote>
-</blockquote>
-]]></content>
-      <categories>
-        <category>基础</category>
-      </categories>
-  </entry>
-  <entry>
     <title>How to calculate power of a number</title>
     <url>/2018/10/11/Leetcode-number_power/</url>
     <content><![CDATA[<h1><span id="how-to-calculate-power-of-a-number">How to calculate power of a number</span></h1><hr>
@@ -1273,17 +1225,5 @@
     <title>Machine Learning Homework</title>
     <url>/2018/10/10/Machine-Learning-Homework/</url>
     <content><![CDATA[]]></content>
-  </entry>
-  <entry>
-    <title>Hello World</title>
-    <url>/2018/03/26/hello-world/</url>
-    <content><![CDATA[<h1><span id="hello-world">Hello world</span></h1><p>@(hello world)[salton|1]</p>
-<blockquote>
-</blockquote>
-<p><strong>Area of focus: </strong> Algorithm/Computer Vision/Machine Learning/Computer Network</p>
-]]></content>
-      <categories>
-        <category>hello</category>
-      </categories>
   </entry>
 </search>

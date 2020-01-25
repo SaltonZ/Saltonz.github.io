@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="C++,Search Engine,Information Retrivement,">
+  <meta name="keywords" content="Hexo, NexT">
 
 
 
@@ -79,18 +79,17 @@
 
 
 
-<meta name="description" content="Inverted Index - C++ basedSaitong Zhao Brief Introduction to the programThis C++ program is used to generate a inverted index for Web Search Engine from the crawled data of web crawler.  The function">
-<meta name="keywords" content="C++,Search Engine,Information Retrivement">
+<meta name="description" content="Chapter 4: Intermediate SQL[TOC]">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Inverted Index - C++ based">
-<meta property="og:url" content="https://saltonz.github.io/2019/10/19/Search Engine/Inverted Index_1/index.html">
+<meta property="og:title" content="Notes for DB Principle- Intermediate SQL">
+<meta property="og:url" content="https://saltonz.github.io/2019/03/10/basic/DB-ch4/index.html">
 <meta property="og:site_name" content="Salton&#39;s">
-<meta property="og:description" content="Inverted Index - C++ basedSaitong Zhao Brief Introduction to the programThis C++ program is used to generate a inverted index for Web Search Engine from the crawled data of web crawler.  The function">
+<meta property="og:description" content="Chapter 4: Intermediate SQL[TOC]">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-11-12T05:49:15.193Z">
+<meta property="og:updated_time" content="2020-01-25T03:00:47.414Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Inverted Index - C++ based">
-<meta name="twitter:description" content="Inverted Index - C++ basedSaitong Zhao Brief Introduction to the programThis C++ program is used to generate a inverted index for Web Search Engine from the crawled data of web crawler.  The function">
+<meta name="twitter:title" content="Notes for DB Principle- Intermediate SQL">
+<meta name="twitter:description" content="Chapter 4: Intermediate SQL[TOC]">
 
 
 
@@ -120,13 +119,13 @@
 
 
 
-  <link rel="canonical" href="https://saltonz.github.io/2019/10/19/Search Engine/Inverted Index_1/">
+  <link rel="canonical" href="https://saltonz.github.io/2019/03/10/basic/DB-ch4/">
 
 
 
 
 
-  <title>Inverted Index - C++ based | Salton's</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  <title>Notes for DB Principle- Intermediate SQL | Salton's</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
   
 
 
@@ -266,7 +265,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://saltonz.github.io/2019/10/19/Search Engine/Inverted Index_1/">
+    <link itemprop="mainEntityOfPage" href="https://saltonz.github.io/2019/03/10/basic/DB-ch4/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Salton Zhao">
@@ -283,7 +282,7 @@
 
         
         
-          <h2 class="post-title" itemprop="name headline">Inverted Index - C++ based</h2>
+          <h2 class="post-title" itemprop="name headline">Notes for DB Principle- Intermediate SQL</h2>
         
 
         <div class="post-meta">
@@ -295,8 +294,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-19T00:00:00-04:00">
-                2019-10-19
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-03-10T13:56:20-04:00">
+                2019-03-10
               </time>
             
 
@@ -318,8 +317,8 @@
               
               
                 <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/Information-Retrivement/" itemprop="url" rel="index">
-                    <span itemprop="name">Information Retrivement</span>
+                  <a href="/categories/basic/" itemprop="url" rel="index">
+                    <span itemprop="name">basic</span>
                   </a>
                 </span>
 
@@ -336,8 +335,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2019/10/19/Search Engine/Inverted Index_1/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count gitment-comments-count" data-xid="/2019/10/19/Search Engine/Inverted Index_1/" itemprop="commentsCount"></span>
+                <a href="/2019/03/10/basic/DB-ch4/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count gitment-comments-count" data-xid="/2019/03/10/basic/DB-ch4/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -370,115 +369,123 @@
       
 
       
-        <h1><span id="inverted-index-c-based">Inverted Index - C++ based</span></h1><p>Saitong Zhao</p>
-<h2><span id="brief-introduction-to-the-program">Brief Introduction to the program</span></h2><p>This C++ program is used to generate a inverted index for Web Search Engine from the crawled data of web crawler. </p>
-<p>The function of inverted index is:  for each query term, give back the document ID contains this term and the frequency this term showed up in the document.</p>
-<blockquote>
-<p>Only support English for now, seeking to support more languages such as Chinese in the future. </p>
-</blockquote>
-<h3><span id="input">Input</span></h3><p>The data-set I used is from <strong>Common Crawl</strong>, an data set contains PBs of data crawled from the Internet.</p>
-<blockquote>
-<p><a href="https://commoncrawl.org/the-data/" target="_blank" rel="noopener">https://commoncrawl.org/the-data/</a></p>
-</blockquote>
-<p>My program use the WET file format of Common Crawl dataset, because it is some how parsed and we don’t need to care much about web page parsing. </p>
+        <h1><span id="chapter-4-intermediate-sql">Chapter 4: Intermediate SQL</span></h1><p>[TOC]</p>
 <a id="more"></a>
-<h3><span id="output">Output</span></h3><p>There are three outputs of this program.</p>
-<ol>
-<li><p>Inverted_Index</p>
-<p>This output is main Inverted Index itself, which is saved to disk as binary file in the format as <strong>inverted_index_{ part number }.dat</strong>. Which can be directly loaded to memory into an vector according to the memory offset.  With the parameters in the code, typically each part of inverted index is about 120 MB.</p>
+<h2><span id="join-expressions">Join Expressions</span></h2><p>Join operations take two relations and return as a result another relation.</p>
+<p>A join operation is a Cartesian product which requires that tuples in the two relations match<b>(under some condition)</b> </p>
+<p>Join operations are typically used as subquery expressions in the from clause.</p>
+<blockquote>
+<p><strong>Outer Join</strong><br>An extension of the join operation that avoids loss of information.<br>Join and then adds tuples form one relation that does not match tuples in the other relation to the result of the join<br>Uses null values.</p>
+<blockquote>
+<p>Left outer Join:<br>Reserve the attributes don’t match in the left relation<br>Right outer Join:<br>Reserve the attributes don’t match in the right relation<br>Full outer Join:<br>Reserve the attributes don’t match in both relations</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<p><strong>Join Conditions</strong><br>defines which tuples in the two relations match and what attributes are present in the result of the join.</p>
+</blockquote>
+<blockquote>
+<p><strong>E.g:</strong><br>courser INNER JOIN prereq ON<br>course.course_id = prereq.course_id</p>
+<blockquote>
+<p>Find the course ID, semeseter, year and title of each course offered by the Comp. Sci. department:<br><strong>select</strong> section.course_id, semester, year, title<br><strong>from</strong> section, course<br><strong>where</strong> section.course_id = course.course_id <strong>and</strong> dept_name = ‘Comp. Sci.’<br><br><br>same with:<br><strong>select</strong> section.course_id, semester, year, title<br><strong>from</strong> section <strong>join</strong> course<br><strong>where</strong> dept_name = ‘Comp. Sci.’</p>
+</blockquote>
+</blockquote>
+<h2><span id="views">Views</span></h2><p>In some cases it is not desirable for all users to see the entire logical model.<br>A <strong>view</strong> provides <u>a mechanism to hide certain data from the view of vertain users</u><br>Any relation that is not of the <u>conceptual model</u> but is made visible to a user as a “virtual relation” is called a view.<br></p>
+<h3><span id="view-definition">View Definition</span></h3><p>A view is defined using the <strong>create view</strong> statement with the forum:<br><br><strong>create view</strong> v <strong>as</strong> &lt; query expression&gt; <br><br>and the view name is represented by <em>v</em></p>
+<p>View definition is not the same as <strong><del>creating a new relation</del></strong> but <strong>evaluating the query expression</strong></p>
+<p>Rather, a view definition causes the <strong>saving of an expression</strong>. The expression is substituted into queries using the view.</p>
+<h3><span id="example-views">Example Views</span></h3><blockquote>
+<p>A view of instructors without their salary:<br><strong>create view</strong> faculty <strong>as</strong><br><strong>select</strong> ID, name, dept_name<br><strong>from</strong> instructors</p>
+</blockquote>
+<blockquote>
+<p>Find all instructors in the Biology department<br><strong>select</strong> name<br><strong>from</strong> faculty<br><strong>where</strong> dept_name = ‘Biology’</p>
+</blockquote>
+<blockquote>
+<p>Create a view of department salary totals<br><strong>create view</strong> departments_total_salary(dept_name, total_salary) <strong>as</strong><br><strong>select</strong> dept_name, <strong>sum</strong>(salary)<br><strong>from</strong> instructors<br><strong>group by</strong> dept_name </p>
+</blockquote>
+<h3><span id="views-defined-using-other-views">Views defined using other views</span></h3><ul>
+<li>One view may be used in the expression defining of another view</li>
+<li>A view relation v1 is said to <strong>depend directly</strong> on a relavition v2 if v2 is used in the expression defining v1</li>
+<li>A view relation v1 is said to <strong>depend</strong> on view relation v2 if either v1 depends directly to v2 or there is a path of dependencies from v1 to v2 </li>
+<li>A view relation v is said to be <strong>recursive</strong>  if it depends on itself.</li>
+</ul>
+<h3><span id="view-expansion">View expansion</span></h3><ul>
+<li>A way to define the meaning of views defined in terms of other views</li>
+<li>Let view v1 be defined by an expression e1 that may itself contain uses of view relations</li>
+<li>View expansion of an expression repeats the following replacement step:<blockquote>
+<p><strong>repeat</strong><br>Find any view relation vi in e1<br>Replace the view relation vi by the expression deﬁning vi<br><strong>until</strong> no more view relations are present in e1  </p>
+</blockquote>
 </li>
-<li><p>Lexicon_map</p>
-<p>This output is used to store the data for build a Hash Map before the Web Search Engine start working. </p>
-<p>Lexicon_map is a .txt file, for each line of lexicon map, the structure is:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[term] [inverted_index offset] [term_start_index] [term_end_index] [total number of doc contains this term]</span><br></pre></td></tr></table></figure>
+</ul>
+<h3><span id="update-of-a-view">Update of a View</span></h3><p>“faculty” is a view</p>
+<blockquote>
+<p><strong>insert into</strong> faculty <strong>values</strong>(‘30765’, ‘Green’, ‘Music’)</p>
+</blockquote>
+<p><strong>some updates can’t be translated uniquely</strong></p>
+<blockquote>
+<p><strong>create view</strong> instructor_info as<br><strong>select</strong> ID, name, building<br><strong>from</strong> instructor, department<br><strong>where</strong> instructor.dept_name= department.dept_name; </p>
+</blockquote>
+<blockquote>
+<p><strong>insert into</strong> instructor values(‘69987’, ‘White’, ‘Taylor’)</p>
+<blockquote>
+<p>If Talyor in multi departments, which department should be?<br>What if Talyor don’t belong to any department.</p>
+</blockquote>
+</blockquote>
+<p><strong>Most SQL inplementions only allow updated on simple views</strong><br>●  The <strong>from</strong> clause has <strong>only one database relation</strong>.<br>●  The <strong>select</strong> clause contains <strong>only attribute names of the relation</strong>, and does not have any expressions, aggregates, or distinct speciﬁcation.<br>●  Any attribute not listed in the select clause can be set to null<br>●  The query does not have a group by or having clause.</p>
+<h2><span id="transactions">Transactions</span></h2><p>Unit of work<br>Atomic Transaction:either fully executed or rolled back as if it never occured.<br>Isolation from concurrent Transactions<br>Transaction begin implicitly and ended by commit work or roll back work<br>But on most databases, each SQL statement commits automatically</p>
+<h2><span id="integrity-constraints">Integrity Constraints</span></h2><p>Integrity constraints guard against accidental damage to the database, by ensuring that authorized changes to the database do not result in a loss of data consistency.</p>
 <ul>
-<li><strong>term</strong>: A term is basically what we defined as an object we would like to find in documents. Such as word in this implementation.</li>
-<li><strong>inverted_index offset</strong>: Since the overall inverted index in build up with several parts of binary file. This parameter tells the term is located is which specific file.</li>
-<li><strong>term_start_index</strong>:  The first offset of the term’s information in the inverted index.</li>
-<li><strong>term_end_index</strong>: The last offset of the term’s information.</li>
-<li><strong>total_number</strong>: The total number of documents that contains this term.</li>
+<li>e.g: A customer must have a phone number</li>
+</ul>
+<p><strong>constraints on a single relation</strong>:</p>
+<blockquote>
+<p><strong>not null</strong></p>
+<blockquote>
+<p>Declare name and budget to be not null </p>
+</blockquote>
+<p><strong>unique(A1, A2, …, $A_m$)</strong></p>
+<blockquote>
+<ul>
+<li>The unique specification states the attibutes(A1, A2, …, $A_m$) form a canditate key</li>
+<li>Canditates keys are permittede to be null</li>
+</ul>
+</blockquote>
+<p><strong>check(P)</strong><br> where P is a predicate<br> (predicate: 谓词，返回值是真值的函数<br> E.g: Like, Between, In, Exists)</p>
+<blockquote>
+<p>The CHECK constraint is used to limit the value range that can be placed in a column.<br><br>If you define a CHECK constraint on a single column it allows only certain values for this column.<br><br>If you define a CHECK constraint on a table it can limit the values in certain columns based on values in other columns in the row.</p>
+</blockquote>
+</blockquote>
+<p> <strong>Referencial Integrity</strong><br> Ensures that a value that appears in one relation for a given set of attributes also appears for a certain set of attributes in another relation. </p>
+<p><strong>cascade</strong></p>
+<blockquote>
+<p>cascade 表示级联操作，就是说，如果主键表中被参考字段更新，外键表中也更新，主键表中的记录被删除，外键表中改行也相应删除</p>
+<blockquote>
+<p>on delete cascade<br> on update cascade</p>
+</blockquote>
+</blockquote>
+<h2><span id="sql-build-in-data-types">SQL Build in Data Types</span></h2><ul>
+<li>date: Dates<br>E.g: <strong>date</strong> “2019-3-11”</li>
+<li>time: time of day<br>E.g: <strong>time</strong> ‘09:00:30’<ul>
+<li>timestamp: date + time<br>*interval period of time<blockquote>
+<p>Subtracting a time/date/timestamp value from another gives an interval value<br>Interval values can be used to added to time/date/timestamp values</p>
+</blockquote>
+</li>
 </ul>
 </li>
-<li><p>Url_Document_map</p>
-<p>This output is used to map the url with the document. During the bootstrap of Web Search Engine, this file would be loaded into the memory to construct a hash map from document to url. For each line, the structure is:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[url] [documentID]</span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-<h3><span id="running-environment">Running Environment</span></h3><p>Tested on <strong>Visual Studio 2017</strong>, <strong>windows 10</strong></p>
-<p>Some features of <strong>C++ 11</strong> is used.</p>
-<p>For better efficiency, remember to add optimizer <strong>-O2</strong> when compiling.</p>
-<p>Run on a <strong>x64</strong> PC and using x64 compiler, or the memory might not enough.</p>
-<p>If using any IDE, use Release mode to run.</p>
-<h3><span id="how-to-run">How to run</span></h3><p>Set up the file folders for output and source data, fill-in the config.cpp as your directory, compile and run on Visual Studio.</p>
-<h2><span id="code-structure-amp-utility">Code Structure &amp; Utility</span></h2><p><strong>&lt;config.h&gt; / &lt;config.cpp&gt;</strong>: </p>
-<blockquote>
-<p>Configure file for user to change their data set directory, output directories, and total number data file user want to process with this program.</p>
-</blockquote>
-<p><strong>&lt;file_util.h&gt;/&lt;file_util.cpp&gt;</strong>: </p>
-<blockquote>
-<p>Provided different functions to: </p>
-<ul>
-<li>Load file from disk directly to memory</li>
-<li>Save hashmap/map from memory to disk with different method (ascii)</li>
-<li>Save vector from memory to disk in binary mode</li>
-<li>Get the filenames recursively in a dictionary</li>
 </ul>
-</blockquote>
-<p><strong>&lt;merge.h&gt;/&lt;merge.cpp&gt;</strong>:</p>
+<h2><span id="other-features">Other Features</span></h2><ul>
+<li><strong>create index</strong> studentID index <strong>on</strong> student(ID)</li>
+<li>large objects<blockquote>
+<p>book review <strong>clob</strong> :</p>
 <blockquote>
-<p>Implement an I/O efficient merge sort algorithm for sorted files.</p>
-<p>Used to merge the intermediate file and generate final inverted index</p>
+<p>character large object,store tect into DBs and support key word search and other Features</p>
 </blockquote>
-<p><strong>&lt;inverted_index.cpp&gt;</strong>:</p>
+<p>image <strong>blob</strong>, movie <strong>blob</strong>:</p>
 <blockquote>
-<p>Main function in this file.</p>
-<p>Used to parse, sort the in-file data and generate intermediate postings</p>
+<p>binary large object,<br>don’t store image in table, pointer to binary image instead</p>
 </blockquote>
-<h2><span id="logic-of-the-program">Logic of the program</span></h2><h3><span id="part-i-parsing-sorting-and-intermediate-posting-generating">Part I - Parsing, Sorting and Intermediate Posting Generating</span></h3><p><strong>Load file</strong></p>
-<p>In this part a file about 400 MB is loaded into the memory. Several methods are tested and the direct call for C function <strong>fread</strong> is the fastest. (Because the ifstream’s buffer is only 512 Bytes, which is very inefficient when load a big file at a time.)</p>
-<p>Because this program is intended to handle all languages.(Some language characters are encoded within wide char <strong>wchar_t</strong>) So the File loaded to memory would be then converted to <strong>wstring</strong> format with <strong>utf-8</strong> encoding.</p>
-<p><strong>Parse</strong></p>
-<p>For each document loaded to the memory, the program would scan the whole document. During this loop, different documents would be parsed out according to the structure of .WET file. Moreover, the program will parse out the term in the document and insert them into a structure for further use. </p>
-<p>The way a term is defined in this program is a continuous string without any character that is not a number or English character. And the term’s length is less than 30 words. (In the parsed data, only a little bit of terms are beyond 15 characters)</p>
-<p><strong>Sort</strong></p>
-<p>For the I/O efficient merge sort later, the data in each posting is sorted by lexicographical order.</p>
-<p>During the parse phase, the term is inserted into a map along with the accordingly document ID and term frequency.  So the data is sorted. We just need to output the map iteratively, the intermediate posting is sorted.</p>
-<p>Insert to a Map might slower than a hash Map, because a <strong>O(lgn)</strong> reform of the RB tree is requires for every insert. But say we have total <strong>k</strong> intermediate postings, each have <strong>n</strong> terms. The complexity of each possible implementation is listed:</p>
-<blockquote>
-<p>Use map to generate sorted postings and then one-pass merge: <strong>k*(n+nlg(n)) + nlg(k)</strong></p>
 </blockquote>
-<blockquote>
-<p>Use hash map to generate postings, unix sort and then one-pass merge: <strong>k*n +k*nlg(n) + nlg(k)</strong> </p>
-</blockquote>
-<p>So basically the complexity is same.</p>
-<p><strong>Posting Generating</strong></p>
-<p>Because the data is too big too load in to memory, so as long as there are more than 2,000,000 terms in memory, the program would output it as an intermediate posting. Which is typically 180 Mb each. The intermediate postings are named in same format for further use.</p>
-<p><strong>Url -&gt; document Map</strong></p>
-<p>During the main loop, when encountering a new document(web page), the program would add a key-value pair to hash map. After all the documents in the data set is processed, the Url - Document map would be save to disk.</p>
-<p>Because the data set I used to test is relatively small (48 GB). So if this inverted index is going to be used distributed or dealing with large size of data, the Url - Document map need to be save to the disk periodically.</p>
-<p>The document ID is a global increasing integer, which is assigned to each documents by the order documents are parsed.</p>
-<h3><span id="part-ii-io-efficient-merge-and-lexicon-generating">Part II  - I/O Efficient Merge and  Lexicon Generating</span></h3><p><strong>Merge Sort</strong></p>
-<p>An I/O efficient merge sort algorithm is implemented for the merge sort.  For every intermediated  postings,  a stream is created to load data from. A <strong>Priority Queue</strong> (in C++ STL, priority_queue is implemented by a heap) is used to compare the current input from different intermediate postings. </p>
-<p>At first each postings would read one term and insert it into the priority queue. Then for each loop, the top of the priority queue is popped and the term’s document ID and frequency is loaded into a 2-D vector. And the corresponding stream would read a term from the intermediate posting, insert it priority Queue.</p>
-<p><strong>Inverted Index Output</strong></p>
-<p>When the 2-D vector has grown to a specific size, we need to output it from memory to the disk. Hence we don’t want a term to be split into two files. Because in the lexicon map, each term is pointing to a specific inverted_index file. So the program would wait until the newly loaded term into priority queue is a new term, and then save the 2-D vector to the disk.</p>
-<p>Because in C++, the data of vector is saved continuously in memory, we can save the data to memory with one <strong>fwrite</strong> in binary mode. Which is easier for us to use this index to query a term in the query processor.</p>
-<p><strong>Data Compression</strong>(To Do)</p>
-<p>Variable Char can be used to achieve the data compression for inverted index.</p>
-<p>Don’t need to save the docId, difference between docId instead.</p>
-<p><strong>Lexicon Map</strong></p>
-<p>During the processing of the intermediate postings, the lexicon Map would be built up as a hash map.  When ever there’s 100,000,000 entries in the hash map, the program would output a file to store the information of lexicon. </p>
-<h2><span id="efficiency-test">Efficiency test</span></h2><p>To test the efficiency, I used <strong>120</strong> WET files as input, the size of data is  about <strong>48</strong> GB. With a total of <strong>5350784</strong> pages and <strong>230020664</strong> terms as defined above.</p>
-<p>The first step of parse and sort took <strong>235</strong> minutes.</p>
-<p>The second step of merge took <strong>300</strong> minutes.</p>
-<p>The inverted index generated is <strong>13.4</strong> GB. Lexicon map generated is <strong>1.2</strong> GB.</p>
-<p>The speed of merge is slower than it suppose to be, and I think it is because of the using of file stream to read the intermediate file. There are two possible solutions to speed up. One is to manually set a comparatively larger buffer for the file stream in c++ STL. Another one is to directly map the memory to disk using memory map method.</p>
-<h2><span id="todo">ToDo</span></h2><ol>
-<li>Using data compression skills to compress the inverted index in the merge phase.</li>
-<li>Modify the merge phase code to make I/O faster (larger buffer / memory map), to speed up the merge phase.</li>
-<li>Maybe add some parameters to make the program more flexible, less hard code. </li>
-</ol>
-<p>Latest version at: <a href="https://github.com/saltonz/Inverted-Index" target="_blank" rel="noopener">https://github.com/saltonz/Inverted-Index</a></p>
+</li>
+</ul>
 
       
     </div>
@@ -495,11 +502,11 @@
         <ul class="post-copyright">
   <li class="post-copyright-author">
     <strong>Post author:</strong>
-    salton
+    Salton Zhao
   </li>
   <li class="post-copyright-link">
     <strong>Post link:</strong>
-    <a href="https://saltonz.github.io/2019/10/19/Search Engine/Inverted Index_1/" title="Inverted Index - C++ based">https://saltonz.github.io/2019/10/19/Search Engine/Inverted Index_1/</a>
+    <a href="https://saltonz.github.io/2019/03/10/basic/DB-ch4/" title="Notes for DB Principle- Intermediate SQL">https://saltonz.github.io/2019/03/10/basic/DB-ch4/</a>
   </li>
   <li class="post-copyright-license">
     <strong>Copyright Notice: </strong>
@@ -511,16 +518,6 @@
     
 
     <footer class="post-footer">
-      
-        <div class="post-tags">
-          
-            <a href="/tags/C/" rel="tag"># C++</a>
-          
-            <a href="/tags/Search-Engine/" rel="tag"># Search Engine</a>
-          
-            <a href="/tags/Information-Retrivement/" rel="tag"># Information Retrivement</a>
-          
-        </div>
       
 
       
@@ -546,8 +543,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/09/28/Search Engine/Multi_Thread_Crawler/" rel="next" title="Multi thread python crawler">
-                <i class="fa fa-chevron-left"></i> Multi thread python crawler
+              <a href="/2019/03/09/DNSpoofing-Lab/" rel="next" title="DNSpoofing Lab Assignment">
+                <i class="fa fa-chevron-left"></i> DNSpoofing Lab Assignment
               </a>
             
           </div>
@@ -556,8 +553,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2020/01/02/Swarm Robotics Project/" rel="prev" title="Swarm Robotics Project">
-                Swarm Robotics Project <i class="fa fa-chevron-right"></i>
+              <a href="/2019/03/17/JVM_basic/" rel="prev" title="Java Learning note-1 (JVM-JMM)">
+                Java Learning note-1 (JVM-JMM) <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -710,7 +707,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#null"><span class="nav-number">1.</span> <span class="nav-text">Inverted Index - C++ based</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#null"><span class="nav-number">1.1.</span> <span class="nav-text">Brief Introduction to the program</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">1.1.1.</span> <span class="nav-text">Input</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">1.1.2.</span> <span class="nav-text">Output</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">1.1.3.</span> <span class="nav-text">Running Environment</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">1.1.4.</span> <span class="nav-text">How to run</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#null"><span class="nav-number">1.2.</span> <span class="nav-text">Code Structure &amp; Utility</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#null"><span class="nav-number">1.3.</span> <span class="nav-text">Logic of the program</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">1.3.1.</span> <span class="nav-text">Part I - Parsing, Sorting and Intermediate Posting Generating</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">1.3.2.</span> <span class="nav-text">Part II  - I/O Efficient Merge and  Lexicon Generating</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#null"><span class="nav-number">1.4.</span> <span class="nav-text">Efficiency test</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#null"><span class="nav-number">1.5.</span> <span class="nav-text">ToDo</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#null"><span class="nav-number">1.</span> <span class="nav-text">Chapter 4: Intermediate SQL</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#null"><span class="nav-number">1.1.</span> <span class="nav-text">Join Expressions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#null"><span class="nav-number">1.2.</span> <span class="nav-text">Views</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">1.2.1.</span> <span class="nav-text">View Definition</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">1.2.2.</span> <span class="nav-text">Example Views</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">1.2.3.</span> <span class="nav-text">Views defined using other views</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">1.2.4.</span> <span class="nav-text">View expansion</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">1.2.5.</span> <span class="nav-text">Update of a View</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#null"><span class="nav-number">1.3.</span> <span class="nav-text">Transactions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#null"><span class="nav-number">1.4.</span> <span class="nav-text">Integrity Constraints</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#null"><span class="nav-number">1.5.</span> <span class="nav-text">SQL Build in Data Types</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#null"><span class="nav-number">1.6.</span> <span class="nav-text">Other Features</span></a></li></ol></li></ol></div>
             
 
           </div>

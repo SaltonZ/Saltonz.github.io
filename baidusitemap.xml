@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://saltonz.github.io/2019/03/17/JVM_basic/</loc>
+    <lastmod>2020-01-25</lastmod>
+  </url>  <url>
+    <loc>https://saltonz.github.io/2019/03/10/basic/DB-ch4/</loc>
+    <lastmod>2020-01-25</lastmod>
+  </url>  <url>
+    <loc>https://saltonz.github.io/2020/01/02/Swarm%20Robotics%20Project/</loc>
+    <lastmod>2020-01-25</lastmod>
+  </url>  <url>
     <loc>https://saltonz.github.io/2019/10/19/Search%20Engine/Inverted%20Index_1/</loc>
     <lastmod>2019-11-12</lastmod>
   </url>  <url>
@@ -34,25 +43,10 @@
     <loc>https://saltonz.github.io/2019/03/09/DNSpoofing-Lab/</loc>
     <lastmod>2019-03-19</lastmod>
   </url>  <url>
-    <loc>https://saltonz.github.io/2019/03/17/JVM_basic/</loc>
-    <lastmod>2019-03-17</lastmod>
-  </url>  <url>
-    <loc>https://saltonz.github.io/2019/03/17/java_learning(2)/</loc>
-    <lastmod>2019-03-17</lastmod>
-  </url>  <url>
-    <loc>https://saltonz.github.io/2019/01/20/tencent/</loc>
-    <lastmod>2019-03-11</lastmod>
-  </url>  <url>
     <loc>https://saltonz.github.io/2018/10/11/Leetcode-number_power/</loc>
     <lastmod>2019-03-11</lastmod>
   </url>  <url>
     <loc>https://saltonz.github.io/2019/03/09/ch4-Network%20protocol/</loc>
-    <lastmod>2019-03-11</lastmod>
-  </url>  <url>
-    <loc>https://saltonz.github.io/2019/03/10/DB-ch4/</loc>
-    <lastmod>2019-03-11</lastmod>
-  </url>  <url>
-    <loc>https://saltonz.github.io/2018/03/26/hello-world/</loc>
     <lastmod>2019-03-11</lastmod>
   </url>  <url>
     <loc>https://saltonz.github.io/2018/10/10/Machine-Learning-Homework/</loc>

@@ -2,6 +2,27 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://saltonz.github.io/2019/03/17/JVM_basic/</loc>
+    
+    <lastmod>2020-01-25T03:02:10.177Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://saltonz.github.io/2019/03/10/basic/DB-ch4/</loc>
+    
+    <lastmod>2020-01-25T03:00:47.414Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://saltonz.github.io/2020/01/02/Swarm%20Robotics%20Project/</loc>
+    
+    <lastmod>2020-01-25T02:43:11.059Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://saltonz.github.io/about/index.html</loc>
     
     <lastmod>2019-11-12T06:38:36.936Z</lastmod>
@@ -86,27 +107,6 @@
   </url>
   
   <url>
-    <loc>https://saltonz.github.io/2019/03/17/JVM_basic/</loc>
-    
-    <lastmod>2019-03-17T17:41:33.743Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://saltonz.github.io/2019/03/17/java_learning(2)/</loc>
-    
-    <lastmod>2019-03-17T17:39:56.132Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://saltonz.github.io/2019/01/20/tencent/</loc>
-    
-    <lastmod>2019-03-11T06:53:07.315Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://saltonz.github.io/2018/10/11/Leetcode-number_power/</loc>
     
     <lastmod>2019-03-11T06:11:38.173Z</lastmod>
@@ -117,20 +117,6 @@
     <loc>https://saltonz.github.io/2019/03/09/ch4-Network%20protocol/</loc>
     
     <lastmod>2019-03-11T05:57:11.704Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://saltonz.github.io/2019/03/10/DB-ch4/</loc>
-    
-    <lastmod>2019-03-11T05:33:10.367Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://saltonz.github.io/2018/03/26/hello-world/</loc>
-    
-    <lastmod>2019-03-11T05:21:32.989Z</lastmod>
     
   </url>
   

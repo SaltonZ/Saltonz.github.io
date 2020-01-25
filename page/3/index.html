@@ -265,7 +265,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://saltonz.github.io/2019/03/17/java_learning(2)/">
+    <link itemprop="mainEntityOfPage" href="https://saltonz.github.io/2019/03/19/Cryotgraohybasic1/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Salton Zhao">
@@ -284,7 +284,7 @@
         
           <h2 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/03/17/java_learning(2)/" itemprop="url">Java Learning note-2 (Hashmap & IO)</a></h2>
+                <a class="post-title-link" href="/2019/03/19/Cryotgraohybasic1/" itemprop="url">Cryptography Basic1</a></h2>
         
 
         <div class="post-meta">
@@ -296,8 +296,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-03-17T00:00:00-04:00">
-                2019-03-17
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-03-19T00:00:00-04:00">
+                2019-03-19
               </time>
             
 
@@ -319,8 +319,8 @@
               
               
                 <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java/" itemprop="url" rel="index">
-                    <span itemprop="name">Java</span>
+                  <a href="/categories/Network-Security/" itemprop="url" rel="index">
+                    <span itemprop="name">Network Security</span>
                   </a>
                 </span>
 
@@ -357,30 +357,33 @@
 
       
         
-          <h1 id="Java-Learning-Note-2"><a href="#Java-Learning-Note-2" class="headerlink" title="Java_Learning Note -2"></a>Java_Learning Note -2</h1><h2 id="Hashmap-Hashtable-ConcurrentHashMap"><a href="#Hashmap-Hashtable-ConcurrentHashMap" class="headerlink" title="Hashmap/Hashtable/ConcurrentHashMap"></a>Hashmap/Hashtable/ConcurrentHashMap</h2><p><strong>Hashtable</strong> </p>
-<ul>
-<li>底层数组+链表实现，无论key还是value都<strong>不能为null</strong>,线程<strong>安全</strong>，Synchronized,效率低</li>
-<li>初始size为11，扩容时newsize = oldsize*2 + 1</li>
-<li>计算index: index = (hash &amp; 0x7FFFFFFF) % tab.length</li>
+          <h1 id="Cryptography-Basic"><a href="#Cryptography-Basic" class="headerlink" title="Cryptography Basic"></a>Cryptography Basic</h1><p><strong>Cipher</strong>: mathematic process usedfor encryption and decryption by cryptographic systems<br>Classification of cryptographic systems:</p>
+<ol>
+<li>Type of transformation<ul>
+<li>plaintext is transformed to ciphertext by some combination of stages of substitution(置换) and transposition(换位).</li>
 </ul>
-<p><strong>HashMap</strong></p>
-<ul>
-<li>底层数组+链表实现，<strong>可以储存null key 和 value</strong>, 线程<strong>不安全</strong></li>
-<li>初始size为16， 扩容newsize = oldsize*2</li>
-<li>扩容针对整个map,每次扩容时原来数组中元素依次重新计算存放位置，并重新插入</li>
-<li>插入元素后判断是否扩容</li>
-<li>当map中元素总数超过Entry数组的75%，触发扩容，为了减小链表长度</li>
-<li>计算index: index = hash &amp; (tab.length-1)
+</li>
+<li>Number of Keys<ul>
+<li>Single key used by sender and receiver: symmetric, public key</li>
+<li>Sender and receiver each use different keys: asymmetric, public key</li>
+</ul>
+</li>
+<li>How plaintext is processed<ul>
+<li>One block at a time (block cipher), output block for each input block</li>
+<li>continuously (stream cipher)</li>
+</ul>
+</li>
+</ol>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2019/03/17/java_learning(2)/#more" rel="contents">
+            <a class="btn" href="/2019/03/19/Cryotgraohybasic1/#more" rel="contents">
               Read more &raquo;
             </a>
           </div>
           <!--/noindex-->
         
       
-    </li></ul></div>
+    </div>
     
     
     
@@ -478,8 +481,8 @@
               
               
                 <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java/" itemprop="url" rel="index">
-                    <span itemprop="name">Java</span>
+                  <a href="/categories/basic/" itemprop="url" rel="index">
+                    <span itemprop="name">basic</span>
                   </a>
                 </span>
 
@@ -571,7 +574,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://saltonz.github.io/2019/03/10/DB-ch4/">
+    <link itemprop="mainEntityOfPage" href="https://saltonz.github.io/2019/03/10/basic/DB-ch4/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Salton Zhao">
@@ -590,7 +593,7 @@
         
           <h2 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/03/10/DB-ch4/" itemprop="url">Notes for DB Principle- Intermediate SQL</a></h2>
+                <a class="post-title-link" href="/2019/03/10/basic/DB-ch4/" itemprop="url">Notes for DB Principle- Intermediate SQL</a></h2>
         
 
         <div class="post-meta">
@@ -625,8 +628,8 @@
               
               
                 <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/Databases/" itemprop="url" rel="index">
-                    <span itemprop="name">Databases</span>
+                  <a href="/categories/basic/" itemprop="url" rel="index">
+                    <span itemprop="name">basic</span>
                   </a>
                 </span>
 
@@ -666,7 +669,7 @@
           <h1 id="Chapter-4-Intermediate-SQL"><a href="#Chapter-4-Intermediate-SQL" class="headerlink" title="Chapter 4: Intermediate SQL"></a>Chapter 4: Intermediate SQL</h1><p>[TOC]</p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2019/03/10/DB-ch4/#more" rel="contents">
+            <a class="btn" href="/2019/03/10/basic/DB-ch4/#more" rel="contents">
               Read more &raquo;
             </a>
           </div>
@@ -1059,7 +1062,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-count">17</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -1070,7 +1073,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-count">5</span>
                   <span class="site-state-item-name">categories</span>
                 </a>
               </div>
@@ -1134,7 +1137,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
