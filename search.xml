@@ -163,9 +163,9 @@
         <category>Information Retrivement</category>
       </categories>
       <tags>
-        <tag>C++</tag>
         <tag>Search Engine</tag>
         <tag>Information Retrivement</tag>
+        <tag>C++</tag>
       </tags>
   </entry>
   <entry>
@@ -332,34 +332,6 @@
       </tags>
   </entry>
   <entry>
-    <title>OverWrite of cmp(cmp重载)</title>
-    <url>/2019/03/26/basic/overwrite_cmp/</url>
-    <content><![CDATA[<h2><span id="overwrite-rule-of-cmp-function-in-c">OverWrite Rule of cmp function in C++</span></h2><h2><span id="c-重载cmp">C++ 重载cmp</span></h2><h3><span id="void-sortiterator-start-iterator-end-strictweakordering-cmp">void sort(iterator start, iterator end, StrictWeakOrdering cmp);</span></h3><p>函数标准声明：<br><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">RandomAccessIterator</span>, <span class="title">class</span> <span class="title">Compare</span>&gt;</span></span><br><span class="line"><span class="class"><span class="title">void</span> <span class="title">sort</span> (<span class="title">RandomAccessIterator</span> <span class="title">first</span>, <span class="title">RandomAccessIterator</span> <span class="title">last</span>, <span class="title">Compare</span> <span class="title">comp</span>);</span></span><br></pre></td></tr></table></figure></p>
-<a id="more"></a>
-<p>例子（降序）：<br><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">cmp</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">return</span> a &gt; b; <span class="comment">// a &lt; b 为升序</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> a[<span class="number">11</span>] = &#123; <span class="number">-5</span>,<span class="number">2</span>,<span class="number">5</span>,<span class="number">7</span>,<span class="number">-11</span>,<span class="number">2</span>,<span class="number">-6</span>,<span class="number">8</span>,<span class="number">9</span>,<span class="number">6</span>,<span class="number">6</span> &#125;;</span><br><span class="line">	sort(a, a + <span class="number">11</span>, cmp);</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i  = <span class="number">0</span>; i &lt; <span class="number">10</span>; ++i)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="built_in">cout</span> &lt;&lt; a[i] &lt;&lt; <span class="string">" "</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">cout</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">	system(<span class="string">"pause"</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<blockquote>
-<p>输出：<br>9 8 7 6 6 5 2 2 -5 -6</p>
-</blockquote>
-<h3><span id="setmap">set/map</span></h3><p>set 与 map的cmp不再只是函数，而是函数对象<br><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">cmp</span>&#123;</span></span><br><span class="line">	<span class="function"><span class="keyword">bool</span> <span class="title">operator</span> <span class="params">()</span><span class="params">(<span class="keyword">const</span> <span class="keyword">int</span> a , <span class="keyword">const</span> <span class="keyword">int</span> b)</span></span></span><br><span class="line"><span class="function">	</span>&#123;</span><br><span class="line">		<span class="keyword">return</span> a &lt; b ;			<span class="comment">// 从小到大 </span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
-<p>例子(set):<br><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;cstring&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;set&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Person</span> &#123;</span></span><br><span class="line">	<span class="keyword">int</span> age;</span><br><span class="line">	<span class="keyword">char</span> name[<span class="number">20</span>];</span><br><span class="line">	Person(<span class="keyword">int</span> Age, <span class="keyword">const</span> <span class="keyword">char</span> Name[]) :age(Age) &#123; strcpy_s(name, Name); &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">cmp</span> &#123;</span></span><br><span class="line">	<span class="function"><span class="keyword">bool</span> <span class="title">operator</span> <span class="params">()</span><span class="params">(<span class="keyword">const</span> Person a, <span class="keyword">const</span> Person b)</span></span></span><br><span class="line"><span class="function">	</span>&#123;</span><br><span class="line">		<span class="keyword">return</span> a.age &lt; b.age;			<span class="comment">//从小到大 </span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="built_in">set</span>&lt;Person, cmp&gt; s;</span><br><span class="line">	<span class="function">Person <span class="title">n1</span><span class="params">(<span class="number">46</span>, <span class="string">"zst"</span>)</span></span>;</span><br><span class="line">	<span class="function">Person <span class="title">n2</span><span class="params">(<span class="number">-16</span>, <span class="string">"salton"</span>)</span></span>;			</span><br><span class="line">	<span class="function">Person <span class="title">n3</span><span class="params">(<span class="number">45</span>, <span class="string">"123"</span>)</span></span>;</span><br><span class="line">	<span class="function">Person <span class="title">n4</span><span class="params">(<span class="number">-25</span>, <span class="string">"test"</span>)</span></span>;</span><br><span class="line">	<span class="function">Person <span class="title">n5</span><span class="params">(<span class="number">34</span>, <span class="string">"zst"</span>)</span></span>;</span><br><span class="line">	<span class="function">Person <span class="title">n6</span><span class="params">(<span class="number">22</span>, <span class="string">"zst"</span>)</span></span>;</span><br><span class="line">	<span class="function">Person <span class="title">n7</span><span class="params">(<span class="number">2</span>, <span class="string">"zst"</span>)</span></span>;</span><br><span class="line">	s.insert(n1);</span><br><span class="line">	s.insert(n2);</span><br><span class="line">	s.insert(n3);</span><br><span class="line">	s.insert(n4);</span><br><span class="line">	s.insert(n5);</span><br><span class="line">	s.insert(n6);</span><br><span class="line">	s.insert(n7);</span><br><span class="line">	<span class="built_in">set</span>&lt;Person, cmp&gt;::iterator begin = s.begin();</span><br><span class="line">	<span class="built_in">set</span>&lt;Person, cmp&gt;::iterator end = s.end();</span><br><span class="line">	<span class="keyword">for</span> (<span class="built_in">set</span>&lt;Person, cmp&gt;::iterator i = begin; i != end; ++i)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="built_in">cout</span> &lt;&lt; i-&gt;age &lt;&lt; <span class="string">" "</span> &lt;&lt; i-&gt;name &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	system(<span class="string">"pause"</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<blockquote>
-<p>输出:<br>-25 test<br>-16 salton<br>2 zst<br>22 zst<br>34 zst<br>45 123<br>46 zst</p>
-</blockquote>
-<h3><span id="priority_queue-cmp">priority_queue cmp</span></h3><p>priority queue 的cmp同样是函数对象<br>对于pair&lt;int, char&gt;:<br><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">cmp</span>&#123;</span></span><br><span class="line">    <span class="function"><span class="keyword">bool</span> <span class="title">operator</span><span class="params">()</span><span class="params">(pair&lt;<span class="keyword">int</span>,<span class="keyword">char</span>&gt; a, pair&lt;<span class="keyword">int</span>,<span class="keyword">char</span>&gt; b)</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> a.first &gt; b.first;  <span class="comment">//以int 为索引排列的小顶堆</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;queue&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">cmp</span> &#123;</span></span><br><span class="line">	<span class="function"><span class="keyword">bool</span> <span class="title">operator</span><span class="params">()</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">int</span> j)</span> </span>&#123; <span class="keyword">return</span> i &gt; j; &#125; <span class="comment">//小顶堆</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	priority_queue&lt;<span class="keyword">int</span>, <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;, cmp&gt; q;</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++) &#123; </span><br><span class="line">		<span class="keyword">if</span> (q.size() &gt;= <span class="number">5</span>) &#123;              <span class="comment">//只保留最大的五个</span></span><br><span class="line">			<span class="keyword">if</span> (i &gt; q.top()) &#123;</span><br><span class="line">				q.pop();</span><br><span class="line">				q.push(i);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span> &#123;</span><br><span class="line">			q.push(i);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">while</span> (!q.empty()) &#123;</span><br><span class="line">		<span class="built_in">cout</span> &lt;&lt; q.top() &lt;&lt; <span class="string">' '</span>;</span><br><span class="line">		q.pop();</span><br><span class="line">	&#125;</span><br><span class="line">	system(<span class="string">"pause"</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>输出：<br>5 6 7 8 9</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>basic</category>
-      </categories>
-      <tags>
-        <tag>C++</tag>
-        <tag>stl</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Thread & Process</title>
     <url>/2019/03/26/basic/Thread_Process/</url>
     <content><![CDATA[<h1><span id="thread-amp-process">Thread &amp; Process</span></h1><h2><span id="进程">进程：</span></h2><ul>
@@ -452,6 +424,34 @@
       </tags>
   </entry>
   <entry>
+    <title>OverWrite of cmp(cmp重载)</title>
+    <url>/2019/03/26/basic/overwrite_cmp/</url>
+    <content><![CDATA[<h2><span id="overwrite-rule-of-cmp-function-in-c">OverWrite Rule of cmp function in C++</span></h2><h2><span id="c-重载cmp">C++ 重载cmp</span></h2><h3><span id="void-sortiterator-start-iterator-end-strictweakordering-cmp">void sort(iterator start, iterator end, StrictWeakOrdering cmp);</span></h3><p>函数标准声明：<br><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">RandomAccessIterator</span>, <span class="title">class</span> <span class="title">Compare</span>&gt;</span></span><br><span class="line"><span class="class"><span class="title">void</span> <span class="title">sort</span> (<span class="title">RandomAccessIterator</span> <span class="title">first</span>, <span class="title">RandomAccessIterator</span> <span class="title">last</span>, <span class="title">Compare</span> <span class="title">comp</span>);</span></span><br></pre></td></tr></table></figure></p>
+<a id="more"></a>
+<p>例子（降序）：<br><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">cmp</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">return</span> a &gt; b; <span class="comment">// a &lt; b 为升序</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> a[<span class="number">11</span>] = &#123; <span class="number">-5</span>,<span class="number">2</span>,<span class="number">5</span>,<span class="number">7</span>,<span class="number">-11</span>,<span class="number">2</span>,<span class="number">-6</span>,<span class="number">8</span>,<span class="number">9</span>,<span class="number">6</span>,<span class="number">6</span> &#125;;</span><br><span class="line">	sort(a, a + <span class="number">11</span>, cmp);</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i  = <span class="number">0</span>; i &lt; <span class="number">10</span>; ++i)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="built_in">cout</span> &lt;&lt; a[i] &lt;&lt; <span class="string">" "</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">cout</span> &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">	system(<span class="string">"pause"</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>输出：<br>9 8 7 6 6 5 2 2 -5 -6</p>
+</blockquote>
+<h3><span id="setmap">set/map</span></h3><p>set 与 map的cmp不再只是函数，而是函数对象<br><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">cmp</span>&#123;</span></span><br><span class="line">	<span class="function"><span class="keyword">bool</span> <span class="title">operator</span> <span class="params">()</span><span class="params">(<span class="keyword">const</span> <span class="keyword">int</span> a , <span class="keyword">const</span> <span class="keyword">int</span> b)</span></span></span><br><span class="line"><span class="function">	</span>&#123;</span><br><span class="line">		<span class="keyword">return</span> a &lt; b ;			<span class="comment">// 从小到大 </span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>例子(set):<br><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;cstring&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;set&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Person</span> &#123;</span></span><br><span class="line">	<span class="keyword">int</span> age;</span><br><span class="line">	<span class="keyword">char</span> name[<span class="number">20</span>];</span><br><span class="line">	Person(<span class="keyword">int</span> Age, <span class="keyword">const</span> <span class="keyword">char</span> Name[]) :age(Age) &#123; strcpy_s(name, Name); &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">cmp</span> &#123;</span></span><br><span class="line">	<span class="function"><span class="keyword">bool</span> <span class="title">operator</span> <span class="params">()</span><span class="params">(<span class="keyword">const</span> Person a, <span class="keyword">const</span> Person b)</span></span></span><br><span class="line"><span class="function">	</span>&#123;</span><br><span class="line">		<span class="keyword">return</span> a.age &lt; b.age;			<span class="comment">//从小到大 </span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="built_in">set</span>&lt;Person, cmp&gt; s;</span><br><span class="line">	<span class="function">Person <span class="title">n1</span><span class="params">(<span class="number">46</span>, <span class="string">"zst"</span>)</span></span>;</span><br><span class="line">	<span class="function">Person <span class="title">n2</span><span class="params">(<span class="number">-16</span>, <span class="string">"salton"</span>)</span></span>;			</span><br><span class="line">	<span class="function">Person <span class="title">n3</span><span class="params">(<span class="number">45</span>, <span class="string">"123"</span>)</span></span>;</span><br><span class="line">	<span class="function">Person <span class="title">n4</span><span class="params">(<span class="number">-25</span>, <span class="string">"test"</span>)</span></span>;</span><br><span class="line">	<span class="function">Person <span class="title">n5</span><span class="params">(<span class="number">34</span>, <span class="string">"zst"</span>)</span></span>;</span><br><span class="line">	<span class="function">Person <span class="title">n6</span><span class="params">(<span class="number">22</span>, <span class="string">"zst"</span>)</span></span>;</span><br><span class="line">	<span class="function">Person <span class="title">n7</span><span class="params">(<span class="number">2</span>, <span class="string">"zst"</span>)</span></span>;</span><br><span class="line">	s.insert(n1);</span><br><span class="line">	s.insert(n2);</span><br><span class="line">	s.insert(n3);</span><br><span class="line">	s.insert(n4);</span><br><span class="line">	s.insert(n5);</span><br><span class="line">	s.insert(n6);</span><br><span class="line">	s.insert(n7);</span><br><span class="line">	<span class="built_in">set</span>&lt;Person, cmp&gt;::iterator begin = s.begin();</span><br><span class="line">	<span class="built_in">set</span>&lt;Person, cmp&gt;::iterator end = s.end();</span><br><span class="line">	<span class="keyword">for</span> (<span class="built_in">set</span>&lt;Person, cmp&gt;::iterator i = begin; i != end; ++i)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="built_in">cout</span> &lt;&lt; i-&gt;age &lt;&lt; <span class="string">" "</span> &lt;&lt; i-&gt;name &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	system(<span class="string">"pause"</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>输出:<br>-25 test<br>-16 salton<br>2 zst<br>22 zst<br>34 zst<br>45 123<br>46 zst</p>
+</blockquote>
+<h3><span id="priority_queue-cmp">priority_queue cmp</span></h3><p>priority queue 的cmp同样是函数对象<br>对于pair&lt;int, char&gt;:<br><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">cmp</span>&#123;</span></span><br><span class="line">    <span class="function"><span class="keyword">bool</span> <span class="title">operator</span><span class="params">()</span><span class="params">(pair&lt;<span class="keyword">int</span>,<span class="keyword">char</span>&gt; a, pair&lt;<span class="keyword">int</span>,<span class="keyword">char</span>&gt; b)</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> a.first &gt; b.first;  <span class="comment">//以int 为索引排列的小顶堆</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;queue&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">cmp</span> &#123;</span></span><br><span class="line">	<span class="function"><span class="keyword">bool</span> <span class="title">operator</span><span class="params">()</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">int</span> j)</span> </span>&#123; <span class="keyword">return</span> i &gt; j; &#125; <span class="comment">//小顶堆</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	priority_queue&lt;<span class="keyword">int</span>, <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;, cmp&gt; q;</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++) &#123; </span><br><span class="line">		<span class="keyword">if</span> (q.size() &gt;= <span class="number">5</span>) &#123;              <span class="comment">//只保留最大的五个</span></span><br><span class="line">			<span class="keyword">if</span> (i &gt; q.top()) &#123;</span><br><span class="line">				q.pop();</span><br><span class="line">				q.push(i);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span> &#123;</span><br><span class="line">			q.push(i);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">while</span> (!q.empty()) &#123;</span><br><span class="line">		<span class="built_in">cout</span> &lt;&lt; q.top() &lt;&lt; <span class="string">' '</span>;</span><br><span class="line">		q.pop();</span><br><span class="line">	&#125;</span><br><span class="line">	system(<span class="string">"pause"</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>输出：<br>5 6 7 8 9</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>basic</category>
+      </categories>
+      <tags>
+        <tag>C++</tag>
+        <tag>stl</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>C++ Memory Leak</title>
     <url>/2019/03/22/basic/Memory%20Leak%20of%20C++/</url>
     <content><![CDATA[<h2><span id="c-内存泄漏的常见情况">C++ 内存泄漏的常见情况</span></h2><h4><span id="在类的构造函数和析构函数中没有对应地调用new-和delete-函数">在类的构造函数和析构函数中没有对应地调用new 和delete 函数</span></h4><p>这种泄漏在两种情况下可能出现</p>
@@ -502,68 +502,6 @@
 <p>In this situation, Mallory is an attacker between Alice and Bob start a Middle man attack.</p>
 <p>By modify the communication between Alice and Bob, Alice is in fact have the secret key between Alice and Mallory, while Bob have the secret key between Bob and Mallory.</p>
 <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> math</span><br><span class="line"><span class="keyword">import</span> random</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">judge_prime</span><span class="params">(p)</span>:</span></span><br><span class="line"><span class="comment">#判断质数</span></span><br><span class="line">	<span class="keyword">if</span> p &lt;= <span class="number">1</span>:</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">False</span></span><br><span class="line">	i = <span class="number">2</span></span><br><span class="line">	<span class="keyword">while</span> i * i &lt;= p:</span><br><span class="line">		<span class="keyword">if</span> p % i == <span class="number">0</span>:</span><br><span class="line">			<span class="keyword">return</span> <span class="keyword">False</span></span><br><span class="line">		i += <span class="number">1</span></span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">True</span></span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_generator</span><span class="params">(p)</span>:</span></span><br><span class="line"><span class="comment">#得到所有的原根</span></span><br><span class="line">	a = <span class="number">2</span></span><br><span class="line">	list = []</span><br><span class="line">	<span class="keyword">while</span> a &lt; p:		</span><br><span class="line">		flag = <span class="number">1</span></span><br><span class="line">		<span class="keyword">while</span> flag != p:</span><br><span class="line">			<span class="keyword">if</span> (a ** flag) % p == <span class="number">1</span>:</span><br><span class="line">				<span class="keyword">break</span></span><br><span class="line">			flag += <span class="number">1</span></span><br><span class="line">		<span class="keyword">if</span> flag == (p - <span class="number">1</span>):</span><br><span class="line">			list.append(a)	</span><br><span class="line">		a += <span class="number">1</span></span><br><span class="line">	<span class="keyword">return</span> list</span><br><span class="line"> </span><br><span class="line"><span class="comment">#A，B得到各自的计算数	</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_calculation</span><span class="params">(p, a, X)</span>:</span></span><br><span class="line">	Y = (a ** X) % p</span><br><span class="line">	<span class="keyword">return</span> Y</span><br><span class="line"> </span><br><span class="line"><span class="comment">#A，B得到交换计算数后的密钥	</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_key</span><span class="params">(X, Y, p)</span>:</span></span><br><span class="line">	key = (Y ** X) % p</span><br><span class="line">	<span class="keyword">return</span> key</span><br><span class="line">	</span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">	</span><br><span class="line">	<span class="comment">#得到规定的素数</span></span><br><span class="line">	flag = <span class="keyword">False</span></span><br><span class="line">	<span class="keyword">while</span> flag == <span class="keyword">False</span>:</span><br><span class="line">		print(<span class="string">'Please input your number(It must be a prime!): '</span>, end = <span class="string">''</span>)</span><br><span class="line">		p = input()</span><br><span class="line">		p = int(p)</span><br><span class="line">		flag = judge_prime(p)</span><br><span class="line">	print(str(p) + <span class="string">' is a prime! '</span>)</span><br><span class="line">	</span><br><span class="line">	<span class="comment">#得到素数的一个原根</span></span><br><span class="line">	list = get_generator(p)</span><br><span class="line">	print(str(p) + <span class="string">' 的一个原根为：'</span>, end = <span class="string">''</span>)</span><br><span class="line">	print(list[<span class="number">-1</span>])</span><br><span class="line">	print(<span class="string">'------------------------------------------------------------------------------'</span>)</span><br><span class="line">	</span><br><span class="line">	<span class="comment">#得到A的私钥</span></span><br><span class="line">	XA = random.randint(<span class="number">0</span>, p<span class="number">-1</span>)</span><br><span class="line">	print(<span class="string">'A随机生成的私钥为：%d'</span> % XA)</span><br><span class="line">	</span><br><span class="line">	<span class="comment">#得到B的私钥</span></span><br><span class="line">	XB = random.randint(<span class="number">0</span>, p<span class="number">-1</span>)</span><br><span class="line">	print(<span class="string">'B随机生成的私钥为：%d'</span> % XB)</span><br><span class="line">	print(<span class="string">'------------------------------------------------------------------------------'</span>)</span><br><span class="line">	</span><br><span class="line">	<span class="comment">#得待A的计算数</span></span><br><span class="line">	YA = get_calculation(p, int(list[<span class="number">-1</span>]), XA)</span><br><span class="line">	print(<span class="string">'A的计算数为：%d'</span> % YA)</span><br><span class="line">	</span><br><span class="line">	<span class="comment">#得到B的计算数</span></span><br><span class="line">	YB = get_calculation(p, int(list[<span class="number">-1</span>]), XB)</span><br><span class="line">	print(<span class="string">'B的计算数为：%d'</span> % YB)</span><br><span class="line">	print(<span class="string">'------------------------------------------------------------------------------'</span>)</span><br><span class="line">	</span><br><span class="line">	<span class="comment">#交换后A的密钥</span></span><br><span class="line">	key_A = get_key(XA, YB, p)</span><br><span class="line">	print(<span class="string">'A的生成密钥为：%d'</span> % key_A)</span><br><span class="line">	</span><br><span class="line">	<span class="comment">#交换后B的密钥</span></span><br><span class="line">	key_B = get_key(XB, YA, p)</span><br><span class="line">	print(<span class="string">'B的生成密钥为：%d'</span> % key_B)</span><br><span class="line">	print(<span class="string">'---------------------------True or False------------------------------------'</span>)</span><br><span class="line">	</span><br><span class="line">	print(key_A == key_B)</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>Network Security</category>
-      </categories>
-      <tags>
-        <tag>Cryptography</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Cipher Block Mode of Opertion</title>
-    <url>/2019/03/19/Cryptgraphybasic2/</url>
-    <content><![CDATA[<h1><span id="cipher-block-mode-of-operation">Cipher Block Mode of Operation</span></h1><p><strong>ECB-Electronic Codebook Mode</strong><br>Block of plaintext will be encrypted by the same key and directly become the cipher block.<br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/ECB_encryption.svg/601px-ECB_encryption.svg.png" alt=""></p>
-<ul>
-<li>特点：明文与密文一一对应，故重复的明文对应重复的密文。 只要观察一下密文就能知道明文中存在怎样的重复组合， 并可以此为线索来破译密码， 因此ECB模式是存在一定风险的。</li>
-<li>对ECB模式的攻击：<ul>
-<li>若转账请求包括三部分：<ul>
-<li>A-&gt;付款人账号</li>
-<li>B-&gt;收款人账号</li>
-<li>C-&gt;转账金额</li>
-</ul>
-</li>
-<li>若攻击者调换A，B，顺序，则在未破译密码的情况下操纵了明文</li>
-</ul>
-</li>
-</ul>
-<h2><span id="cbc-cipher-block-chaining-mode"><strong>CBC-Cipher Block Chaining Mode</strong></span></h2><p>Input to encryption is XOR of current Plaintext block and previous Ciphertext block(initialization vector for the first block).<br>Same key is used for each block.<br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/CBC_encryption.svg/601px-CBC_encryption.svg.png" alt=""><br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/CBC_decryption.svg/601px-CBC_decryption.svg.png" alt=""></p>
-<ul>
-<li>特点： <ul>
-<li>加密之前一定会与前一个密文分组进行异或运算，因此同样的明文加密得到的密文未必相同，故避免了ECB模式的缺陷</li>
-<li>加密过程中无法单独对一个中间的明文分组进行加密</li>
-<li>解密过程中，如果有一个密文分组损坏，最多两个明文分组会受到影响。如果密文分组中有比特丢失，则缺失比特位后面全部分组都无法解密</li>
-</ul>
-</li>
-<li>对CBC模式的攻击：<ul>
-<li><strong>填充提示攻击</strong><br>是一种利用分组密码中填充部分来进行攻击的方法。在分组密码中，当明文长度不为分组长度的整数倍时，需要在最后一个分组中填充一些数据使其凑满一个分组长度。在填充提示攻击中，攻击者会反复发送一段密文，每次发送时都对填充数据进行少许改变。由于接收者（服务器）在无法正确解密时会返回一个错误消息，攻击者通过这一错误消息就可以获得一部分与明文相关的信息。这一攻击并不仅限于CBC模式，而是适用所有需要进行分组填充的模式。<br>2014年对SSL3.0 造成了重大影响POODLE攻击实际上就是一种填充示攻击。</li>
-<li><strong>对初始化向量（IV）进行攻击</strong><br>初始化向量（IV）必须使用不可预测的随机数。然而在SSL/TLS的TLS1.0版本协议中，IV并没有使用不可预测的随机数，而是使用上一次CBC模式加密时的最后一个分组。为了防御攻击者对此进行攻击，TLS1.1以上的版本中改为了必须显示传送IV。</li>
-</ul>
-</li>
-</ul>
-<h2><span id="cfb-cipher-feedback-mode"><strong>CFB-Cipher Feedback Mode</strong></span></h2><p>CFB converts block cipher into stream cipher.<br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/CFB_encryption.svg/601px-CFB_encryption.svg.png" alt=""><br><img src="https://www.researchgate.net/profile/Yas_Alsultanny/publication/255581885/figure/fig1/AS:563789780013062@1511429366690/Block-diagram-of-the-encryption-of-the-CFB-mode.png" alt=""></p>
-<ul>
-<li>对CFB模式的攻击：<ul>
-<li>重放攻击：<br>第一天Alice 使用CFB模式向Bob发送了一条信息（五个分组）<br>第二天Alice 向Bob发送了另外一条信息（五个分组）<br>若使用相同的秘钥，<br>攻击者可以截获第一天后四个分组，并将第二天的后四个分组替换成第一天的</li>
-</ul>
-</li>
-</ul>
-<h2><span id="ctr-counter-mode"><strong>CTR-Counter Mode</strong></span></h2><p>CTR also convert block cipher into stream cipher<br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/CTR_encryption_2.svg/601px-CTR_encryption_2.svg.png" alt=""><br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/CTR_decryption_2.svg/601px-CTR_decryption_2.svg.png" alt=""></p>
-<ul>
-<li>特点<ul>
-<li>CTR模式的加密和解密使用了完全相同的模式，因此在程序实现上比较容易</li>
-<li>能够以任意的顺序对分组进行加密解密，也就意味着能够实现并行计算</li>
-</ul>
-</li>
-<li>攻击者<ul>
-<li>可以通过反转密文分组中的某些比特，引起解密后明文中响应比特也发生反转</li>
-</ul>
-</li>
-</ul>
-<h2><span id="ofb-output-feedback-mode"><strong>OFB-Output Feedback Mode</strong></span></h2><p>OFB is similar to CFB, with output of encryption function fed back to the shift register instead of ciphertext.<br>(Also, OFB mode operates on full blocks of plaintext and ciphertext, not on an s-bit subset.)<br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/OFB_encryption.svg/601px-OFB_encryption.svg.png" alt=""></p>
-<ul>
-<li>OFB 与CFB唯一的不同就是Encryption算法的输入<br>CFB Encryption 的输入是前一个密文分组<br>OFB Encryption 的输入时前一个Encryption的输出</li>
-</ul>
-]]></content>
       <categories>
         <category>Network Security</category>
       </categories>
@@ -679,6 +617,68 @@
 <ul>
 <li>A byte k is generated from S by selecting one of the 256 entries. </li>
 <li>As each k is generated, entries of S are again permuted.</li>
+</ul>
+]]></content>
+      <categories>
+        <category>Network Security</category>
+      </categories>
+      <tags>
+        <tag>Cryptography</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Cipher Block Mode of Opertion</title>
+    <url>/2019/03/19/Cryptgraphybasic2/</url>
+    <content><![CDATA[<h1><span id="cipher-block-mode-of-operation">Cipher Block Mode of Operation</span></h1><p><strong>ECB-Electronic Codebook Mode</strong><br>Block of plaintext will be encrypted by the same key and directly become the cipher block.<br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/ECB_encryption.svg/601px-ECB_encryption.svg.png" alt=""></p>
+<ul>
+<li>特点：明文与密文一一对应，故重复的明文对应重复的密文。 只要观察一下密文就能知道明文中存在怎样的重复组合， 并可以此为线索来破译密码， 因此ECB模式是存在一定风险的。</li>
+<li>对ECB模式的攻击：<ul>
+<li>若转账请求包括三部分：<ul>
+<li>A-&gt;付款人账号</li>
+<li>B-&gt;收款人账号</li>
+<li>C-&gt;转账金额</li>
+</ul>
+</li>
+<li>若攻击者调换A，B，顺序，则在未破译密码的情况下操纵了明文</li>
+</ul>
+</li>
+</ul>
+<h2><span id="cbc-cipher-block-chaining-mode"><strong>CBC-Cipher Block Chaining Mode</strong></span></h2><p>Input to encryption is XOR of current Plaintext block and previous Ciphertext block(initialization vector for the first block).<br>Same key is used for each block.<br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/CBC_encryption.svg/601px-CBC_encryption.svg.png" alt=""><br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/CBC_decryption.svg/601px-CBC_decryption.svg.png" alt=""></p>
+<ul>
+<li>特点： <ul>
+<li>加密之前一定会与前一个密文分组进行异或运算，因此同样的明文加密得到的密文未必相同，故避免了ECB模式的缺陷</li>
+<li>加密过程中无法单独对一个中间的明文分组进行加密</li>
+<li>解密过程中，如果有一个密文分组损坏，最多两个明文分组会受到影响。如果密文分组中有比特丢失，则缺失比特位后面全部分组都无法解密</li>
+</ul>
+</li>
+<li>对CBC模式的攻击：<ul>
+<li><strong>填充提示攻击</strong><br>是一种利用分组密码中填充部分来进行攻击的方法。在分组密码中，当明文长度不为分组长度的整数倍时，需要在最后一个分组中填充一些数据使其凑满一个分组长度。在填充提示攻击中，攻击者会反复发送一段密文，每次发送时都对填充数据进行少许改变。由于接收者（服务器）在无法正确解密时会返回一个错误消息，攻击者通过这一错误消息就可以获得一部分与明文相关的信息。这一攻击并不仅限于CBC模式，而是适用所有需要进行分组填充的模式。<br>2014年对SSL3.0 造成了重大影响POODLE攻击实际上就是一种填充示攻击。</li>
+<li><strong>对初始化向量（IV）进行攻击</strong><br>初始化向量（IV）必须使用不可预测的随机数。然而在SSL/TLS的TLS1.0版本协议中，IV并没有使用不可预测的随机数，而是使用上一次CBC模式加密时的最后一个分组。为了防御攻击者对此进行攻击，TLS1.1以上的版本中改为了必须显示传送IV。</li>
+</ul>
+</li>
+</ul>
+<h2><span id="cfb-cipher-feedback-mode"><strong>CFB-Cipher Feedback Mode</strong></span></h2><p>CFB converts block cipher into stream cipher.<br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/CFB_encryption.svg/601px-CFB_encryption.svg.png" alt=""><br><img src="https://www.researchgate.net/profile/Yas_Alsultanny/publication/255581885/figure/fig1/AS:563789780013062@1511429366690/Block-diagram-of-the-encryption-of-the-CFB-mode.png" alt=""></p>
+<ul>
+<li>对CFB模式的攻击：<ul>
+<li>重放攻击：<br>第一天Alice 使用CFB模式向Bob发送了一条信息（五个分组）<br>第二天Alice 向Bob发送了另外一条信息（五个分组）<br>若使用相同的秘钥，<br>攻击者可以截获第一天后四个分组，并将第二天的后四个分组替换成第一天的</li>
+</ul>
+</li>
+</ul>
+<h2><span id="ctr-counter-mode"><strong>CTR-Counter Mode</strong></span></h2><p>CTR also convert block cipher into stream cipher<br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/CTR_encryption_2.svg/601px-CTR_encryption_2.svg.png" alt=""><br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/CTR_decryption_2.svg/601px-CTR_decryption_2.svg.png" alt=""></p>
+<ul>
+<li>特点<ul>
+<li>CTR模式的加密和解密使用了完全相同的模式，因此在程序实现上比较容易</li>
+<li>能够以任意的顺序对分组进行加密解密，也就意味着能够实现并行计算</li>
+</ul>
+</li>
+<li>攻击者<ul>
+<li>可以通过反转密文分组中的某些比特，引起解密后明文中响应比特也发生反转</li>
+</ul>
+</li>
+</ul>
+<h2><span id="ofb-output-feedback-mode"><strong>OFB-Output Feedback Mode</strong></span></h2><p>OFB is similar to CFB, with output of encryption function fed back to the shift register instead of ciphertext.<br>(Also, OFB mode operates on full blocks of plaintext and ciphertext, not on an s-bit subset.)<br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/OFB_encryption.svg/601px-OFB_encryption.svg.png" alt=""></p>
+<ul>
+<li>OFB 与CFB唯一的不同就是Encryption算法的输入<br>CFB Encryption 的输入是前一个密文分组<br>OFB Encryption 的输入时前一个Encryption的输出</li>
 </ul>
 ]]></content>
       <categories>
