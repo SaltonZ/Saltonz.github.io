@@ -163,9 +163,9 @@
         <category>Information Retrivement</category>
       </categories>
       <tags>
+        <tag>C++</tag>
         <tag>Search Engine</tag>
         <tag>Information Retrivement</tag>
-        <tag>C++</tag>
       </tags>
   </entry>
   <entry>
@@ -231,9 +231,9 @@
         <category>Information Retrivement</category>
       </categories>
       <tags>
-        <tag>Python</tag>
         <tag>Search Engine</tag>
         <tag>Information Retrivement</tag>
+        <tag>Python</tag>
       </tags>
   </entry>
   <entry>
@@ -510,6 +510,68 @@
       </tags>
   </entry>
   <entry>
+    <title>Cipher Block Mode of Opertion</title>
+    <url>/2019/03/19/Cryptgraphybasic2/</url>
+    <content><![CDATA[<h1><span id="cipher-block-mode-of-operation">Cipher Block Mode of Operation</span></h1><p><strong>ECB-Electronic Codebook Mode</strong><br>Block of plaintext will be encrypted by the same key and directly become the cipher block.<br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/ECB_encryption.svg/601px-ECB_encryption.svg.png" alt=""></p>
+<ul>
+<li>特点：明文与密文一一对应，故重复的明文对应重复的密文。 只要观察一下密文就能知道明文中存在怎样的重复组合， 并可以此为线索来破译密码， 因此ECB模式是存在一定风险的。</li>
+<li>对ECB模式的攻击：<ul>
+<li>若转账请求包括三部分：<ul>
+<li>A-&gt;付款人账号</li>
+<li>B-&gt;收款人账号</li>
+<li>C-&gt;转账金额</li>
+</ul>
+</li>
+<li>若攻击者调换A，B，顺序，则在未破译密码的情况下操纵了明文</li>
+</ul>
+</li>
+</ul>
+<h2><span id="cbc-cipher-block-chaining-mode"><strong>CBC-Cipher Block Chaining Mode</strong></span></h2><p>Input to encryption is XOR of current Plaintext block and previous Ciphertext block(initialization vector for the first block).<br>Same key is used for each block.<br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/CBC_encryption.svg/601px-CBC_encryption.svg.png" alt=""><br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/CBC_decryption.svg/601px-CBC_decryption.svg.png" alt=""></p>
+<ul>
+<li>特点： <ul>
+<li>加密之前一定会与前一个密文分组进行异或运算，因此同样的明文加密得到的密文未必相同，故避免了ECB模式的缺陷</li>
+<li>加密过程中无法单独对一个中间的明文分组进行加密</li>
+<li>解密过程中，如果有一个密文分组损坏，最多两个明文分组会受到影响。如果密文分组中有比特丢失，则缺失比特位后面全部分组都无法解密</li>
+</ul>
+</li>
+<li>对CBC模式的攻击：<ul>
+<li><strong>填充提示攻击</strong><br>是一种利用分组密码中填充部分来进行攻击的方法。在分组密码中，当明文长度不为分组长度的整数倍时，需要在最后一个分组中填充一些数据使其凑满一个分组长度。在填充提示攻击中，攻击者会反复发送一段密文，每次发送时都对填充数据进行少许改变。由于接收者（服务器）在无法正确解密时会返回一个错误消息，攻击者通过这一错误消息就可以获得一部分与明文相关的信息。这一攻击并不仅限于CBC模式，而是适用所有需要进行分组填充的模式。<br>2014年对SSL3.0 造成了重大影响POODLE攻击实际上就是一种填充示攻击。</li>
+<li><strong>对初始化向量（IV）进行攻击</strong><br>初始化向量（IV）必须使用不可预测的随机数。然而在SSL/TLS的TLS1.0版本协议中，IV并没有使用不可预测的随机数，而是使用上一次CBC模式加密时的最后一个分组。为了防御攻击者对此进行攻击，TLS1.1以上的版本中改为了必须显示传送IV。</li>
+</ul>
+</li>
+</ul>
+<h2><span id="cfb-cipher-feedback-mode"><strong>CFB-Cipher Feedback Mode</strong></span></h2><p>CFB converts block cipher into stream cipher.<br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/CFB_encryption.svg/601px-CFB_encryption.svg.png" alt=""><br><img src="https://www.researchgate.net/profile/Yas_Alsultanny/publication/255581885/figure/fig1/AS:563789780013062@1511429366690/Block-diagram-of-the-encryption-of-the-CFB-mode.png" alt=""></p>
+<ul>
+<li>对CFB模式的攻击：<ul>
+<li>重放攻击：<br>第一天Alice 使用CFB模式向Bob发送了一条信息（五个分组）<br>第二天Alice 向Bob发送了另外一条信息（五个分组）<br>若使用相同的秘钥，<br>攻击者可以截获第一天后四个分组，并将第二天的后四个分组替换成第一天的</li>
+</ul>
+</li>
+</ul>
+<h2><span id="ctr-counter-mode"><strong>CTR-Counter Mode</strong></span></h2><p>CTR also convert block cipher into stream cipher<br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/CTR_encryption_2.svg/601px-CTR_encryption_2.svg.png" alt=""><br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/CTR_decryption_2.svg/601px-CTR_decryption_2.svg.png" alt=""></p>
+<ul>
+<li>特点<ul>
+<li>CTR模式的加密和解密使用了完全相同的模式，因此在程序实现上比较容易</li>
+<li>能够以任意的顺序对分组进行加密解密，也就意味着能够实现并行计算</li>
+</ul>
+</li>
+<li>攻击者<ul>
+<li>可以通过反转密文分组中的某些比特，引起解密后明文中响应比特也发生反转</li>
+</ul>
+</li>
+</ul>
+<h2><span id="ofb-output-feedback-mode"><strong>OFB-Output Feedback Mode</strong></span></h2><p>OFB is similar to CFB, with output of encryption function fed back to the shift register instead of ciphertext.<br>(Also, OFB mode operates on full blocks of plaintext and ciphertext, not on an s-bit subset.)<br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/OFB_encryption.svg/601px-OFB_encryption.svg.png" alt=""></p>
+<ul>
+<li>OFB 与CFB唯一的不同就是Encryption算法的输入<br>CFB Encryption 的输入是前一个密文分组<br>OFB Encryption 的输入时前一个Encryption的输出</li>
+</ul>
+]]></content>
+      <categories>
+        <category>Network Security</category>
+      </categories>
+      <tags>
+        <tag>Cryptography</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Cryptography Basic1</title>
     <url>/2019/03/19/Cryotgraohybasic1/</url>
     <content><![CDATA[<h1><span id="cryptography-basic">Cryptography Basic</span></h1><p><strong>Cipher</strong>: mathematic process usedfor encryption and decryption by cryptographic systems<br>Classification of cryptographic systems:</p>
@@ -617,68 +679,6 @@
 <ul>
 <li>A byte k is generated from S by selecting one of the 256 entries. </li>
 <li>As each k is generated, entries of S are again permuted.</li>
-</ul>
-]]></content>
-      <categories>
-        <category>Network Security</category>
-      </categories>
-      <tags>
-        <tag>Cryptography</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Cipher Block Mode of Opertion</title>
-    <url>/2019/03/19/Cryptgraphybasic2/</url>
-    <content><![CDATA[<h1><span id="cipher-block-mode-of-operation">Cipher Block Mode of Operation</span></h1><p><strong>ECB-Electronic Codebook Mode</strong><br>Block of plaintext will be encrypted by the same key and directly become the cipher block.<br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/ECB_encryption.svg/601px-ECB_encryption.svg.png" alt=""></p>
-<ul>
-<li>特点：明文与密文一一对应，故重复的明文对应重复的密文。 只要观察一下密文就能知道明文中存在怎样的重复组合， 并可以此为线索来破译密码， 因此ECB模式是存在一定风险的。</li>
-<li>对ECB模式的攻击：<ul>
-<li>若转账请求包括三部分：<ul>
-<li>A-&gt;付款人账号</li>
-<li>B-&gt;收款人账号</li>
-<li>C-&gt;转账金额</li>
-</ul>
-</li>
-<li>若攻击者调换A，B，顺序，则在未破译密码的情况下操纵了明文</li>
-</ul>
-</li>
-</ul>
-<h2><span id="cbc-cipher-block-chaining-mode"><strong>CBC-Cipher Block Chaining Mode</strong></span></h2><p>Input to encryption is XOR of current Plaintext block and previous Ciphertext block(initialization vector for the first block).<br>Same key is used for each block.<br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/CBC_encryption.svg/601px-CBC_encryption.svg.png" alt=""><br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/CBC_decryption.svg/601px-CBC_decryption.svg.png" alt=""></p>
-<ul>
-<li>特点： <ul>
-<li>加密之前一定会与前一个密文分组进行异或运算，因此同样的明文加密得到的密文未必相同，故避免了ECB模式的缺陷</li>
-<li>加密过程中无法单独对一个中间的明文分组进行加密</li>
-<li>解密过程中，如果有一个密文分组损坏，最多两个明文分组会受到影响。如果密文分组中有比特丢失，则缺失比特位后面全部分组都无法解密</li>
-</ul>
-</li>
-<li>对CBC模式的攻击：<ul>
-<li><strong>填充提示攻击</strong><br>是一种利用分组密码中填充部分来进行攻击的方法。在分组密码中，当明文长度不为分组长度的整数倍时，需要在最后一个分组中填充一些数据使其凑满一个分组长度。在填充提示攻击中，攻击者会反复发送一段密文，每次发送时都对填充数据进行少许改变。由于接收者（服务器）在无法正确解密时会返回一个错误消息，攻击者通过这一错误消息就可以获得一部分与明文相关的信息。这一攻击并不仅限于CBC模式，而是适用所有需要进行分组填充的模式。<br>2014年对SSL3.0 造成了重大影响POODLE攻击实际上就是一种填充示攻击。</li>
-<li><strong>对初始化向量（IV）进行攻击</strong><br>初始化向量（IV）必须使用不可预测的随机数。然而在SSL/TLS的TLS1.0版本协议中，IV并没有使用不可预测的随机数，而是使用上一次CBC模式加密时的最后一个分组。为了防御攻击者对此进行攻击，TLS1.1以上的版本中改为了必须显示传送IV。</li>
-</ul>
-</li>
-</ul>
-<h2><span id="cfb-cipher-feedback-mode"><strong>CFB-Cipher Feedback Mode</strong></span></h2><p>CFB converts block cipher into stream cipher.<br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/CFB_encryption.svg/601px-CFB_encryption.svg.png" alt=""><br><img src="https://www.researchgate.net/profile/Yas_Alsultanny/publication/255581885/figure/fig1/AS:563789780013062@1511429366690/Block-diagram-of-the-encryption-of-the-CFB-mode.png" alt=""></p>
-<ul>
-<li>对CFB模式的攻击：<ul>
-<li>重放攻击：<br>第一天Alice 使用CFB模式向Bob发送了一条信息（五个分组）<br>第二天Alice 向Bob发送了另外一条信息（五个分组）<br>若使用相同的秘钥，<br>攻击者可以截获第一天后四个分组，并将第二天的后四个分组替换成第一天的</li>
-</ul>
-</li>
-</ul>
-<h2><span id="ctr-counter-mode"><strong>CTR-Counter Mode</strong></span></h2><p>CTR also convert block cipher into stream cipher<br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/CTR_encryption_2.svg/601px-CTR_encryption_2.svg.png" alt=""><br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/CTR_decryption_2.svg/601px-CTR_decryption_2.svg.png" alt=""></p>
-<ul>
-<li>特点<ul>
-<li>CTR模式的加密和解密使用了完全相同的模式，因此在程序实现上比较容易</li>
-<li>能够以任意的顺序对分组进行加密解密，也就意味着能够实现并行计算</li>
-</ul>
-</li>
-<li>攻击者<ul>
-<li>可以通过反转密文分组中的某些比特，引起解密后明文中响应比特也发生反转</li>
-</ul>
-</li>
-</ul>
-<h2><span id="ofb-output-feedback-mode"><strong>OFB-Output Feedback Mode</strong></span></h2><p>OFB is similar to CFB, with output of encryption function fed back to the shift register instead of ciphertext.<br>(Also, OFB mode operates on full blocks of plaintext and ciphertext, not on an s-bit subset.)<br><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/OFB_encryption.svg/601px-OFB_encryption.svg.png" alt=""></p>
-<ul>
-<li>OFB 与CFB唯一的不同就是Encryption算法的输入<br>CFB Encryption 的输入是前一个密文分组<br>OFB Encryption 的输入时前一个Encryption的输出</li>
 </ul>
 ]]></content>
       <categories>
